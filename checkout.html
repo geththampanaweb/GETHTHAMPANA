@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Complete Reservation</title>
+<title>Complete Reservation | ගෙත්තම්පාන</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -21,29 +21,51 @@ Complete Your Reservation
 
 <div class="bg-white/10 p-6 rounded-2xl">
 
-<h2 class="text-2xl mb-4">Selected Seats</h2>
+<h2 class="text-2xl mb-4">
+Selected Seats
+</h2>
 
-<p id="seatDisplay" class="text-yellow-300 text-lg mb-8"></p>
+<p id="seatDisplay" class="text-yellow-300 text-lg mb-8">
+Loading...
+</p>
 
 <form id="reservationForm">
 
-<input id="name" type="text" placeholder="Full Name" required
+<input
+id="name"
+type="text"
+placeholder="Full Name"
+required
 class="w-full p-4 rounded-xl text-black mb-4">
 
-<input id="phone" type="tel" placeholder="Mobile Number" required
+<input
+id="phone"
+type="tel"
+placeholder="Mobile Number"
+required
 class="w-full p-4 rounded-xl text-black mb-4">
 
-<input id="email" type="email" placeholder="Email Address" required
+<input
+id="email"
+type="email"
+placeholder="Email Address"
+required
 class="w-full p-4 rounded-xl text-black mb-4">
 
-<input id="school" type="text" placeholder="School / Organization"
+<input
+id="school"
+type="text"
+placeholder="School / Organization"
 class="w-full p-4 rounded-xl text-black mb-4">
 
-<textarea id="notes" placeholder="Special Notes"
+<textarea
+id="notes"
+placeholder="Special Notes"
 class="w-full p-4 rounded-xl text-black mb-4"></textarea>
 
-<button type="submit"
-class="bg-yellow-400 text-black px-8 py-4 rounded-full font-bold">
+<button
+type="submit"
+class="bg-yellow-400 text-black px-8 py-4 rounded-full font-bold hover:scale-105 transition">
 Confirm Reservation
 </button>
 
@@ -56,12 +78,19 @@ Reservation Successful 🎉
 </h2>
 
 <p class="text-gray-300 mb-4">
-Your ticket QR code is below
+Your reservation has been recorded successfully.
+</p>
+
+<div id="bookingDetails" class="mb-6 text-left bg-white/5 p-4 rounded-xl"></div>
+
+<p class="text-gray-300 mb-4">
+Your QR code:
 </p>
 
 <div id="qrcode" class="flex justify-center"></div>
 
-<button onclick="window.print()"
+<button
+onclick="window.print()"
 class="mt-6 bg-white text-black px-6 py-3 rounded-full">
 Print Ticket
 </button>
@@ -69,83 +98,161 @@ Print Ticket
 </div>
 
 </div>
+
 </div>
 
+<footer class="py-10 text-center text-gray-500">
+© 2026 ගෙත්තම්පාන
+</footer>
+
 <script type="module">
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-/* ---------------- SUPABASE ---------------- */
-const supabaseUrl = "https://geththampanaweb.github.io/GETHTHAMPANA/";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvaXB4Y3d2YXVzZ2xxY3RxZGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2NzkxMjgsImV4cCI6MjA5NzI1NTEyOH0.bbCF-hmMj_p5GnIhBsjOrLYATztHAdm02FH7XjGAMe0"; // 🔥 FIX THIS
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+import {
+getFirestore,
+collection,
+addDoc
+}
+from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-/* ---------------- LOAD SEATS ---------------- */
-const seats = JSON.parse(localStorage.getItem("selectedSeats")) || [];
+/* ---------------- FIREBASE CONFIG ---------------- */
+
+const firebaseConfig = {
+apiKey: "AIzaSyDaIzeEQkOrziNSXlRHWv-509hYZb4Y7vY",
+authDomain: "geththampana-reservations.firebaseapp.com",
+projectId: "geththampana-reservations",
+storageBucket: "geththampana-reservations.firebasestorage.app",
+messagingSenderId: "706440471161",
+appId: "1:706440471161:web:d32183dccadad1b835eaa8",
+measurementId: "G-R7Y10WQXZ1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* ---------------- LOAD SELECTED SEATS ---------------- */
+
+const seats =
+JSON.parse(localStorage.getItem("selectedSeats")) || [];
 
 document.getElementById("seatDisplay").innerText =
-seats.length ? seats.join(", ") : "No seats selected";
+seats.length
+? seats.join(", ")
+: "No seats selected";
 
-/* ---------------- UNIQUE BOOKING ID ---------------- */
+/* ---------------- BOOKING ID ---------------- */
+
 function generateBookingId() {
-  return "GTH-" + Date.now();
+
+return "GTH-" +
+Date.now() +
+"-" +
+Math.floor(Math.random() * 1000);
+
 }
 
-/* ---------------- SUBMIT ---------------- */
-document.getElementById("reservationForm").addEventListener("submit", async (e) => {
+/* ---------------- FORM SUBMIT ---------------- */
+
+document
+.getElementById("reservationForm")
+.addEventListener("submit", async (e) => {
+
 e.preventDefault();
 
-const name = document.getElementById("name").value;
-const phone = document.getElementById("phone").value;
-const email = document.getElementById("email").value;
-const school = document.getElementById("school").value;
-const notes = document.getElementById("notes").value;
+const name =
+document.getElementById("name").value.trim();
 
-if (seats.length === 0) {
-alert("No seats selected!");
+const phone =
+document.getElementById("phone").value.trim();
+
+const email =
+document.getElementById("email").value.trim();
+
+const school =
+document.getElementById("school").value.trim();
+
+const notes =
+document.getElementById("notes").value.trim();
+
+if(seats.length === 0){
+
+alert("Please select seats first.");
+
 return;
+
 }
 
 const bookingId = generateBookingId();
 
-/* ---------------- INSERT ---------------- */
-const { error } = await supabase.from("reservations").insert([{
+try {
+
+await addDoc(
+collection(db, "reservations"),
+{
 name,
 phone,
 email,
 school,
 notes,
-seats: JSON.stringify(seats),
-booking_id: bookingId,
+seats,
+bookingId,
 created_at: new Date().toISOString()
-}]);
-
-if (error) {
-console.log(error);
-alert("Reservation failed. Check Supabase RLS + key.");
-return;
 }
+);
 
-/* ---------------- UI SUCCESS ---------------- */
-document.getElementById("reservationForm").style.display = "none";
-document.getElementById("success").classList.remove("hidden");
+/* ---------------- SUCCESS SCREEN ---------------- */
+
+document
+.getElementById("reservationForm")
+.style.display = "none";
+
+document
+.getElementById("success")
+.classList.remove("hidden");
+
+document
+.getElementById("bookingDetails")
+.innerHTML = `
+<p><strong>Booking ID:</strong> ${bookingId}</p>
+<p><strong>Name:</strong> ${name}</p>
+<p><strong>Seats:</strong> ${seats.join(", ")}</p>
+`;
 
 /* ---------------- QR CODE ---------------- */
+
 const qrData = JSON.stringify({
 bookingId,
 name,
 phone,
+email,
 seats
 });
 
-new QRCode(document.getElementById("qrcode"), {
+new QRCode(
+document.getElementById("qrcode"),
+{
 text: qrData,
 width: 220,
 height: 220
-});
+}
+);
 
 /* ---------------- CLEAR STORAGE ---------------- */
+
 localStorage.removeItem("selectedSeats");
+
+}
+catch(error){
+
+console.error(error);
+
+alert(
+"Reservation failed. Check Firebase Firestore setup and rules."
+);
+
+}
 
 });
 
@@ -153,3 +260,4 @@ localStorage.removeItem("selectedSeats");
 
 </body>
 </html>
+```
