@@ -44,7 +44,7 @@ class="w-full p-4 rounded-xl text-black mb-4"></textarea>
 
 <button type="submit"
 class="bg-yellow-400 text-black px-8 py-4 rounded-full font-bold">
-Reserve Seats
+Confirm Reservation
 </button>
 
 </form>
@@ -52,8 +52,12 @@ Reserve Seats
 <div id="success" class="hidden mt-8 text-center">
 
 <h2 class="text-3xl text-green-400 mb-4">
-Reservation Successful
+Reservation Successful 🎉
 </h2>
+
+<p class="text-gray-300 mb-4">
+Your ticket QR code is below
+</p>
 
 <div id="qrcode" class="flex justify-center"></div>
 
@@ -72,7 +76,7 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 /* ---------------- SUPABASE ---------------- */
 const supabaseUrl = "https://boipxcwvausglqctqdhr.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvaXB4Y3d2YXVzZ2xxY3RxZGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2NzkxMjgsImV4cCI6MjA5NzI1NTEyOH0.bbCF-hmMj_p5GnIhBsjOrLYATztHAdm02FH7XjGAMe0"; // ❗ CHANGE THIS
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvaXB4Y3d2YXVzZ2xxY3RxZGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2NzkxMjgsImV4cCI6MjA5NzI1NTEyOH0.bbCF-hmMj_p5GnIhBsjOrLYATztHAdm02FH7XjGAMe0"; // 🔥 FIX THIS
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -82,7 +86,12 @@ const seats = JSON.parse(localStorage.getItem("selectedSeats")) || [];
 document.getElementById("seatDisplay").innerText =
 seats.length ? seats.join(", ") : "No seats selected";
 
-/* ---------------- FORM SUBMIT ---------------- */
+/* ---------------- UNIQUE BOOKING ID ---------------- */
+function generateBookingId() {
+  return "GTH-" + Date.now();
+}
+
+/* ---------------- SUBMIT ---------------- */
 document.getElementById("reservationForm").addEventListener("submit", async (e) => {
 e.preventDefault();
 
@@ -97,7 +106,9 @@ alert("No seats selected!");
 return;
 }
 
-/* ---------------- SAVE TO SUPABASE ---------------- */
+const bookingId = generateBookingId();
+
+/* ---------------- INSERT ---------------- */
 const { error } = await supabase.from("reservations").insert([{
 name,
 phone,
@@ -105,27 +116,27 @@ email,
 school,
 notes,
 seats: JSON.stringify(seats),
+booking_id: bookingId,
 created_at: new Date().toISOString()
 }]);
 
 if (error) {
-console.log("Supabase error:", error);
-alert("Failed to save reservation. Check Supabase RLS + key.");
+console.log(error);
+alert("Reservation failed. Check Supabase RLS + key.");
 return;
 }
 
-/* ---------------- SUCCESS UI ---------------- */
+/* ---------------- UI SUCCESS ---------------- */
 document.getElementById("reservationForm").style.display = "none";
 document.getElementById("success").classList.remove("hidden");
 
 /* ---------------- QR CODE ---------------- */
-const qrData = `
-Geththampana Ticket
-Name: ${name}
-Phone: ${phone}
-Email: ${email}
-Seats: ${seats.join(", ")}
-`;
+const qrData = JSON.stringify({
+bookingId,
+name,
+phone,
+seats
+});
 
 new QRCode(document.getElementById("qrcode"), {
 text: qrData,
@@ -135,6 +146,7 @@ height: 220
 
 /* ---------------- CLEAR STORAGE ---------------- */
 localStorage.removeItem("selectedSeats");
+
 });
 
 </script>
