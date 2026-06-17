@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Complete Reservation</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+</head>
+
+<body class="bg-black text-white min-h-screen">
+
+<div class="max-w-3xl mx-auto py-16 px-6">
+
+<h1 class="text-4xl font-bold text-yellow-400 mb-8">
+Complete Your Reservation
+</h1>
+
+<div class="bg-white/10 p-6 rounded-2xl">
+
+<h2 class="text-2xl mb-4">Selected Seats</h2>
+
+<p id="seatDisplay" class="text-yellow-300 text-lg mb-8"></p>
+
+<form id="reservationForm">
+
+<input id="name" type="text" placeholder="Full Name" required
+class="w-full p-4 rounded-xl text-black mb-4">
+
+<input id="phone" type="tel" placeholder="Mobile Number" required
+class="w-full p-4 rounded-xl text-black mb-4">
+
+<input id="email" type="email" placeholder="Email Address" required
+class="w-full p-4 rounded-xl text-black mb-4">
+
+<input id="school" type="text" placeholder="School / Organization"
+class="w-full p-4 rounded-xl text-black mb-4">
+
+<textarea id="notes" placeholder="Special Notes"
+class="w-full p-4 rounded-xl text-black mb-4"></textarea>
+
+<button type="submit"
+class="bg-yellow-400 text-black px-8 py-4 rounded-full font-bold">
+Reserve Seats
+</button>
+
+</form>
+
+<div id="success" class="hidden mt-8">
+
+<h2 class="text-3xl text-green-400 mb-4">
+Reservation Successful
+</h2>
+
+<div id="qrcode"></div>
+
+<button onclick="window.print()"
+class="mt-6 bg-white text-black px-6 py-3 rounded-full">
+Print Reservation
+</button>
+
+</div>
+
+</div>
+</div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+/* ---------- SUPABASE SETUP ---------- */
+const supabaseUrl = "https://boipxcwvausglqctqdhr.supabase.co";
+const supabaseKey = "sb_publishable_3nBfDmRJtkjOEjmMRUOEOQ_tIycECnt";
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+/* ---------- LOAD SELECTED SEATS ---------- */
+const seats = JSON.parse(localStorage.getItem("selectedSeats")) || [];
+
+document.getElementById("seatDisplay").innerText =
+seats.length ? seats.join(", ") : "No seats selected";
+
+/* ---------- FORM SUBMIT ---------- */
+document.getElementById("reservationForm").addEventListener("submit", async (e) => {
+e.preventDefault();
+
+const name = document.getElementById("name").value;
+const phone = document.getElementById("phone").value;
+const email = document.getElementById("email").value;
+const school = document.getElementById("school").value;
+const notes = document.getElementById("notes").value;
+
+if (seats.length === 0) {
+alert("No seats selected!");
+return;
+}
+
+/* ---------- SAVE TO SUPABASE ---------- */
+const { error } = await supabase
+.from("reservations")
+.insert([{
+name,
+phone,
+email,
+school,
+notes,
+seats: JSON.stringify(seats),
+created_at: new Date()
+}]);
+
+if (error) {
+alert("Failed to save reservation!");
+console.log(error);
+return;
+}
+
+/* ---------- SUCCESS UI ---------- */
+document.getElementById("reservationForm").style.display = "none";
+document.getElementById("success").classList.remove("hidden");
+
+/* ---------- QR CODE ---------- */
+new QRCode(document.getElementById("qrcode"), {
+text: `
+Name: ${name}
+Phone: ${phone}
+Email: ${email}
+Seats: ${seats.join(", ")}
+`,
+width: 250,
+height: 250
+});
+
+/* ---------- CLEAR LOCAL STORAGE ---------- */
+localStorage.removeItem("selectedSeats");
+
+});
+
+</script>
+
+</body>
+</html>
