@@ -295,60 +295,89 @@ window.location.href = "checkout.html";
 
 
 
-
-
+```html
 <script type="module">
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const supabaseUrl = "https://boipxcwvausglqctqdhr.supabase.co";
-const supabaseKey = "sb_publishable_3nBfDmRJtkjOEjmMRUOEOQ_tIycECnt";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 
-window.supabase = createClient(supabaseUrl, supabaseKey);
+import {
+getFirestore,
+collection,
+getDocs
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyDaIzeEQkOrziNSXlRHWv-509hYZb4Y7vY",
+authDomain: "geththampana-reservations.firebaseapp.com",
+projectId: "geththampana-reservations",
+storageBucket: "geththampana-reservations.firebasestorage.app",
+messagingSenderId: "706440471161",
+appId: "1:706440471161:web:d32183dccadad1b835eaa8",
+measurementId: "G-R7Y10WQXZ1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 async function loadBookedSeats() {
 
-const { data, error } = await supabase
-.from("reservations")
-.select("seats");
+try {
 
-if(error) return;
+const querySnapshot = await getDocs(
+collection(db, "reservations")
+);
 
 let booked = [];
 
-data.forEach(r => {
-try {
-booked = booked.concat(JSON.parse(r.seats));
-} catch(e) {
-console.log("Skipping bad data");
-}
-});
+querySnapshot.forEach((doc) => {
 
-document.querySelectorAll(".seat").forEach(seat => {
+const data = doc.data();
 
-let id = parseInt(seat.dataset.id);
-
-if(booked.includes(id)) {
-  seat.classList.add("booked");
-  seat.classList.add("locked");
-
-  seat.classList.remove("selected");
-  selected = selected.filter(x => x !== id);
-
-  seat.style.pointerEvents = "none";
-
-  updateSummary();
+if (Array.isArray(data.seats)) {
+booked = booked.concat(data.seats);
 }
 
 });
+
+document.querySelectorAll(".seat").forEach((seat) => {
+
+const id = parseInt(seat.dataset.id);
+
+if (booked.includes(id)) {
+
+seat.classList.add("booked");
+seat.classList.add("locked");
+
+seat.classList.remove("selected");
+
+selected = selected.filter(x => x !== id);
+
+seat.style.pointerEvents = "none";
+
+updateSummary();
+
+}
+
+});
+
+}
+catch(error){
+
+console.error("Firebase Error:", error);
+
+}
 
 }
 
 loadBookedSeats();
 
-// 🔥 AUTO REFRESH EVERY 5 SECONDS
 setInterval(loadBookedSeats, 5000);
 
 </script>
+```
+
+
+
 
 </body>
 </html>
