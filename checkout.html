@@ -73,7 +73,7 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 /* ---------- SUPABASE SETUP ---------- */
 const supabaseUrl = "https://boipxcwvausglqctqdhr.supabase.co";
-const supabaseKey = "sb_publishable_3nBfDmRJtkjOEjmMRUOEOQ_tIycECnt";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvaXB4Y3d2YXVzZ2xxY3RxZGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2NzkxMjgsImV4cCI6MjA5NzI1NTEyOH0.bbCF-hmMj_p5GnIhBsjOrLYATztHAdm02FH7XjGAMe0";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -112,9 +112,9 @@ created_at: new Date()
 }]);
 
 if (error) {
-alert("Failed to save reservation!");
-console.log(error);
-return;
+  alert("Failed to save reservation!");
+  console.log("Supabase error:", error);
+  return;
 }
 
 /* ---------- SUCCESS UI ---------- */
