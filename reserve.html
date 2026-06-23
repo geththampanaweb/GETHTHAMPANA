@@ -20,20 +20,20 @@ background:#050505;
 
 .screen{
 background:linear-gradient(90deg,#facc15,#fb923c);
-height:80px;
+height:100px;
 width:90%;
 margin:auto;
-border-radius:100px;
+border-radius:20px;
 box-shadow:0 0 50px rgba(255,200,0,.5);
 }
 
 .seat{
-width:34px;
-height:34px;
-border-radius:10px;
+width:20px;
+height:20px;
+border-radius:5px;
 cursor:pointer;
 transition:.3s;
-font-size:10px;
+font-size:9px;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -42,15 +42,17 @@ font-weight:bold;
 
 .seat:hover{
 transform:scale(1.15);
+font-weight:bold;
 }
 
 .vip{
-background:#facc15;
+background:#10b981;
 color:black;
 }
 
 .premium{
-background:#3b82f6;
+background:#10b981;
+color:black;
 }
 
 .standard{
@@ -138,7 +140,7 @@ Selected
 <div class="screen"></div>
 
 <p class="text-center mt-4 text-yellow-300 tracking-widest">
-STAGE
+
 </p>
 
 </div>
@@ -197,40 +199,178 @@ let selected = [];
 
 /* ---------- CREATE SEATS ---------- */
 
+/* ---------- CREATE SEATS ---------- */
+
 let seatNumber = 1;
 
-for(let row=1; row<=5; row++){
-  let rowDiv=document.createElement('div');
-  rowDiv.className="flex justify-center gap-2";
+/* Create rows */
 
-  for(let seat=1; seat<=15; seat++){
-    createSeat(rowDiv, seatNumber, 'vip');
-    seatNumber++;
-  }
-  seatMap.appendChild(rowDiv);
+function createRows(parent, rows, cols, type){
+
+for(let row=1; row<=rows; row++){
+
+const rowDiv = document.createElement("div");
+
+rowDiv.className =
+"flex justify-center gap-2 mb-2";
+
+for(let seat=1; seat<=cols; seat++){
+
+createSeat(
+rowDiv,
+seatNumber,
+type
+);
+
+seatNumber++;
+
 }
 
-for(let row=1; row<=10; row++){
-  let rowDiv=document.createElement('div');
-  rowDiv.className="flex justify-center gap-2";
+parent.appendChild(rowDiv);
 
-  for(let seat=1; seat<=20; seat++){
-    createSeat(rowDiv, seatNumber, 'premium');
-    seatNumber++;
-  }
-  seatMap.appendChild(rowDiv);
 }
 
-for(let row=1; row<=6; row++){
-  let rowDiv=document.createElement('div');
-  rowDiv.className="flex justify-center gap-2";
-
-  for(let seat=1; seat<=15; seat++){
-    createSeat(rowDiv, seatNumber, 'standard');
-    seatNumber++;
-  }
-  seatMap.appendChild(rowDiv);
 }
+
+/* Main Container */
+
+seatMap.innerHTML = "";
+
+seatMap.className =
+"flex flex-col gap-12 w-full";
+
+/* =========================
+TOP SECTION
+70 LEFT | ENTRANCE | 70 RIGHT
+========================= */
+
+const topSection =
+document.createElement("div");
+
+topSection.className =
+"flex justify-between items-start w-full px-4";
+
+/* LEFT 70 */
+
+const leftTop =
+document.createElement("div");
+
+createRows(
+leftTop,
+10,
+7,
+"vip"
+);
+
+/* ENTRANCE */
+
+const entrance =
+document.createElement("div");
+
+entrance.className =
+`
+
+bg-white/5
+rounded-xl
+flex
+justify-center
+items-center
+text-yellow-400
+font-bold
+text-xl
+`;
+
+entrance.style.height =
+"300px";
+
+entrance.style.width =
+"500px";
+
+entrance.innerHTML =
+`
+<div
+style="
+writing-mode:vertical-rl;
+transform:rotate(180deg);
+letter-spacing:4px;
+">
+STAGE
+</div>
+`;
+
+/* RIGHT 70 */
+
+const rightTop =
+document.createElement("div");
+
+createRows(
+rightTop,
+10,
+7,
+"vip"
+);
+
+topSection.append(
+leftTop,
+entrance,
+rightTop
+);
+
+/* =========================
+BOTTOM SECTION
+120 LEFT | SPACE | 120 RIGHT
+========================= */
+
+const bottomSection =
+document.createElement("div");
+
+bottomSection.className =
+"flex justify-between w-full px-4";
+
+/* LEFT 120 */
+
+const leftBottom =
+document.createElement("div");
+
+createRows(
+leftBottom,
+7,
+17,
+"premium"
+);
+
+/* EMPTY CENTER */
+
+const middleSpace =
+document.createElement("div");
+
+middleSpace.style.width =
+"96px";
+
+/* RIGHT 120 */
+
+const rightBottom =
+document.createElement("div");
+
+createRows(
+rightBottom,
+7,
+17,
+"premium"
+);
+
+bottomSection.append(
+leftBottom,
+middleSpace,
+rightBottom
+);
+
+/* Render */
+
+seatMap.append(
+topSection,
+bottomSection
+);
 
 /* ---------- CREATE SEAT FUNCTION ---------- */
 
@@ -382,3 +522,4 @@ setInterval(loadBookedSeats, 5000);
 
 </body>
 </html>
+
