@@ -27,21 +27,132 @@
             background:rgba(255,255,255,.05);
             border:1px solid rgba(255,255,255,.1);
         }
+
+        /* ── Gallery transitions ── */
+        .gallery-img {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .gallery-img.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .gallery-img:hover {
+            transform: scale(1.03);
+            transition: transform 0.35s ease;
+        }
+
+        /* ── Reels section ── */
+        .reel-card {
+            position: relative;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            aspect-ratio: 9/16;
+            background: #111;
+            cursor: pointer;
+            flex: 0 0 220px;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+        }
+        .reel-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+        .reel-card video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .reel-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%);
+            display: flex;
+            align-items: flex-end;
+            padding: 1rem;
+            pointer-events: none;
+        }
+        .reel-play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: rgba(251,191,36,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .reel-card:hover .reel-play-btn,
+        .reel-card.playing .reel-play-btn {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+        .reel-play-btn svg {
+            width: 22px;
+            height: 22px;
+            fill: #000;
+            margin-left: 3px;
+        }
+
+        /* scrollable reel track */
+        .reel-track {
+            display: flex;
+            gap: 1.25rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .reel-track::-webkit-scrollbar { height: 4px; }
+        .reel-track::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+        .reel-track::-webkit-scrollbar-thumb { background: rgba(251,191,36,0.5); border-radius: 4px; }
+        .reel-card { scroll-snap-align: start; }
+
+        /* scroll arrow buttons */
+        .reel-arrow {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(251,191,36,0.15);
+            border: 1px solid rgba(251,191,36,0.3);
+            color: #fbbf24;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .reel-arrow:hover { background: rgba(251,191,36,0.3); }
+        .reel-arrow svg { width: 20px; height: 20px; }
+
+        /* reel slide-in animation */
+        .reel-card {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.35s ease;
+        }
+        .reel-card.reel-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reel-card:hover {
+            transform: translateY(-6px) scale(1.02) !important;
+        }
     </style>
 </head>
 
 <body class="bg-black text-white">
 
 <!-- NAVBAR -->
-
 <nav class="fixed w-full z-50 bg-black/50 backdrop-blur-md border-b border-white/10">
-
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-
-        <h1 class="text-2xl font-bold text-amber-400">
-            ගෙත්තම්පාණ  
-        </h1>
-
+        <h1 class="text-2xl font-bold text-amber-400">ගෙත්තම්පාණ </h1>
         <div class="hidden md:flex gap-8 text-sm">
             <a href="#" class="hover:text-amber-400">Home</a>
             <a href="#about" class="hover:text-amber-400">About</a>
@@ -49,283 +160,134 @@
             <a href="#venue" class="hover:text-amber-400">Venue</a>
             <a href="#contact" class="hover:text-amber-400">Contact</a>
         </div>
-
     </div>
-
 </nav>
 
 <!-- HERO -->
-
 <section class="hero-bg min-h-screen flex items-center">
-
     <div class="max-w-7xl mx-auto px-6">
-
         <div class="max-w-3xl">
-
-            <p class="uppercase tracking-[5px] text-amber-400 mb-4">
-                Musical Evening
-            </p>
-
-           <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/geththampana..jpeg"rounded-3xl shadow-2xl">
-
-            <p class="text-xl text-gray-300 mb-8">
-                An unforgettable evening of music, culture, rhythm and
-                memories under one stage.
-            </p>
-
+            <p class="uppercase tracking-[5px] text-amber-400 mb-4">Musical Evening</p>
+            
+			<img src="images/geththampana..jpeg" class="rounded-3xl shadow-2xl">
+			
+			
+            <p class="text-xl text-gray-300 mb-8">An unforgettable evening of music, culture, rhythm and memories under one stage.</p>
             <div class="flex flex-wrap gap-4">
-
-                <a href="reserve.html"
-                    class="bg-amber-500 hover:bg-amber-600 px-8 py-4 rounded-full font-semibold transition">
-                    Reserve Your Seat
-                </a>
-                <a href="audiencechoice.html"
-   class="bg-purple-600 hover:bg-purple-700 px-8 py-4 rounded-full font-semibold transition">
-   🎵 Audience Choice
-</a>
-                <a href="#about"
-                    class="border border-white px-8 py-4 rounded-full hover:bg-white hover:text-black transition">
-                    Learn More
-                </a>
-
+                <a href="reserve.html" class="bg-amber-500 hover:bg-amber-600 px-8 py-4 rounded-full font-semibold transition">Reserve Your Seat</a>
+                <a href="audience-choice.html" class="bg-amber-500 hover:bg-amber-600 px-8 py-4 rounded-full font-semibold transition">Audience Choice</a>
+                <a href="#about" class="border border-white px-8 py-4 rounded-full hover:bg-white hover:text-black transition">Learn More</a>
             </div>
-
             <div class="mt-12 flex flex-wrap gap-8">
-
                 <div>
                     <p class="text-gray-400">Venue</p>
-                    <h3 class="font-bold">
-                        D.S. Senanayake College, Colombo 07
-                    </h3>
+                    <h3 class="font-bold">D.S. Senanayake College, Colombo 07</h3>
                 </div>
-
                 <div>
                     <p class="text-gray-400">Event</p>
-                    <h3 class="font-bold">
-                        Live Musical Evening
-                    </h3>
+                    <h3 class="font-bold">Live Musical Evening</h3>
                 </div>
-
-				 <div>
+                <div>
                     <p class="text-gray-400">Date</p>
-                    <h3 class="font-bold">
-                        25th September
-                    </h3>
+                    <h3 class="font-bold">25th September</h3>
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
-</section>
 </section>
 
 <!-- OFFICIAL TRAILER -->
-
-<!-- OFFICIAL TRAILER -->
-
 <section class="py-24 bg-black">
-
     <div class="max-w-6xl mx-auto px-6">
-
         <div class="text-center mb-12">
-
-            <h2 class="text-4xl font-bold text-amber-400 mb-4">
-                Official Trailer
-            </h2>
-
-            <p class="text-gray-400">
-                Watch the official trailer of ගෙත්තම්පාණ  2026
-            </p>
-
+            <h2 class="text-4xl font-bold text-amber-400 mb-4">Official Trailer</h2>
+            <p class="text-gray-400">Watch the official trailer of ගෙත්තම්පාණ 2026</p>
         </div>
-
         <div class="rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-
-            <video
-                class="w-full"
-                autoplay
-                muted
-                loop
-                playsinline
-                controls>
-
+            <video class="w-full" autoplay muted loop playsinline controls>
                 <source src="images/sitaramam.mp4" type="video/mp4">
-
                 Your browser does not support the video tag.
-
             </video>
-
         </div>
-
     </div>
-
 </section>
+
 <!-- ABOUT -->
-
 <section id="about" class="py-24 bg-zinc-950">
-
     <div class="max-w-7xl mx-auto px-6">
-
         <div class="grid md:grid-cols-2 gap-12 items-center">
-
-            <img
-                src="images/off.jpeg"
-                class="rounded-3xl shadow-2xl">
-
+            <img src="images/off.jpeg" class="rounded-3xl shadow-2xl">
             <div>
-
-                <h2 class="text-4xl font-bold mb-6 text-amber-400">
-                    About ගෙත්තම්පාණ 
-                </h2>
-
+                <h2 class="text-4xl font-bold mb-6 text-amber-400">About ගෙත්තම්පාණ</h2>
                 <p class="text-gray-300 leading-relaxed mb-6">
-                    ගෙත්තම්පාණ  is a musical programme organized by
-D.S. Senanayake College, first introduced in 2025 to promote
-musical appreciation and provide students with a platform to
-showcase their talents. Following the success of its inaugural
-edition, the programme will be held for the second time in 2026
-with the theme of Sri Lankan Folk Music.
-<p>
-
-This year's event aims to celebrate the richness and diversity of
-Sri Lanka’s folk music traditions through performances and
-presentations that highlight their cultural and historical
-significance. By bringing traditional music to a modern audience,
-Geththampana 2026 seeks to foster cultural awareness,
-encourage artistic expression, and inspire a greater appreciation
-for the nation’s musical heritage among students and the wider
+                    ගෙත්තම්පාණ is a musical programme organized by D.S. Senanayake College, first introduced in 2025 to promote musical appreciation and provide students with a platform to showcase their talents. Following the success of its inaugural edition, the programme will be held for the second time in 2026 with the theme of Sri Lankan Folk Music.
                 </p>
-
+                <p class="text-gray-300 leading-relaxed mb-6">
+                    This year's event aims to celebrate the richness and diversity of Sri Lanka's folk music traditions through performances and presentations that highlight their cultural and historical significance. By bringing traditional music to a modern audience, Geththampana 2026 seeks to foster cultural awareness, encourage artistic expression, and inspire a greater appreciation for the nation's musical heritage among students and the wider community.
+                </p>
                 <p class="text-gray-400 leading-relaxed">
-                    Experience live music performances, vibrant stage
-                    productions and a night filled with rhythm and emotion.
+                    Experience live music performances, vibrant stage productions and a night filled with rhythm and emotion.
                 </p>
-
             </div>
-
         </div>
-
     </div>
-
 </section>
 
 <!-- HIGHLIGHTS -->
-
 <section class="py-24 bg-black">
-
     <div class="max-w-7xl mx-auto px-6">
-
         <div class="text-center mb-16">
-
-            <h2 class="text-4xl font-bold">
-                Event Highlights
-            </h2>
-
+            <h2 class="text-4xl font-bold">Event Highlights</h2>
         </div>
-
         <div class="grid md:grid-cols-3 gap-8">
-
             <div class="glass p-8 rounded-3xl">
-                <h3 class="text-xl font-bold text-amber-400 mb-3">
-                    Live Performances
-                </h3>
-                <p class="text-gray-300">
-                    Enjoy powerful performances from talented musicians.
-                </p>
+                <h3 class="text-xl font-bold text-amber-400 mb-3">Live Performances</h3>
+                <p class="text-gray-300">Enjoy powerful performances from talented musicians.</p>
             </div>
-
             <div class="glass p-8 rounded-3xl">
-                <h3 class="text-xl font-bold text-amber-400 mb-3">
-                    Special Guests
-                </h3>
-                <p class="text-gray-300">
-                    Exciting appearances and unforgettable moments.
-                </p>
+                <h3 class="text-xl font-bold text-amber-400 mb-3">Special Guests</h3>
+                <p class="text-gray-300">Exciting appearances and unforgettable moments.</p>
             </div>
-
             <div class="glass p-8 rounded-3xl">
-                <h3 class="text-xl font-bold text-amber-400 mb-3">
-                    Cultural Experience
-                </h3>
-                <p class="text-gray-300">
-                    Music, community and artistic expression together.
-                </p>
+                <h3 class="text-xl font-bold text-amber-400 mb-3">Cultural Experience</h3>
+                <p class="text-gray-300">Music, community and artistic expression together.</p>
             </div>
-
         </div>
-
     </div>
-
 </section>
 
 <!-- ARTISTS -->
-
 <section id="artists" class="py-24 bg-zinc-950">
-
     <div class="max-w-7xl mx-auto px-6">
-
         <div class="text-center mb-16">
-
-            <h2 class="text-4xl font-bold mb-4">
-                Featured Artists
-            </h2>
-
-            <p class="text-gray-400">
-                Artist lineup will be announced soon.
-            </p>
-
+            <h2 class="text-4xl font-bold mb-4">Featured Artists</h2>
+            <p class="text-gray-400">Artist lineup will be announced soon.</p>
         </div>
-
         <div class="grid md:grid-cols-3 gap-8">
-
-           <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/kanchana.jpeg"
-                class="rounded-3xl h-96 object-cover w-full">
-
-            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/bandula.jpeg"
-                class="rounded-3xl h-96 object-cover w-full">
-
-            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/umali.jpeg"
-                class="rounded-3xl h-96 object-cover w-full">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/kanchana.jpeg" class="rounded-3xl h-96 object-cover w-full">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/bandula.jpeg" class="rounded-3xl h-96 object-cover w-full">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/umali.jpeg" class="rounded-3xl h-96 object-cover w-full">
         </div>
-
     </div>
-
 </section>
 
-<!-- GALLERY -->
-
+<!-- GALLERY (with scroll-triggered fade+scale transitions) -->
 <section class="py-24 bg-black">
-
     <div class="max-w-7xl mx-auto px-6">
-
         <div class="text-center mb-16">
-
-            <h2 class="text-4xl font-bold">
-                Gallery
-            </h2>
-
+            <h2 class="text-4xl font-bold">Gallery</h2>
         </div>
-
         <div class="grid md:grid-cols-4 gap-4">
-
-            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry1.jpeg" class="rounded-2xl">
-            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry5.jpeg" class="rounded-2xl">
-            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry3.jpeg" class="rounded-2xl">
-            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry4.jpeg" class="rounded-2xl">
-			<img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry4.jpeg" class="rounded-2xl">
-			<img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry3.jpeg" class="rounded-2xl">
-			<img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry5.jpeg" class="rounded-2xl">
-			<img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry1.jpeg" class="rounded-2xl">
-
-            
-
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry1.jpeg" class="rounded-2xl gallery-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry5.jpeg" class="rounded-2xl gallery-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry3.jpeg" class="rounded-2xl gallery-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry4.jpeg" class="rounded-2xl gallery-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry4.jpeg" class="rounded-2xl gallery-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry3.jpeg" class="rounded-2xl gallery-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry5.jpeg" class="rounded-2xl gallery-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry1.jpeg" class="rounded-2xl gallery-img">
         </div>
-
     </div>
-
 </section>
 
 <!-- ════════════════════════════════════════
@@ -353,7 +315,7 @@ for the nation’s musical heritage among students and the wider
 
                 <!-- Reel 1 – video file -->
                 <div class="reel-card" data-reel="1">
-                    <video src="images/test.mp4" loop playsinline muted preload="metadata"></video>
+                    <video src="images/test2.mp4" loop playsinline muted preload="metadata"></video>
                     <div class="reel-overlay">
                         <p class="text-sm font-semibold text-white">ගෙත්තම්පාන 2026</p>
                     </div>
@@ -364,7 +326,7 @@ for the nation’s musical heritage among students and the wider
 
                 <!-- Reel 2 -->
                 <div class="reel-card" data-reel="2">
-                    <video src="images/test.mp4" loop playsinline muted preload="metadata"></video>
+                    <video src="images/test2.mp4" loop playsinline muted preload="metadata"></video>
                     <div class="reel-overlay">
                         <p class="text-sm font-semibold text-white">Rehearsal Highlights</p>
                     </div>
@@ -375,7 +337,7 @@ for the nation’s musical heritage among students and the wider
 
                 <!-- Reel 3 -->
                 <div class="reel-card" data-reel="3">
-                    <video src="images/test.mp4" loop playsinline muted preload="metadata"></video>
+                    <video src="images/test2.mp4" loop playsinline muted preload="metadata"></video>
                     <div class="reel-overlay">
                         <p class="text-sm font-semibold text-white">Stage Setup</p>
                     </div>
@@ -386,7 +348,7 @@ for the nation’s musical heritage among students and the wider
 
                 <!-- Reel 4 -->
                 <div class="reel-card" data-reel="4">
-                    <video src="images/test.mp4" loop playsinline muted preload="metadata"></video>
+                    <video src="images/test2.mp4" loop playsinline muted preload="metadata"></video>
                     <div class="reel-overlay">
                         <p class="text-sm font-semibold text-white">Artists at Work</p>
                     </div>
@@ -397,7 +359,7 @@ for the nation’s musical heritage among students and the wider
 
                 <!-- Reel 5 -->
                 <div class="reel-card" data-reel="5">
-                    <video src="images/test.mp4" loop playsinline muted preload="metadata"></video>
+                    <video src="images/test2.mp4" loop playsinline muted preload="metadata"></video>
                     <div class="reel-overlay">
                         <p class="text-sm font-semibold text-white">Folk Traditions</p>
                     </div>
@@ -421,98 +383,102 @@ for the nation’s musical heritage among students and the wider
     </div>
 </section>
 <!-- ════════════════════════════════════════ -->
-	
+
 <!-- VENUE -->
-
 <section id="venue" class="py-24 bg-zinc-950">
-
     <div class="max-w-7xl mx-auto px-6 text-center">
-
-        <h2 class="text-4xl font-bold mb-6 text-amber-400">
-            Venue
-        </h2>
-
-        <p class="text-xl text-gray-300 mb-8">
-            D.S. Senanayake College, Colombo 07
-        </p>
-
+        <h2 class="text-4xl font-bold mb-6 text-amber-400">Venue</h2>
+        <p class="text-xl text-gray-300 mb-8">D.S. Senanayake College, Colombo 07</p>
         <div class="rounded-3xl overflow-hidden">
-
-            <iframe
-                src="https://maps.google.com/maps?q=D.S.%20Senanayake%20College%20Colombo&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                width="100%"
-                height="450"
-                style="border:0;">
-            </iframe>
-
+            <iframe src="https://maps.google.com/maps?q=D.S.%20Senanayake%20College%20Colombo&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="450" style="border:0;"></iframe>
         </div>
-
     </div>
-
 </section>
 
 <!-- CONTACT -->
-
 <section id="contact" class="py-24 bg-black">
-
     <div class="max-w-5xl mx-auto px-6 text-center">
-
-        <h2 class="text-4xl font-bold mb-8">
-            Contact Us
-        </h2>
-
+        <h2 class="text-4xl font-bold mb-8">Contact Us</h2>
         <div class="glass rounded-3xl p-10">
-
-            <p class="text-xl mb-4">
-                Email
-            </p>
-
-            <a href="mailto:dsgeththampana@gmail.com"
-                class="text-amber-400 text-lg">
-                dsgeththampana@gmail.com
-            </a>
-
+            <p class="text-xl mb-4">Email</p>
+            <a href="mailto:dsgeththampana@gmail.com" class="text-amber-400 text-lg">dsgeththampana@gmail.com</a>
         </div>
-<br>
-		<div class="glass rounded-3xl p-10">
-
-            <p class="text-xl mb-4">
-                Instagram
-            </p>
-
-            <a href="mailto:dsgeththampana@gmail.com"
-                class="text-amber-400 text-lg">
-                geththampana.lk
-            </a>
-
+        <br>
+        <div class="glass rounded-3xl p-10">
+            <p class="text-xl mb-4">Instagram</p>
+            <a href="#" class="text-amber-400 text-lg">geththampana.lk</a>
         </div>
-
-		<br>
-		<div class="glass rounded-3xl p-10">
-
-            <p class="text-xl mb-4">
-                Contact
-            </p>
-
-            <a href="mailto:dsgeththampana@gmail.com"
-                class="text-amber-400 text-lg">
-                +94 75 485 2275
-            </a>
-
+        <br>
+        <div class="glass rounded-3xl p-10">
+            <p class="text-xl mb-4">Contact</p>
+            <a href="tel:+94754852275" class="text-amber-400 text-lg">+94 75 485 2275</a>
         </div>
-
     </div>
-
 </section>
 
 <!-- FOOTER -->
-
 <footer class="border-t border-white/10 py-8 text-center text-gray-500">
-
     © 2026 ගෙත්තම්පාන. All Rights Reserved.<br>
-	Developed By - Lochana Dineth.
-
+    Developed By - Lochana Dineth.
 </footer>
+
+<script>
+/* ── Gallery: scroll-triggered fade + scale ── */
+(function(){
+    const imgs = document.querySelectorAll('.gallery-img');
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach((e, i) => {
+            if(e.isIntersecting){
+                setTimeout(() => e.target.classList.add('visible'), i * 80);
+                io.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.15 });
+    imgs.forEach(img => io.observe(img));
+})();
+
+/* ── Reels: play/pause on tap, arrow scroll, slide-in ── */
+(function(){
+    const track  = document.getElementById('reel-track');
+    const prev   = document.getElementById('reel-prev');
+    const next   = document.getElementById('reel-next');
+    const cards  = document.querySelectorAll('.reel-card');
+    const SCROLL = 240;
+
+    /* slide-in on scroll */
+    const reelIO = new IntersectionObserver((entries) => {
+        entries.forEach((e, i) => {
+            if(e.isIntersecting){
+                setTimeout(() => e.target.classList.add('reel-visible'), i * 100);
+                reelIO.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    cards.forEach(c => reelIO.observe(c));
+
+    /* arrow buttons */
+    prev.addEventListener('click', () => track.scrollBy({ left: -SCROLL, behavior: 'smooth' }));
+    next.addEventListener('click', () => track.scrollBy({ left: SCROLL, behavior: 'smooth' }));
+
+    /* tap to play / pause */
+    cards.forEach(card => {
+        const vid = card.querySelector('video');
+        if(!vid) return;
+        card.addEventListener('click', () => {
+            if(vid.paused){
+                /* pause all others first */
+                document.querySelectorAll('.reel-card video').forEach(v => { if(v !== vid){ v.pause(); v.closest('.reel-card').classList.remove('playing'); } });
+                vid.play();
+                card.classList.add('playing');
+            } else {
+                vid.pause();
+                card.classList.remove('playing');
+            }
+        });
+    });
+})();
+</script>
 
 </body>
 </html>
+
