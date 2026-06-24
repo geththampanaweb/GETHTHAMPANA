@@ -6,262 +6,263 @@
   <title>ගෙත්තම්පාන | Audience Choice</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Sinhala:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --spotify-green: #1DB954;
-      --spotify-green-dark: #169c46;
-      --bg: #0a0a0d;
-      --panel: rgba(255,255,255,.05);
-      --border: rgba(255,255,255,.10);
+    :root{
+      --bg:#070707;
+      --panel:rgba(255,255,255,.05);
+      --panel-strong:rgba(255,255,255,.08);
+      --line:rgba(255,255,255,.10);
+      --accent:#f59e0b;
+      --accent-2:#fbbf24;
+      --text:#f4f4f5;
+      --muted:#a1a1aa;
     }
 
     html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Inter', 'Noto Sans Sinhala', sans-serif;
+    body{
+      font-family:'Noto Sans Sinhala',sans-serif;
       background:
-        radial-gradient(circle at top left, rgba(29,185,84,.18), transparent 30%),
-        radial-gradient(circle at top right, rgba(255,193,7,.08), transparent 26%),
-        linear-gradient(180deg, #111116 0%, #09090c 40%, #050506 100%);
+        radial-gradient(circle at top, rgba(245,158,11,.14), transparent 26%),
+        radial-gradient(circle at right top, rgba(251,191,36,.08), transparent 18%),
+        linear-gradient(180deg, #090909 0%, #050505 100%);
+      color:var(--text);
     }
 
-    .sinhala { font-family: 'Noto Sans Sinhala', sans-serif; }
-    .glass {
-      background: var(--panel);
-      border: 1px solid var(--border);
+    .glass{
       backdrop-filter: blur(14px);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 20px 80px rgba(0,0,0,.35);
     }
-    .track-card {
-      transition: transform .22s ease, border-color .22s ease, background .22s ease;
+
+    .glass-strong{
+      backdrop-filter: blur(14px);
+      background: var(--panel-strong);
+      border: 1px solid rgba(255,255,255,.12);
     }
-    .track-card:hover {
+
+    .track-card{
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+    .track-card:hover{
       transform: translateY(-2px);
-      border-color: rgba(29,185,84,.45);
+      border-color: rgba(245,158,11,.35);
       background: rgba(255,255,255,.07);
     }
-    .audio::-webkit-media-controls-panel {
-      background-color: #111318;
+
+    .soft-scroll::-webkit-scrollbar { width: 10px; }
+    .soft-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 999px; }
+    .soft-scroll::-webkit-scrollbar-track { background: transparent; }
+
+    .pulse-dot{
+      width:10px;height:10px;border-radius:999px;background:#22c55e;
+      box-shadow:0 0 0 0 rgba(34,197,94,.6);
+      animation:pulse 1.7s infinite;
     }
-    .audio {
-      width: 100%;
-      border-radius: 14px;
-      overflow: hidden;
+    @keyframes pulse{
+      0%{ box-shadow:0 0 0 0 rgba(34,197,94,.55); }
+      70%{ box-shadow:0 0 0 12px rgba(34,197,94,0); }
+      100%{ box-shadow:0 0 0 0 rgba(34,197,94,0); }
     }
+
+    .btn-accent{
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      color: #111827;
+      box-shadow: 0 10px 30px rgba(245,158,11,.28);
+    }
+    .btn-accent:hover{ filter: brightness(1.03); }
+    .btn-ghost{
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .range::-webkit-slider-thumb{
+      appearance:none;
+      width:16px;height:16px;border-radius:999px;background:#fbbf24; cursor:pointer; border:0;
+    }
+    .range::-webkit-slider-runnable-track{ height:6px; border-radius:999px; background: rgba(255,255,255,.10); }
+
+    .artist-chip{ border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.04); }
   </style>
 </head>
+<body class="min-h-screen">
 
-<body class="text-white">
-  <!-- Top Bar -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-white/10 bg-black/55 backdrop-blur-xl">
-    <div class="max-w-7xl mx-auto px-5 sm:px-6 py-4 flex items-center justify-between gap-4">
-      <a href="index.html" class="flex items-center gap-3">
-        <div class="h-11 w-11 rounded-2xl bg-[var(--spotify-green)] grid place-items-center text-black font-black">G</div>
-        <div>
-          <p class="text-xs uppercase tracking-[0.35em] text-white/55">ගෙත්තම්පාන</p>
-          <h1 class="sinhala text-lg sm:text-xl font-extrabold leading-tight">Audience Choice</h1>
+  <!-- TOP BAR -->
+  <header class="sticky top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <a href="index.html" class="shrink-0 inline-flex items-center gap-2 px-3 py-2 rounded-full btn-ghost text-sm hover:bg-white/8 transition">
+          <span>←</span>
+          <span>Home</span>
+        </a>
+        <div class="min-w-0">
+          <h1 class="text-lg sm:text-xl font-extrabold text-amber-400 leading-tight truncate">ගෙත්තම්පාන Audience Choice</h1>
+          <p class="text-xs sm:text-sm text-gray-400 truncate">Vote for the music flavor you want to hear live</p>
         </div>
-      </a>
+      </div>
 
-      <nav class="hidden md:flex items-center gap-6 text-sm text-white/70">
-        <a href="#suggest" class="hover:text-white transition">Suggest</a>
-        <a href="#vote" class="hover:text-white transition">Vote</a>
-        <a href="#leaderboard" class="hover:text-white transition">Leaderboard</a>
-      </nav>
-
-      <a href="index.html" class="hidden sm:inline-flex items-center rounded-full border border-white/15 px-5 py-2 text-sm font-medium hover:bg-white hover:text-black transition">
-        Back to Home
-      </a>
+      <div class="flex items-center gap-3 sm:gap-4">
+        <div class="hidden sm:flex items-center gap-2 text-xs text-gray-300 glass rounded-full px-3 py-2">
+          <span class="pulse-dot"></span>
+          Live sync
+        </div>
+        <div class="glass rounded-full px-3 py-2 text-xs sm:text-sm text-gray-200">
+          <span class="text-gray-400">Your status:</span>
+          <span id="myStatus" class="ml-1 text-amber-400 font-semibold">Connecting…</span>
+        </div>
+      </div>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="pt-28 pb-12 sm:pt-32 sm:pb-16">
-    <div class="max-w-7xl mx-auto px-5 sm:px-6">
-      <div class="grid lg:grid-cols-[1.2fr_.8fr] gap-6 items-stretch">
-        <div class="glass rounded-[2rem] p-7 sm:p-10 overflow-hidden relative">
-          <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(29,185,84,.22),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(255,193,7,.10),transparent_30%)] pointer-events-none"></div>
-          <div class="relative">
-            <p class="uppercase tracking-[0.45em] text-[var(--spotify-green)] text-xs sm:text-sm font-semibold mb-4">Live audience flavor board</p>
-            <h2 class="sinhala text-4xl sm:text-6xl font-black leading-tight mb-5">ඔබ කැමති සංගීතයට vote කරන්න</h2>
-            <p class="text-white/72 text-base sm:text-lg max-w-2xl leading-relaxed">
-              Pick the songs you want to hear at the musical evening, preview short audio clips, and help shape the final vibe of the show.
-            </p>
+  <!-- HERO -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-6">
+    <div class="grid lg:grid-cols-[1.2fr_.8fr] gap-6 items-stretch">
+      <div class="glass rounded-[28px] p-6 sm:p-8 overflow-hidden relative">
+        <div class="absolute inset-0 opacity-30 pointer-events-none"
+             style="background: radial-gradient(circle at top right, rgba(245,158,11,.20), transparent 25%), radial-gradient(circle at bottom left, rgba(251,191,36,.12), transparent 22%);"></div>
+        <div class="relative">
+          <p class="uppercase tracking-[0.35em] text-amber-400 text-xs sm:text-sm mb-3">Audience-powered setlist</p>
+          <h2 class="text-3xl sm:text-5xl font-black leading-tight mb-4">
+            Tell us your music taste, and shape the night.
+          </h2>
+          <p class="text-gray-300 max-w-3xl text-sm sm:text-base leading-relaxed">
+            This page works like a live chart. Listen to short clips, choose your favorite once, and watch the rankings update in real time for everyone.
+          </p>
 
-            <div class="mt-8 flex flex-wrap gap-3">
-              <a href="#vote" class="inline-flex items-center rounded-full bg-[var(--spotify-green)] px-6 py-3 font-semibold text-black hover:bg-[var(--spotify-green-dark)] transition">
-                Start Voting
-              </a>
-              <a href="#suggest" class="inline-flex items-center rounded-full border border-white/15 px-6 py-3 font-semibold hover:bg-white hover:text-black transition">
-                Suggest a Song
-              </a>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <div class="glass-strong rounded-2xl px-4 py-3 min-w-40">
+              <p class="text-xs text-gray-400">Live votes</p>
+              <p id="totalVotes" class="text-2xl font-extrabold text-white">0</p>
             </div>
-
-            <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div class="glass rounded-2xl p-4">
-                <p class="text-white/50 text-xs uppercase tracking-widest">Total votes</p>
-                <p id="totalVotes" class="text-2xl font-extrabold mt-1">0</p>
-              </div>
-              <div class="glass rounded-2xl p-4">
-                <p class="text-white/50 text-xs uppercase tracking-widest">Tracks</p>
-                <p id="trackCount" class="text-2xl font-extrabold mt-1">0</p>
-              </div>
-              <div class="glass rounded-2xl p-4">
-                <p class="text-white/50 text-xs uppercase tracking-widest">Your status</p>
-                <p id="voteStatus" class="text-lg font-bold mt-1 text-[var(--spotify-green)]">Ready</p>
-              </div>
-              <div class="glass rounded-2xl p-4">
-                <p class="text-white/50 text-xs uppercase tracking-widest">Theme</p>
-                <p class="text-lg font-bold mt-1">Spotify-inspired</p>
-              </div>
+            <div class="glass-strong rounded-2xl px-4 py-3 min-w-40">
+              <p class="text-xs text-gray-400">Songs loaded</p>
+              <p id="songCount" class="text-2xl font-extrabold text-white">0</p>
             </div>
-          </div>
-        </div>
-
-        <div class="glass rounded-[2rem] p-7 sm:p-10 flex flex-col justify-between gap-6">
-          <div>
-            <p class="text-white/50 uppercase tracking-[0.3em] text-xs mb-3">How it works</p>
-            <div class="space-y-4 text-white/80">
-              <div class="flex gap-4">
-                <div class="h-10 w-10 rounded-2xl bg-white/10 grid place-items-center font-bold">1</div>
-                <div>
-                  <h3 class="font-semibold text-white">Listen to the clip</h3>
-                  <p class="text-sm text-white/60">Each suggestion has a short audio preview.</p>
-                </div>
-              </div>
-              <div class="flex gap-4">
-                <div class="h-10 w-10 rounded-2xl bg-white/10 grid place-items-center font-bold">2</div>
-                <div>
-                  <h3 class="font-semibold text-white">Vote once</h3>
-                  <p class="text-sm text-white/60">One vote is allowed per person on this device/browser.</p>
-                </div>
-              </div>
-              <div class="flex gap-4">
-                <div class="h-10 w-10 rounded-2xl bg-white/10 grid place-items-center font-bold">3</div>
-                <div>
-                  <h3 class="font-semibold text-white">See live ranking</h3>
-                  <p class="text-sm text-white/60">The leaderboard updates instantly after each vote.</p>
-                </div>
-              </div>
+            <div class="glass-strong rounded-2xl px-4 py-3 min-w-40">
+              <p class="text-xs text-gray-400">Top pick</p>
+              <p id="topPick" class="text-lg font-bold text-amber-400 truncate">Waiting for votes</p>
             </div>
-          </div>
-
-          <div class="rounded-3xl bg-black/35 border border-white/10 p-5">
-            <p class="text-xs uppercase tracking-[0.3em] text-white/45 mb-2">Note</p>
-            <p class="text-sm text-white/70 leading-relaxed">
-              This is a strong front-end voting system. For real one-person-per-user enforcement across all devices, connect it to Firebase, Supabase, or another backend.
-            </p>
           </div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- Suggest a Song -->
-  <section id="suggest" class="py-10 sm:py-14">
-    <div class="max-w-7xl mx-auto px-5 sm:px-6">
-      <div class="grid lg:grid-cols-[1fr_.9fr] gap-6 items-start">
-        <div class="glass rounded-[2rem] p-6 sm:p-8">
-          <div class="flex items-center justify-between gap-4 mb-6">
-            <div>
-              <p class="text-white/50 uppercase tracking-[0.3em] text-xs mb-2">Audience suggestions</p>
-              <h3 class="text-2xl sm:text-3xl font-black">Add a song with a small audio cut</h3>
-            </div>
-            <div class="hidden sm:flex items-center gap-2 text-[var(--spotify-green)] font-semibold">
-              <span class="h-2.5 w-2.5 rounded-full bg-[var(--spotify-green)] animate-pulse"></span>
-              Live
-            </div>
-          </div>
-
-          <form id="songForm" class="grid md:grid-cols-2 gap-4">
-            <label class="block md:col-span-1">
-              <span class="block text-sm text-white/60 mb-2">Song title</span>
-              <input id="songTitle" type="text" required placeholder="Enter the song name"
-                     class="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 outline-none focus:border-[var(--spotify-green)] transition">
-            </label>
-
-            <label class="block md:col-span-1">
-              <span class="block text-sm text-white/60 mb-2">Artist / source</span>
-              <input id="songArtist" type="text" required placeholder="Artist name"
-                     class="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 outline-none focus:border-[var(--spotify-green)] transition">
-            </label>
-
-            <label class="block md:col-span-2">
-              <span class="block text-sm text-white/60 mb-2">Short audio clip</span>
-              <input id="songAudio" type="file" accept="audio/*" required
-                     class="w-full rounded-2xl bg-black/40 border border-dashed border-white/20 px-4 py-3 file:mr-4 file:rounded-full file:border-0 file:bg-white file:px-4 file:py-2 file:font-semibold file:text-black hover:file:bg-[var(--spotify-green)] hover:file:text-black transition">
-            </label>
-
-            <label class="block md:col-span-2">
-              <span class="block text-sm text-white/60 mb-2">Why should people vote for this?</span>
-              <textarea id="songReason" rows="4" placeholder="Write a short note..."
-                        class="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 outline-none focus:border-[var(--spotify-green)] transition"></textarea>
-            </label>
-
-            <div class="md:col-span-2 flex flex-wrap items-center gap-3">
-              <button type="submit" class="inline-flex items-center rounded-full bg-[var(--spotify-green)] px-6 py-3 font-semibold text-black hover:bg-[var(--spotify-green-dark)] transition">
-                Add to list
-              </button>
-              <p class="text-sm text-white/50">Best with short clips. Uploaded audio is stored in the browser for this demo.</p>
-            </div>
-          </form>
-        </div>
-
-        <div id="leaderboard" class="glass rounded-[2rem] p-6 sm:p-8">
-          <div class="flex items-center justify-between mb-5">
-            <div>
-              <p class="text-white/50 uppercase tracking-[0.3em] text-xs mb-2">Live leaderboard</p>
-              <h3 class="text-2xl font-black">Top ranked songs</h3>
-            </div>
-            <div class="rounded-full bg-[var(--spotify-green)]/15 text-[var(--spotify-green)] px-3 py-1 text-xs font-semibold border border-[var(--spotify-green)]/25">
-              Auto-sorted
-            </div>
-          </div>
-          <div id="leaderboardList" class="space-y-3"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Vote List -->
-  <section id="vote" class="py-10 sm:py-14">
-    <div class="max-w-7xl mx-auto px-5 sm:px-6">
-      <div class="flex items-end justify-between gap-4 mb-6">
+      <div class="glass rounded-[28px] p-6 sm:p-8 flex flex-col justify-between gap-5">
         <div>
-          <p class="text-white/50 uppercase tracking-[0.3em] text-xs mb-2">Vote stream</p>
-          <h3 class="text-2xl sm:text-3xl font-black">Choose the songs you want to hear</h3>
+          <h3 class="text-2xl font-bold mb-2">How it works</h3>
+          <div class="space-y-3 text-sm text-gray-300 leading-relaxed">
+            <p>1. Play any song clip.</p>
+            <p>2. Tap Vote on the one you like most.</p>
+            <p>3. Each device/account gets only one vote.</p>
+            <p>4. Results update live for everyone.</p>
+          </div>
         </div>
-        <a href="#suggest" class="text-sm text-[var(--spotify-green)] hover:underline">Add a new suggestion</a>
-      </div>
 
-      <div id="tracksContainer" class="space-y-4"></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="glass-strong rounded-2xl p-4">
+            <p class="text-xs text-gray-400">Status</p>
+            <p id="authLabel" class="font-bold text-white mt-1">Connecting…</p>
+          </div>
+          <div class="glass-strong rounded-2xl p-4">
+            <p class="text-xs text-gray-400">Rule</p>
+            <p class="font-bold text-white mt-1">One vote only</p>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <footer class="py-10 border-t border-white/10">
-    <div class="max-w-7xl mx-auto px-5 sm:px-6 flex flex-col sm:flex-row gap-3 items-center justify-between text-sm text-white/45">
-      <p>© 2026 ගෙත්තම්පාන. Audience Choice page.</p>
-      <p>Developed by Lochana Dineth.</p>
+  <!-- MAIN LIST -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
+    <div class="flex items-center justify-between gap-4 mb-4">
+      <div>
+        <h3 class="text-2xl sm:text-3xl font-extrabold">Top tracks</h3>
+        <p class="text-gray-400 text-sm sm:text-base">Sorted by live votes, from top to bottom.</p>
+      </div>
+      <button id="refreshBtn" class="btn-ghost rounded-full px-4 py-2 text-sm hover:bg-white/8 transition">Refresh view</button>
     </div>
-  </footer>
+
+    <div id="statusBar" class="hidden mb-5 glass rounded-2xl px-4 py-3 text-sm text-amber-300"></div>
+
+    <div class="grid lg:grid-cols-[1fr_360px] gap-6">
+      <section class="glass rounded-[28px] p-4 sm:p-5">
+        <div id="tracks" class="space-y-3 soft-scroll max-h-[78vh] overflow-auto pr-1"></div>
+      </section>
+
+      <aside class="space-y-6">
+        <section class="glass rounded-[28px] p-5">
+          <h4 class="text-xl font-bold mb-3">My vote</h4>
+          <div id="myVoteBox" class="text-sm text-gray-300 leading-relaxed">
+            You have not voted yet.
+          </div>
+          <button id="clearLocalBtn" class="mt-4 w-full rounded-2xl py-3 btn-ghost text-sm hover:bg-white/8 transition">Reset local display</button>
+        </section>
+
+       
+
+        <section class="glass rounded-[28px] p-5">
+          <h4 class="text-xl font-bold mb-3">Event hint</h4>
+          <p class="text-sm text-gray-300 leading-relaxed">
+            Keep the clips short, clean, and easy to recognize. That helps the audience decide quickly, just like a music app.
+          </p>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <template id="trackTemplate">
+    <article class="track-card glass rounded-[24px] p-4 sm:p-5 border border-white/10">
+      <div class="flex flex-col md:flex-row md:items-center gap-4">
+        <div class="flex items-center gap-4 min-w-0 flex-1">
+          <div class="rank w-12 h-12 rounded-2xl bg-white/6 border border-white/10 flex items-center justify-center text-lg font-black text-amber-400 shrink-0">1</div>
+          <img class="cover w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border border-white/10 bg-white/5 shrink-0" alt="Cover" />
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <h5 class="title text-base sm:text-lg font-bold truncate"></h5>
+              <span class="genre text-[11px] px-2.5 py-1 rounded-full artist-chip text-gray-300"></span>
+            </div>
+            <p class="artist text-sm text-gray-400"></p>
+            <p class="desc text-sm text-gray-300 mt-1 line-clamp-2"></p>
+          </div>
+        </div>
+
+        <div class="w-full md:w-[420px] shrink-0">
+          <audio class="audio w-full" controls preload="none"></audio>
+          <div class="mt-3 flex items-center justify-between gap-3 text-sm text-gray-300">
+            <div>
+              <p class="votes font-bold text-white">0 votes</p>
+              <p class="smallNote text-xs text-gray-400">Live updates enabled</p>
+            </div>
+            <button class="voteBtn rounded-full px-4 py-2 btn-accent font-bold text-sm">Vote</button>
+          </div>
+        </div>
+      </div>
+    </article>
+  </template>
 
   <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  onSnapshot,
-  doc,
-  updateDoc,
-  increment,
-  setDoc,
-  getDoc,
-  query,
-  orderBy
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-/* 🔥 YOUR FIREBASE CONFIG */
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import {
+      getAuth,
+      signInAnonymously,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      addDoc,
+      setDoc,
+      getDoc,
+      onSnapshot,
+      query,
+      orderBy,
+      serverTimestamp,
+      runTransaction,
+      increment
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDaIzeEQkOrziNSXlRHWv-509hYZb4Y7vY",
@@ -270,149 +271,407 @@ const firebaseConfig = {
   projectId: "geththampana-reservations",
   storageBucket: "geththampana-reservations.firebasestorage.app",
   messagingSenderId: "706440471161",
-  appId: "1:706440471161:web:d32183dccadad1b835eaa8",
-  measurementId: "G-R7Y10WQXZ1"
+  appId: "1:706440471161:web:e034921a10c9dd7335eaa8",
+  measurementId: "G-N0VKX3QPQ8"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+    // 2) Put admin Firebase Auth UIDs here if you want the upload panel to appear.
+    const ADMIN_UIDS = [
+      "PASTE_YOUR_ADMIN_UID_HERE"
+    ];
 
-const tracksRef = collection(db, "tracks");
-const votesRef = collection(db, "votes");
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
 
-/* 👤 UNIQUE USER */
-const voterId =
-  localStorage.getItem("voterId") ||
-  (crypto.randomUUID?.() || "voter-" + Date.now());
+    const tracksEl = document.getElementById('tracks');
+    const trackTemplate = document.getElementById('trackTemplate');
+    const totalVotesEl = document.getElementById('totalVotes');
+    const songCountEl = document.getElementById('songCount');
+    const topPickEl = document.getElementById('topPick');
+    const myStatusEl = document.getElementById('myStatus');
+    const authLabelEl = document.getElementById('authLabel');
+    const myVoteBox = document.getElementById('myVoteBox');
+    const statusBar = document.getElementById('statusBar');
+    const adminPanel = document.getElementById('adminPanel');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const clearLocalBtn = document.getElementById('clearLocalBtn');
+    const uploadForm = document.getElementById('uploadForm');
+    const uploadBtn = document.getElementById('uploadBtn');
 
-localStorage.setItem("voterId", voterId);
+    let currentUser = null;
+    let currentSongs = [];
+    let myVote = null;
+    let votersCount = 0;
+    let statusTimer = null;
 
-/* UI */
-const tracksContainer = document.getElementById("tracksContainer");
-const leaderboardList = document.getElementById("leaderboardList");
-const totalVotesEl = document.getElementById("totalVotes");
-const trackCountEl = document.getElementById("trackCount");
-const voteStatusEl = document.getElementById("voteStatus");
-const songForm = document.getElementById("songForm");
+    const demoSongs = [
+      {
+        id: 'demo-1',
+        title: 'Heya Yanna Bari',
+        artist: 'Folk Fusion Demo',
+        genre: 'Folk',
+        description: 'A warm opening pick with a traditional feel and a modern pulse.',
+        coverUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=800&q=80',
+        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+        votes: 0,
+        createdAt: Date.now()
+      },
+      {
+        id: 'demo-2',
+        title: 'Night Drive Rhythm',
+        artist: 'Live Band Demo',
+        genre: 'Pop',
+        description: 'A catchy crowd-pleaser with a steady groove.',
+        coverUrl: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=800&q=80',
+        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+        votes: 0,
+        createdAt: Date.now() - 1
+      },
+      {
+        id: 'song1',
+        title: 'සඳවතියේ',
+        artist: 'Acoustic Demo',
+        genre: 'Acoustic',
+        description: 'Soft vocals and a calm arrangement for an elegant stage mood.',
+        coverUrl: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800?auto=format&fit=crop&w=800&q=80',
+        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+        votes: 0,
+        createdAt: Date.now() - 2
+      }
+    ];
 
-/* ================= REALTIME LOAD ================= */
-const q = query(tracksRef, orderBy("votes", "desc"));
+    function showStatus(message, timeout = 2800) {
+      statusBar.textContent = message;
+      statusBar.classList.remove('hidden');
+      clearTimeout(statusTimer);
+      if (timeout > 0) {
+        statusTimer = setTimeout(() => statusBar.classList.add('hidden'), timeout);
+      }
+    }
 
-onSnapshot(q, (snapshot) => {
-  const tracks = [];
-  snapshot.forEach((d) => {
-    tracks.push({ id: d.id, ...d.data() });
-  });
+    function renderStats(songs) {
+      const totalVotes = songs.reduce((sum, song) => sum + (Number(song.votes) || 0), 0);
+      totalVotesEl.textContent = totalVotes;
+      songCountEl.textContent = songs.length;
+      const leader = songs[0];
+      topPickEl.textContent = leader ? `${leader.title}` : 'Waiting for votes';
+    }
 
-  render(tracks);
-});
-
-/* ================= RENDER ================= */
-function render(tracks) {
-  let total = 0;
-
-  tracksContainer.innerHTML = "";
-  leaderboardList.innerHTML = "";
-
-  tracks.forEach((t, i) => {
-    total += t.votes || 0;
-
-    const div = document.createElement("div");
-    div.className = "track-card glass rounded-[1.75rem] p-5 sm:p-6";
-
-    div.innerHTML = `
-      <div class="flex justify-between items-start">
-        <div>
-          <h4 class="text-xl font-bold">${i + 1}. ${t.title}</h4>
-          <p class="text-white/60">${t.artist}</p>
-          <p class="text-sm text-white/50 mt-2">${t.reason || ""}</p>
-          <audio class="audio mt-3" controls src="${t.audioUrl}"></audio>
+    function renderMyVote() {
+      if (!myVote) {
+        myVoteBox.innerHTML = '<p>You have not voted yet. Choose one track from the list.</p>';
+        return;
+      }
+      const song = currentSongs.find(s => s.id === myVote.songId);
+      if (!song) {
+        myVoteBox.innerHTML = '<p>Your vote was saved, but that song is no longer visible.</p>';
+        return;
+      }
+      myVoteBox.innerHTML = `
+        <div class="flex items-start gap-3">
+          <img src="${song.coverUrl}" alt="${song.title}" class="w-14 h-14 rounded-2xl object-cover border border-white/10">
+          <div>
+            <p class="font-bold text-white">${song.title}</p>
+            <p class="text-gray-400 text-sm">${song.artist}</p>
+            <p class="text-amber-400 text-xs mt-1">Your vote is locked</p>
+          </div>
         </div>
+      `;
+    }
 
-        <div class="text-right">
-          <p class="text-3xl font-black text-[var(--spotify-green)]">${t.votes || 0}</p>
+    function renderTracks() {
+      tracksEl.innerHTML = '';
 
-          <button class="vote-btn mt-3 px-4 py-2 rounded-full bg-green-500 text-black"
-            data-id="${t.id}">
-            Vote
-          </button>
-        </div>
-      </div>
-    `;
+      if (!currentSongs.length) {
+        tracksEl.innerHTML = `
+          <div class="glass-strong rounded-[24px] p-8 text-center text-gray-300">
+            No songs have been uploaded yet. Use the admin panel to publish your first track.
+          </div>
+        `;
+        renderStats([]);
+        renderMyVote();
+        return;
+      }
 
-    tracksContainer.appendChild(div);
+      currentSongs.forEach((song, index) => {
+        const node = trackTemplate.content.cloneNode(true);
+        const card = node.querySelector('article');
+        const rank = node.querySelector('.rank');
+        const cover = node.querySelector('.cover');
+        const title = node.querySelector('.title');
+        const artist = node.querySelector('.artist');
+        const genre = node.querySelector('.genre');
+        const desc = node.querySelector('.desc');
+        const audio = node.querySelector('.audio');
+        const votes = node.querySelector('.votes');
+        const voteBtn = node.querySelector('.voteBtn');
+        const note = node.querySelector('.smallNote');
 
-    /* leaderboard */
-    const lb = document.createElement("div");
-    lb.className = "flex justify-between bg-white/10 p-2 rounded";
-    lb.innerHTML = `
-      <span>${i + 1}. ${t.title}</span>
-      <span>${t.votes || 0}</span>
-    `;
-    leaderboardList.appendChild(lb);
-  });
+        rank.textContent = `${index + 1}`;
+        cover.src = song.coverUrl || 'https://via.placeholder.com/160x160?text=Song';
+        cover.alt = song.title || 'Song cover';
+        title.textContent = song.title || 'Untitled';
+        artist.textContent = song.artist || 'Unknown artist';
+        genre.textContent = song.genre || 'Music';
+        desc.textContent = song.description || 'Listen and vote for this song.';
+        audio.src = song.audioUrl || '';
+        votes.textContent = `${song.votes || 0} vote${(song.votes || 0) === 1 ? '' : 's'}`;
+        note.textContent = myVote ? 'Vote locked on this device' : 'Tap vote once';
 
-  totalVotesEl.textContent = total;
-  trackCountEl.textContent = tracks.length;
+        voteBtn.disabled = Boolean(myVote);
+        voteBtn.textContent = myVote
+          ? (myVote.songId === song.id ? 'Voted' : 'Locked')
+          : 'Vote';
+        voteBtn.classList.toggle('opacity-60', Boolean(myVote));
+        voteBtn.classList.toggle('cursor-not-allowed', Boolean(myVote));
 
-  document.querySelectorAll(".vote-btn").forEach((btn) => {
-    btn.onclick = () => vote(btn.dataset.id);
-  });
-}
+        voteBtn.addEventListener('click', () => voteForSong(song.id));
 
-/* ================= VOTE ================= */
-async function vote(trackId) {
-  const voteDoc = doc(db, "votes", voterId);
-  const existing = await getDoc(voteDoc);
+        card.dataset.songId = song.id;
+        tracksEl.appendChild(node);
+      });
 
-  if (existing.exists()) {
-    alert("You already voted!");
+      renderStats(currentSongs);
+      renderMyVote();
+    }
+
+   async function voteForSong(songId) {
+
+  if (!currentUser) {
+    showStatus("Connecting...");
     return;
   }
 
-  await setDoc(voteDoc, { trackId, time: Date.now() });
+  const voteRef = doc(db, "userVotes", currentUser.uid);
+  const songRef = doc(db, "songs", songId);
 
-  await updateDoc(doc(db, "tracks", trackId), {
-    votes: increment(1)
-  });
+  try {
+
+    await runTransaction(db, async (transaction) => {
+
+      const voteSnap = await transaction.get(voteRef);
+
+      let votedSongs = [];
+
+      if (voteSnap.exists()) {
+        votedSongs = voteSnap.data().songs || [];
+      }
+
+      if (votedSongs.includes(songId)) {
+        throw new Error("already-voted-song");
+      }
+
+      if (votedSongs.length >= 2) {
+        throw new Error("vote-limit");
+      }
+
+      const songSnap = await transaction.get(songRef);
+
+      if (!songSnap.exists()) {
+        throw new Error("song-missing");
+      }
+
+      votedSongs.push(songId);
+
+      transaction.set(
+        voteRef,
+        {
+          songs: votedSongs,
+          votedAt: serverTimestamp()
+        },
+        { merge: true }
+      );
+
+      transaction.update(songRef, {
+        votes: increment(1)
+      });
+
+    });
+
+    showStatus("Vote recorded successfully.");
+
+  } catch (error) {
+
+    if (error.message === "vote-limit") {
+      showStatus("You can only vote for 2 songs.");
+    }
+    else if (error.message === "already-voted-song") {
+      showStatus("Already voted for this song.");
+    }
+    else {
+      console.error(error);
+      showStatus("Vote failed.");
+    }
+
+  }
+
 }
 
-/* ================= ADD SONG ================= */
-songForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+      if (myVote) {
+        showStatus('You already voted. Each person gets one vote.');
+        return;
+      }
 
-  const title = songTitle.value;
-  const artist = songArtist.value;
-  const file = songAudio.files[0];
-  const reason = songReason.value;
+      const voteRef = doc(db, 'userVotes', currentUser.uid);
+      const songRef = doc(db, 'songs', songId);
 
-  if (!file) return;
+      try {
+        await runTransaction(db, async (transaction) => {
+          const voteSnap = await transaction.get(voteRef);
+          if (voteSnap.exists()) {
+            throw new Error('already-voted');
+          }
+          const songSnap = await transaction.get(songRef);
+          if (!songSnap.exists()) {
+            throw new Error('song-missing');
+          }
 
-  const audioUrl = await toBase64(file);
+          transaction.set(voteRef, {
+            songId,
+            uid: currentUser.uid,
+            votedAt: serverTimestamp()
+          });
+          transaction.update(songRef, {
+            votes: increment(1)
+          });
+        });
 
-  await addDoc(tracksRef, {
-    title,
-    artist,
-    reason,
-    audioUrl,
-    votes: 0,
-    createdAt: Date.now()
-  });
+        showStatus('Your vote has been recorded live.');
+      } catch (error) {
+        if (String(error.message) === 'already-voted') {
+          showStatus('Your vote is already saved on this device/account.');
+        } else if (String(error.message) === 'song-missing') {
+          showStatus('That song is no longer available.');
+        } else {
+          console.error(error);
+          showStatus('Could not save the vote right now. Check Firebase rules and network access.');
+        }
+      }
+    }
 
-  songForm.reset();
-});
 
-/* ================= FILE ================= */
-function toBase64(file) {
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload = () => res(r.result);
-    r.onerror = rej;
-    r.readAsDataURL(file);
-  });
-}
-</script>
+      uploadBtn.disabled = true;
+      uploadBtn.textContent = 'Uploading…';
+
+      try {
+        const safeName = `${Date.now()}-${title.replace(/\s+/g, '-').toLowerCase()}`;
+        const coverRef = ref(storage, `audience-choice/covers/${safeName}-${coverFile.name}`);
+        const audioRef = ref(storage, `audience-choice/audio/${safeName}-${audioFile.name}`);
+
+        await uploadBytes(coverRef, coverFile);
+        await uploadBytes(audioRef, audioFile);
+
+        const [coverUrl, audioUrl] = await Promise.all([
+          getDownloadURL(coverRef),
+          getDownloadURL(audioRef)
+        ]);
+
+        await addDoc(collection(db, 'songs'), {
+          title,
+          artist,
+          genre,
+          description,
+          coverUrl,
+          audioUrl,
+          votes: 0,
+          createdAt: serverTimestamp()
+        });
+
+        uploadForm.reset();
+        showStatus('Song published successfully. It will appear live for everyone.');
+      } catch (error) {
+        console.error(error);
+        showStatus('Upload failed. Check Storage rules, Firestore rules, and Firebase config.');
+      } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = 'Publish song';
+      }
+    }
+
+    function setupRealtimeListeners() {
+      const songsQuery = query(collection(db, 'songs'), orderBy('votes', 'desc'));
+      onSnapshot(songsQuery, (snapshot) => {
+        currentSongs = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+        renderTracks();
+      }, (error) => {
+        console.error(error);
+        currentSongs = demoSongs.slice().sort((a, b) => (b.votes || 0) - (a.votes || 0));
+        renderTracks();
+        showStatus('Live data could not load, so the demo list is showing.');
+      });
+
+      if (currentUser) {
+        const voteRef = doc(db, 'userVotes', currentUser.uid);
+        onSnapshot(voteRef, (snapshot) => {
+          myVote = snapshot.exists() ? snapshot.data() : null;
+          renderTracks();
+          updateMyVoteStatus();
+        });
+      }
+
+      onSnapshot(collection(db, 'userVotes'), (snapshot) => {
+        votersCount = snapshot.size;
+      });
+    }
+
+    function updateMyVoteStatus() {
+      if (!currentUser) {
+        myStatusEl.textContent = 'Connecting…';
+        authLabelEl.textContent = 'Connecting…';
+        return;
+      }
+      if (myVote) {
+        myStatusEl.textContent = 'Voted';
+        authLabelEl.textContent = 'Vote saved';
+        return;
+      }
+      myStatusEl.textContent = 'Ready';
+      authLabelEl.textContent = 'Ready to vote';
+    }
+
+    function setupAdminVisibility(uid) {
+      const isAdmin = ADMIN_UIDS.includes(uid);
+      adminPanel.classList.toggle('hidden', !isAdmin);
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+      renderTracks();
+      showStatus('View refreshed.');
+    });
+
+    clearLocalBtn.addEventListener('click', () => {
+      myVoteBox.innerHTML = '<p>You have not voted yet. Choose one track from the list.</p>';
+      showStatus('Local display cleared. Your live vote is still stored in Firebase.');
+    });
+
+    
+
+    signInAnonymously(auth).catch((error) => {
+      console.error(error);
+      showStatus('Anonymous sign-in failed. Enable Firebase Authentication > Anonymous.');
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) return;
+      currentUser = user;
+      myStatusEl.textContent = 'Ready';
+      authLabelEl.textContent = 'Ready to vote';
+      setupAdminVisibility(user.uid);
+      setupRealtimeListeners();
+      updateMyVoteStatus();
+    });
+
+    // Fallback demo render while Firebase connects.
+    currentSongs = demoSongs.slice().sort((a, b) => (b.votes || 0) - (a.votes || 0));
+    renderTracks();
+    totalVotesEl.textContent = '0';
+    songCountEl.textContent = demoSongs.length;
+    topPickEl.textContent = demoSongs[0].title;
+  </script>
 </body>
 </html>
+
 
 
