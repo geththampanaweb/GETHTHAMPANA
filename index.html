@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ගෙත්තම්පාන | Musical Evening</title>
+    <title>ගෙත්තම්පාණ | Musical Evening</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -39,7 +39,7 @@
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
         <h1 class="text-2xl font-bold text-amber-400">
-            ගෙත්තම්පාන 
+            ගෙත්තම්පාණ  
         </h1>
 
         <div class="hidden md:flex gap-8 text-sm">
@@ -66,9 +66,7 @@
                 Musical Evening
             </p>
 
-            <h1 class="text-5xl md:text-8xl font-extrabold mb-6 leading-tight">
-                ගෙත්තම්පාන 
-            </h1> 
+           <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/geththampana..jpeg"rounded-3xl shadow-2xl">
 
             <p class="text-xl text-gray-300 mb-8">
                 An unforgettable evening of music, culture, rhythm and
@@ -139,7 +137,7 @@
             </h2>
 
             <p class="text-gray-400">
-                Watch the official trailer of ගෙත්තම්පාන 2026
+                Watch the official trailer of ගෙත්තම්පාණ  2026
             </p>
 
         </div>
@@ -180,11 +178,11 @@
             <div>
 
                 <h2 class="text-4xl font-bold mb-6 text-amber-400">
-                    About ගෙත්තම්පාන
+                    About ගෙත්තම්පාණ 
                 </h2>
 
                 <p class="text-gray-300 leading-relaxed mb-6">
-                    ගෙත්තම්පාන is a musical programme organized by
+                    ගෙත්තම්පාණ  is a musical programme organized by
 D.S. Senanayake College, first introduced in 2025 to promote
 musical appreciation and provide students with a platform to
 showcase their talents. Following the success of its inaugural
@@ -330,6 +328,96 @@ for the nation’s musical heritage among students and the wider
 
 </section>
 
+<section id="reels" class="py-24 bg-zinc-950">
+    <div class="max-w-7xl mx-auto px-6">
+
+        <div class="text-center mb-12">
+            <p class="uppercase tracking-[5px] text-amber-400 mb-3 text-sm">Behind the Scenes</p>
+            <h2 class="text-4xl font-bold">Reels</h2>
+            <p class="text-gray-400 mt-3">Moments that matter — scroll to explore</p>
+        </div>
+
+        <!-- scroll controls + track -->
+        <div class="flex items-center gap-4">
+
+            <button class="reel-arrow" id="reel-prev" aria-label="Scroll left">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+
+            <div class="reel-track flex-1" id="reel-track">
+
+                <!-- Reel 1 – video file -->
+                <div class="reel-card" data-reel="1">
+                    <source src="images/sitaramam.mp4" type="video/mp4" loop playsinline muted preload="metadata"></video>
+                    <div class="reel-overlay">
+                        <p class="text-sm font-semibold text-white">ගෙත්තම්පාණ 2026</p>
+                    </div>
+                    <div class="reel-play-btn">
+                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </div>
+                </div>
+
+                <!-- Reel 2 -->
+                <div class="reel-card" data-reel="2">
+                   <source src="images/sitaramam.mp4" type="video/mp4" loop playsinline muted preload="metadata"></video>
+                    <div class="reel-overlay">
+                        <p class="text-sm font-semibold text-white">Rehearsal Highlights</p>
+                    </div>
+                    <div class="reel-play-btn">
+                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </div>
+                </div>
+
+                <!-- Reel 3 -->
+                <div class="reel-card" data-reel="3">
+                    <source src="images/sitaramam.mp4" type="video/mp4" loop playsinline muted preload="metadata"></video>
+                    <div class="reel-overlay">
+                        <p class="text-sm font-semibold text-white">Stage Setup</p>
+                    </div>
+                    <div class="reel-play-btn">
+                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </div>
+                </div>
+
+                <!-- Reel 4 -->
+                <div class="reel-card" data-reel="4">
+                   <source src="images/sitaramam.mp4" type="video/mp4" loop playsinline muted preload="metadata"></video>
+                    <div class="reel-overlay">
+                        <p class="text-sm font-semibold text-white">Artists at Work</p>
+                    </div>
+                    <div class="reel-play-btn">
+                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </div>
+                </div>
+
+                <!-- Reel 5 -->
+                <div class="reel-card" data-reel="5">
+                   <source src="images/sitaramam.mp4" type="video/mp4" loop playsinline muted preload="metadata"></video>
+                    <div class="reel-overlay">
+                        <p class="text-sm font-semibold text-white">Folk Traditions</p>
+                    </div>
+                    <div class="reel-play-btn">
+                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </div>
+                </div>
+
+            </div><!-- /reel-track -->
+
+            <button class="reel-arrow" id="reel-next" aria-label="Scroll right">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+
+        </div><!-- /flex row -->
+
+        <p class="text-center text-gray-600 text-xs mt-6">Swipe or use arrows to browse · Tap a reel to play / pause</p>
+
+    </div>
+</section>
+	
 <!-- VENUE -->
 
 <section id="venue" class="py-24 bg-zinc-950">
