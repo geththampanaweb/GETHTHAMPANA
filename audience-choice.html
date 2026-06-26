@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ගෙත්තම්පාන | Audience Choice</title>
+  <title>ගෙත්තම්පාණ | Audience Choice</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -128,7 +128,7 @@
             Tell us your music taste, and shape the night.
           </h2>
           <p class="text-gray-300 max-w-3xl text-sm sm:text-base leading-relaxed">
-            This page works like a live chart. Listen to short clips, choose your favorite once, and watch the rankings update in real time for everyone.
+            This page works like a live chart. Listen to short clips, choose your two favorite songs, and watch the rankings update in real time for everyone.
           </p>
 
           <div class="mt-6 flex flex-wrap gap-3">
@@ -153,8 +153,8 @@
           <h3 class="text-2xl font-bold mb-2">How it works</h3>
           <div class="space-y-3 text-sm text-gray-300 leading-relaxed">
             <p>1. Play any song clip.</p>
-            <p>2. Tap Vote on the one you like most.</p>
-            <p>3. Each device/account gets only one vote.</p>
+            <p>2. Tap Vote on up to two songs you like most.</p>
+            <p>3. Each device/account gets exactly two votes.</p>
             <p>4. Results update live for everyone.</p>
           </div>
         </div>
@@ -166,7 +166,7 @@
           </div>
           <div class="glass-strong rounded-2xl p-4">
             <p class="text-xs text-gray-400">Rule</p>
-            <p class="font-bold text-white mt-1">One vote only</p>
+            <p class="font-bold text-white mt-1">Two votes max</p>
           </div>
         </div>
       </div>
@@ -241,8 +241,18 @@
     </article>
   </template>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    <script type="module">
+    // -----------------------------------------------------------------
+    // GETHTHAMPANA — Audience Choice
+    // Audience-only voting page. No Storage, no Admin panel.
+    // Each visitor signs in anonymously and may vote for exactly
+    // TWO different songs. Songs, covers, and audio all come from
+    // Firestore (covers/audio are plain GitHub URLs, no Storage).
+    // -----------------------------------------------------------------
+
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
     import {
       getAuth,
       signInAnonymously,
@@ -252,9 +262,6 @@
       getFirestore,
       collection,
       doc,
-      addDoc,
-      setDoc,
-      getDoc,
       onSnapshot,
       query,
       orderBy,
@@ -262,27 +269,27 @@
       runTransaction,
       increment
     } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-    
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAbp7re-m1Csx6xdgpsuNWnZnidW20-mXM",
-  authDomain: "geththampana26.firebaseapp.com",
-  projectId: "geththampana26",
-  storageBucket: "geththampana26.firebasestorage.app",
-  messagingSenderId: "619427934857",
-  appId: "1:619427934857:web:1c6c89cb310a5f3f740c58",
-  measurementId: "G-EW90X3W16K"
-};
-    // 2) Put admin Firebase Auth UIDs here if you want the upload panel to appear.
-    const ADMIN_UIDS = [
-      "PASTE_YOUR_ADMIN_UID_HERE"
-    ];
+
+    // 1) Firebase project configuration.
+    const firebaseConfig = {
+      apiKey: "AIzaSyAbp7re-m1Csx6xdgpsuNWnZnidW20-mXM",
+      authDomain: "geththampana26.firebaseapp.com",
+      projectId: "geththampana26",
+      storageBucket: "geththampana26.firebasestorage.app",
+      messagingSenderId: "619427934857",
+      appId: "1:619427934857:web:1c6c89cb310a5f3f740c58",
+      measurementId: "G-EW90X3W16K"
+    };
+
+    const MAX_VOTES = 2;
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    
 
+    // ---------------------------------------------------------------
+    // DOM references (all elements already exist in the markup above)
+    // ---------------------------------------------------------------
     const tracksEl = document.getElementById('tracks');
     const trackTemplate = document.getElementById('trackTemplate');
     const totalVotesEl = document.getElementById('totalVotes');
@@ -292,55 +299,32 @@ const firebaseConfig = {
     const authLabelEl = document.getElementById('authLabel');
     const myVoteBox = document.getElementById('myVoteBox');
     const statusBar = document.getElementById('statusBar');
-    const adminPanel = document.getElementById('adminPanel');
     const refreshBtn = document.getElementById('refreshBtn');
     const clearLocalBtn = document.getElementById('clearLocalBtn');
-    const uploadForm = document.getElementById('uploadForm');
-    const uploadBtn = document.getElementById('uploadBtn');
 
-    let currentUser = null;
-    let currentSongs = [];
-    let myVote = null;
-    let votersCount = 0;
+    // ---------------------------------------------------------------
+    // App state
+    // ---------------------------------------------------------------
+    let currentUser = null;        // Firebase anonymous user
+    let currentSongs = [];         // Latest songs snapshot, sorted by votes desc
+    let myVoteDoc = null;           // { songs: [id, id], votedAt } or null
+    let isOffline = false;
     let statusTimer = null;
 
-    const demoSongs = [
-      {
-        id: 'demo-1',
-        title: 'Heya Yanna Bari',
-        artist: 'Folk Fusion Demo',
-        genre: 'Folk',
-        description: 'A warm opening pick with a traditional feel and a modern pulse.',
-        coverUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=800&q=80',
-        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-        votes: 0,
-        createdAt: Date.now()
-      },
-      {
-        id: 'demo-2',
-        title: 'Night Drive Rhythm',
-        artist: 'Live Band Demo',
-        genre: 'Pop',
-        description: 'A catchy crowd-pleaser with a steady groove.',
-        coverUrl: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=800&q=80',
-        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-        votes: 0,
-        createdAt: Date.now() - 1
-      },
-      {
-        id: 'song1',
-        title: 'සඳවතියේ',
-        artist: 'Acoustic Demo',
-        genre: 'Acoustic',
-        description: 'Soft vocals and a calm arrangement for an elegant stage mood.',
-        coverUrl: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800?auto=format&fit=crop&w=800&q=80',
-        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-        votes: 0,
-        createdAt: Date.now() - 2
-      }
-    ];
+    /** Songs the current visitor has already voted for. */
+    function votedSongIds() {
+      return (myVoteDoc && Array.isArray(myVoteDoc.songs)) ? myVoteDoc.songs : [];
+    }
 
-    function showStatus(message, timeout = 2800) {
+    /** How many votes the visitor still has left (0, 1, or 2). */
+    function votesRemaining() {
+      return Math.max(0, MAX_VOTES - votedSongIds().length);
+    }
+
+    // ---------------------------------------------------------------
+    // Status banner helper
+    // ---------------------------------------------------------------
+    function showStatus(message, timeout = 3200) {
       statusBar.textContent = message;
       statusBar.classList.remove('hidden');
       clearTimeout(statusTimer);
@@ -349,34 +333,50 @@ const firebaseConfig = {
       }
     }
 
+    // ---------------------------------------------------------------
+    // Rendering
+    // ---------------------------------------------------------------
     function renderStats(songs) {
       const totalVotes = songs.reduce((sum, song) => sum + (Number(song.votes) || 0), 0);
       totalVotesEl.textContent = totalVotes;
       songCountEl.textContent = songs.length;
       const leader = songs[0];
-      topPickEl.textContent = leader ? `${leader.title}` : 'Waiting for votes';
+      topPickEl.textContent = leader ? leader.title : 'Waiting for votes';
     }
 
     function renderMyVote() {
-      if (!myVote) {
-        myVoteBox.innerHTML = '<p>You have not voted yet. Choose one track from the list.</p>';
+      const voted = votedSongIds();
+
+      if (!voted.length) {
+        myVoteBox.innerHTML = '<p>You have not voted yet. Choose up to two tracks from the list.</p>';
         return;
       }
-      const song = currentSongs.find(s => s.id === myVote.songId);
-      if (!song) {
-        myVoteBox.innerHTML = '<p>Your vote was saved, but that song is no longer visible.</p>';
-        return;
-      }
-      myVoteBox.innerHTML = `
-        <div class="flex items-start gap-3">
-          <img src="${song.coverUrl}" alt="${song.title}" class="w-14 h-14 rounded-2xl object-cover border border-white/10">
-          <div>
-            <p class="font-bold text-white">${song.title}</p>
-            <p class="text-gray-400 text-sm">${song.artist}</p>
-            <p class="text-amber-400 text-xs mt-1">Your vote is locked</p>
+
+      const rows = voted.map((songId) => {
+        const song = currentSongs.find(s => s.id === songId);
+        if (!song) {
+          return '<p>One of your votes is saved, but that song is no longer visible.</p>';
+        }
+        return `
+          <div class="flex items-start gap-3">
+            <img src="${song.coverUrl || ''}" alt="${song.title || 'Song'}" class="w-14 h-14 rounded-2xl object-cover border border-white/10">
+            <div>
+              <p class="font-bold text-white">${song.title || 'untitled'}</p>
+              <p class="text-gray-400 text-sm">${song.artist || ''}</p>
+              <p class="text-amber-400 text-xs mt-1">Vote locked</p>
+            </div>
           </div>
-        </div>
-      `;
+		  
+		  
+        `;
+      });
+
+      const remaining = votesRemaining();
+      const remainingNote = remaining > 0
+        ? `<p class="text-xs text-gray-400 mt-3">${remaining} vote${remaining === 1 ? '' : 's'} remaining.</p>`
+        : `<p class="text-xs text-gray-400 mt-3">Both votes used. Thank you!</p>`;
+
+      myVoteBox.innerHTML = `<div class="space-y-3">${rows.join('')}</div>${remainingNote}`;
     }
 
     function renderTracks() {
@@ -385,13 +385,16 @@ const firebaseConfig = {
       if (!currentSongs.length) {
         tracksEl.innerHTML = `
           <div class="glass-strong rounded-[24px] p-8 text-center text-gray-300">
-            No songs have been uploaded yet. Use the admin panel to publish your first track.
+            No songs are available yet. Please check back shortly before the event starts.
           </div>
         `;
         renderStats([]);
         renderMyVote();
         return;
       }
+
+      const voted = votedSongIds();
+      const limitReached = voted.length >= MAX_VOTES;
 
       currentSongs.forEach((song, index) => {
         const node = trackTemplate.content.cloneNode(true);
@@ -407,8 +410,10 @@ const firebaseConfig = {
         const voteBtn = node.querySelector('.voteBtn');
         const note = node.querySelector('.smallNote');
 
+        const alreadyVotedForThis = voted.includes(song.id);
+
         rank.textContent = `${index + 1}`;
-        cover.src = song.coverUrl || 'https://via.placeholder.com/160x160?text=Song';
+        cover.src = song.coverUrl || '';
         cover.alt = song.title || 'Song cover';
         title.textContent = song.title || 'Untitled';
         artist.textContent = song.artist || 'Unknown artist';
@@ -416,14 +421,22 @@ const firebaseConfig = {
         desc.textContent = song.description || 'Listen and vote for this song.';
         audio.src = song.audioUrl || '';
         votes.textContent = `${song.votes || 0} vote${(song.votes || 0) === 1 ? '' : 's'}`;
-        note.textContent = myVote ? 'Vote locked on this device' : 'Tap vote once';
 
-        voteBtn.disabled = Boolean(myVote);
-        voteBtn.textContent = myVote
-          ? (myVote.songId === song.id ? 'Voted' : 'Locked')
-          : 'Vote';
-        voteBtn.classList.toggle('opacity-60', Boolean(myVote));
-        voteBtn.classList.toggle('cursor-not-allowed', Boolean(myVote));
+        if (alreadyVotedForThis) {
+          note.textContent = 'You voted for this track';
+          voteBtn.textContent = 'Voted';
+        } else if (limitReached) {
+          note.textContent = 'Both votes already used';
+          voteBtn.textContent = 'Vote';
+        } else {
+          note.textContent = 'Live updates enabled';
+          voteBtn.textContent = 'Vote';
+        }
+
+        const disableBtn = alreadyVotedForThis || limitReached || !currentUser;
+        voteBtn.disabled = disableBtn;
+        voteBtn.classList.toggle('opacity-60', disableBtn);
+        voteBtn.classList.toggle('cursor-not-allowed', disableBtn);
 
         voteBtn.addEventListener('click', () => voteForSong(song.id));
 
@@ -435,80 +448,52 @@ const firebaseConfig = {
       renderMyVote();
     }
 
-   async function voteForSong(songId) {
-
-  if (!currentUser) {
-    showStatus("Connecting...");
-    return;
-  }
-
-  const voteRef = doc(db, "userVotes", currentUser.uid);
-  const songRef = doc(db, "songs", songId);
-
-  try {
-
-    await runTransaction(db, async (transaction) => {
-
-      const voteSnap = await transaction.get(voteRef);
-
-      let votedSongs = [];
-
-      if (voteSnap.exists()) {
-        votedSongs = voteSnap.data().songs || [];
+    // ---------------------------------------------------------------
+    // Status labels (top bar + hero "Status" card)
+    // ---------------------------------------------------------------
+    function updateStatusLabels() {
+      if (isOffline) {
+        myStatusEl.textContent = 'Offline';
+        authLabelEl.textContent = 'Offline';
+        return;
+      }
+      if (!currentUser) {
+        myStatusEl.textContent = 'Connecting…';
+        authLabelEl.textContent = 'Connecting…';
+        return;
       }
 
-      if (votedSongs.includes(songId)) {
-        throw new Error("already-voted-song");
+      const usedCount = votedSongIds().length;
+
+      if (usedCount === 0) {
+        myStatusEl.textContent = 'Ready';
+        authLabelEl.textContent = 'Ready to vote';
+      } else if (usedCount < MAX_VOTES) {
+        const remaining = MAX_VOTES - usedCount;
+        myStatusEl.textContent = `${remaining} Vote Remaining`;
+        authLabelEl.textContent = `${remaining} Vote Remaining`;
+      } else {
+        myStatusEl.textContent = '2 Votes Used';
+        authLabelEl.textContent = '2 Votes Used';
       }
-
-      if (votedSongs.length >= 2) {
-        throw new Error("vote-limit");
-      }
-
-      const songSnap = await transaction.get(songRef);
-
-      if (!songSnap.exists()) {
-        throw new Error("song-missing");
-      }
-
-      votedSongs.push(songId);
-
-      transaction.set(
-        voteRef,
-        {
-          songs: votedSongs,
-          votedAt: serverTimestamp()
-        },
-        { merge: true }
-      );
-
-      transaction.update(songRef, {
-        votes: increment(1)
-      });
-
-    });
-
-    showStatus("Vote recorded successfully.");
-
-  } catch (error) {
-
-    if (error.message === "vote-limit") {
-      showStatus("You can only vote for 2 songs.");
-    }
-    else if (error.message === "already-voted-song") {
-      showStatus("Already voted for this song.");
-    }
-    else {
-      console.error(error);
-      showStatus("Vote failed.");
     }
 
-  }
+    // ---------------------------------------------------------------
+    // Voting
+    // ---------------------------------------------------------------
+    async function voteForSong(songId) {
+      if (!currentUser) {
+        showStatus('Still connecting. Please wait a moment and try again.');
+        return;
+      }
 
-}
+      if (votedSongIds().includes(songId)) {
+        showStatus('You already voted for this song.');
+        return;
+      }
 
-      if (myVote) {
-        showStatus('You already voted. Each person gets one vote.');
+      if (votedSongIds().length >= MAX_VOTES) {
+        showStatus('You already used both of your votes.');
         return;
       }
 
@@ -518,19 +503,31 @@ const firebaseConfig = {
       try {
         await runTransaction(db, async (transaction) => {
           const voteSnap = await transaction.get(voteRef);
-          if (voteSnap.exists()) {
-            throw new Error('already-voted');
-          }
           const songSnap = await transaction.get(songRef);
+
           if (!songSnap.exists()) {
             throw new Error('song-missing');
           }
 
+          const existingSongs = (voteSnap.exists() && Array.isArray(voteSnap.data().songs))
+            ? voteSnap.data().songs
+            : [];
+
+          if (existingSongs.includes(songId)) {
+            throw new Error('already-voted-song');
+          }
+
+          if (existingSongs.length >= MAX_VOTES) {
+            throw new Error('vote-limit');
+          }
+
+          const updatedSongs = [...existingSongs, songId];
+
           transaction.set(voteRef, {
-            songId,
-            uid: currentUser.uid,
+            songs: updatedSongs,
             votedAt: serverTimestamp()
-          });
+          }, { merge: true });
+
           transaction.update(songRef, {
             votes: increment(1)
           });
@@ -538,135 +535,98 @@ const firebaseConfig = {
 
         showStatus('Your vote has been recorded live.');
       } catch (error) {
-        if (String(error.message) === 'already-voted') {
-          showStatus('Your vote is already saved on this device/account.');
-        } else if (String(error.message) === 'song-missing') {
+        const code = error && error.message;
+
+        if (code === 'vote-limit') {
+          showStatus('You can only vote for two songs in total.');
+        } else if (code === 'already-voted-song') {
+          showStatus('You already voted for this song.');
+        } else if (code === 'song-missing') {
           showStatus('That song is no longer available.');
+        } else if (error && error.code === 'permission-denied') {
+          showStatus('Voting is not allowed right now. Please try again shortly.');
+        } else if (!navigator.onLine) {
+          showStatus('You appear to be offline. Reconnect and try again.');
         } else {
           console.error(error);
-          showStatus('Could not save the vote right now. Check Firebase rules and network access.');
+          showStatus('Could not save your vote right now. Please try again.');
         }
       }
     }
 
-
-      uploadBtn.disabled = true;
-      uploadBtn.textContent = 'Uploading…';
-
-      try {
-        const safeName = `${Date.now()}-${title.replace(/\s+/g, '-').toLowerCase()}`;
-        const coverRef = ref(storage, `audience-choice/covers/${safeName}-${coverFile.name}`);
-        const audioRef = ref(storage, `audience-choice/audio/${safeName}-${audioFile.name}`);
-
-        await uploadBytes(coverRef, coverFile);
-        await uploadBytes(audioRef, audioFile);
-
-        const [coverUrl, audioUrl] = await Promise.all([
-          getDownloadURL(coverRef),
-          getDownloadURL(audioRef)
-        ]);
-
-        await addDoc(collection(db, 'songs'), {
-          title,
-          artist,
-          genre,
-          description,
-          coverUrl,
-          audioUrl,
-          votes: 0,
-          createdAt: serverTimestamp()
-        });
-
-        uploadForm.reset();
-        showStatus('Song published successfully. It will appear live for everyone.');
-      } catch (error) {
-        console.error(error);
-        showStatus('Upload failed. Check Storage rules, Firestore rules, and Firebase config.');
-      } finally {
-        uploadBtn.disabled = false;
-        uploadBtn.textContent = 'Publish song';
-      }
-    }
-
+    // ---------------------------------------------------------------
+    // Realtime listeners
+    // ---------------------------------------------------------------
     function setupRealtimeListeners() {
       const songsQuery = query(collection(db, 'songs'), orderBy('votes', 'desc'));
+
       onSnapshot(songsQuery, (snapshot) => {
+        isOffline = false;
         currentSongs = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
         renderTracks();
+        updateStatusLabels();
       }, (error) => {
         console.error(error);
-        currentSongs = demoSongs.slice().sort((a, b) => (b.votes || 0) - (a.votes || 0));
-        renderTracks();
-        showStatus('Live data could not load, so the demo list is showing.');
+        isOffline = true;
+        updateStatusLabels();
+        showStatus('Connection lost. Showing the last known results.', 0);
       });
 
       if (currentUser) {
         const voteRef = doc(db, 'userVotes', currentUser.uid);
         onSnapshot(voteRef, (snapshot) => {
-          myVote = snapshot.exists() ? snapshot.data() : null;
+          myVoteDoc = snapshot.exists() ? snapshot.data() : null;
           renderTracks();
-          updateMyVoteStatus();
+          updateStatusLabels();
+        }, (error) => {
+          console.error(error);
+          if (error && error.code === 'permission-denied') {
+            showStatus('Could not read your vote status. Check Firestore rules.', 0);
+          }
         });
       }
-
-      onSnapshot(collection(db, 'userVotes'), (snapshot) => {
-        votersCount = snapshot.size;
-      });
     }
 
-    function updateMyVoteStatus() {
-      if (!currentUser) {
-        myStatusEl.textContent = 'Connecting…';
-        authLabelEl.textContent = 'Connecting…';
-        return;
-      }
-      if (myVote) {
-        myStatusEl.textContent = 'Voted';
-        authLabelEl.textContent = 'Vote saved';
-        return;
-      }
-      myStatusEl.textContent = 'Ready';
-      authLabelEl.textContent = 'Ready to vote';
-    }
-
-    function setupAdminVisibility(uid) {
-      const isAdmin = ADMIN_UIDS.includes(uid);
-      adminPanel.classList.toggle('hidden', !isAdmin);
-    }
-
-    document.getElementById('refreshBtn').addEventListener('click', () => {
+    // ---------------------------------------------------------------
+    // UI controls
+    // ---------------------------------------------------------------
+    refreshBtn.addEventListener('click', () => {
       renderTracks();
+      updateStatusLabels();
       showStatus('View refreshed.');
     });
 
     clearLocalBtn.addEventListener('click', () => {
-      myVoteBox.innerHTML = '<p>You have not voted yet. Choose one track from the list.</p>';
-      showStatus('Local display cleared. Your live vote is still stored in Firebase.');
+      renderMyVote();
+      showStatus('Display refreshed. Your votes remain saved in Firebase.');
     });
 
-    
+    // ---------------------------------------------------------------
+    // Auth + boot
+    // ---------------------------------------------------------------
+    updateStatusLabels();
 
     signInAnonymously(auth).catch((error) => {
       console.error(error);
-      showStatus('Anonymous sign-in failed. Enable Firebase Authentication > Anonymous.');
+      showStatus('Anonymous sign-in failed. Enable Firebase Authentication > Anonymous.', 0);
     });
 
     onAuthStateChanged(auth, (user) => {
       if (!user) return;
       currentUser = user;
-      myStatusEl.textContent = 'Ready';
-      authLabelEl.textContent = 'Ready to vote';
-      setupAdminVisibility(user.uid);
+      updateStatusLabels();
       setupRealtimeListeners();
-      updateMyVoteStatus();
     });
 
-    // Fallback demo render while Firebase connects.
-    currentSongs = demoSongs.slice().sort((a, b) => (b.votes || 0) - (a.votes || 0));
-    renderTracks();
-    totalVotesEl.textContent = '0';
-    songCountEl.textContent = demoSongs.length;
-    topPickEl.textContent = demoSongs[0].title;
+    window.addEventListener('online', () => {
+      isOffline = false;
+      updateStatusLabels();
+    });
+    window.addEventListener('offline', () => {
+      isOffline = true;
+      updateStatusLabels();
+      showStatus('You are offline. Reconnect to vote.', 0);
+    });
   </script>
 </body>
 </html>
