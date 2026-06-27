@@ -305,6 +305,20 @@
             pointer-events: none;
         }
 
+        /* Expand image to fill the full tile when hovered */
+        .core-tile-img {
+            transition: height 0.5s cubic-bezier(.34,1.3,.64,1);
+        }
+        .core-tile.core-active .core-tile-img {
+            aspect-ratio: unset;
+            position: absolute;
+            inset: 0;
+            height: 100%;
+        }
+        .core-tile.core-active .core-tile-img img {
+            height: 100%;
+        }
+
         .core-tile-info { padding: 1.3rem; text-align: center; }
         .core-tile-info h4 { font-weight: 700; font-size: 1.1rem; }
         .core-tile--chairman .core-tile-info h4 { color: #c084fc; }
@@ -688,7 +702,7 @@
             <div class="core-tile core-tile--chieforg" data-core>
                 <span class="core-tile-ribbon">Chief Organizer</span>
                 <div class="core-tile-img">
-                    <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/songs/8.jpeg" alt="Chief Organizer">
+                    <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Chief Organizer">
                 </div>
                 <div class="core-tile-info">
                     <h4>Chief Organizer's Full Name</h4>
@@ -924,5 +938,3 @@
 
 </body>
 </html>
-
-
