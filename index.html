@@ -145,7 +145,7 @@
             transform: translateY(-6px) scale(1.02) !important;
         }
 
-		 /* ════════════════════════════════════════
+        /* ════════════════════════════════════════
            ORGANIZING COMMITTEE SECTION  (NEW)
         ════════════════════════════════════════ */
 
@@ -296,6 +296,24 @@
             font-weight: 500;
             line-height: 1.2;
         }
+
+        /* ── Artists section : hover-to-highlight, blur the rest ── */
+        .artist-grid { position: relative; }
+        .artist-img {
+            transition: transform .45s ease, filter .45s ease, box-shadow .45s ease, opacity .45s ease;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+        .artist-grid:hover .artist-img {
+            filter: blur(5px) brightness(.55);
+        }
+        .artist-grid .artist-img:hover {
+            filter: blur(0) brightness(1) saturate(1.05);
+            transform: scale(1.08);
+            box-shadow: 0 25px 60px rgba(251,191,36,0.35);
+            z-index: 5;
+        }
     </style>
 </head>
 
@@ -357,7 +375,7 @@
         </div>
         <div class="rounded-3xl overflow-hidden shadow-2xl border border-white/10">
             <video class="w-full" autoplay muted loop playsinline controls>
-                <source src="images/sitarama.mp4" type="video/mp4">
+                <source src="images/test.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         </div>
@@ -368,7 +386,7 @@
 <section id="about" class="py-24 bg-zinc-950">
     <div class="max-w-7xl mx-auto px-6">
         <div class="grid md:grid-cols-2 gap-12 items-center">
-            <img src="images/unknown.jpeg" class="rounded-3xl shadow-2xl">
+            <img src="images/off.jpeg" class="rounded-3xl shadow-2xl">
             <div>
                 <h2 class="text-4xl font-bold mb-6 text-amber-400">About ගෙත්තම්පාණ</h2>
                 <p class="text-gray-300 leading-relaxed mb-6">
@@ -415,10 +433,10 @@
             <h2 class="text-4xl font-bold mb-4">Featured Artists</h2>
             <p class="text-gray-400">Artist lineup will be announced soon.</p>
         </div>
-        <div class="grid md:grid-cols-3 gap-8">
-            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" class="rounded-3xl h-96 object-cover w-full">
-            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" class="rounded-3xl h-96 object-cover w-full">
-            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" class="rounded-3xl h-96 object-cover w-full">
+        <div class="grid md:grid-cols-3 gap-8 artist-grid">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/kanchana.jpeg" class="rounded-3xl h-96 object-cover w-full artist-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/bandula.jpeg" class="rounded-3xl h-96 object-cover w-full artist-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/umali.jpeg" class="rounded-3xl h-96 object-cover w-full artist-img">
         </div>
     </div>
 </section>
@@ -467,7 +485,7 @@
 
                 <!-- Reel 1 – video file -->
                 <div class="reel-card" data-reel="1">
-                    <video src="images/tst2.mp4" loop playsinline muted preload="metadata"></video>
+                    <video src="images/test.mp4" loop playsinline muted preload="metadata"></video>
                     <div class="reel-overlay">
                         <p class="text-sm font-semibold text-white">ගෙත්තම්පාන 2026</p>
                     </div>
@@ -478,7 +496,7 @@
 
                 <!-- Reel 2 -->
                 <div class="reel-card" data-reel="2">
-                    <video src="images/tst2.mp4" loop playsinline muted preload="metadata"></video>
+                    <video src="images/test.mp4" loop playsinline muted preload="metadata"></video>
                     <div class="reel-overlay">
                         <p class="text-sm font-semibold text-white">Rehearsal Highlights</p>
                     </div>
@@ -489,7 +507,7 @@
 
                 <!-- Reel 3 -->
                 <div class="reel-card" data-reel="3">
-                    <video src="images/tst2.mp4" loop playsinline muted preload="metadata"></video>
+                    <video src="images/test.mp4" loop playsinline muted preload="metadata"></video>
                     <div class="reel-overlay">
                         <p class="text-sm font-semibold text-white">Stage Setup</p>
                     </div>
@@ -500,7 +518,7 @@
 
                 <!-- Reel 4 -->
                 <div class="reel-card" data-reel="4">
-                    <video src="images/tst2.mp4" loop playsinline muted preload="metadata"></video>
+                    <video src="images/test.mp4" loop playsinline muted preload="metadata"></video>
                     <div class="reel-overlay">
                         <p class="text-sm font-semibold text-white">Artists at Work</p>
                     </div>
@@ -511,7 +529,7 @@
 
                 <!-- Reel 5 -->
                 <div class="reel-card" data-reel="5">
-                    <video src="images/tst2.mp4" loop playsinline muted preload="metadata"></video>
+                    <video src="images/test.mp4" loop playsinline muted preload="metadata"></video>
                     <div class="reel-overlay">
                         <p class="text-sm font-semibold text-white">Folk Traditions</p>
                     </div>
@@ -595,13 +613,13 @@
             </div>
 
             <div class="lead-tile lead-tile--mic" data-lead>
-                <span class="lead-tile-badge">Mistress-in-Charge</span>
+                <span class="lead-tile-badge">Teacher-in-Charge</span>
                 <div class="lead-tile-img">
                     <img src="images/committee/mic.jpg" alt="Teacher-in-Charge">
                 </div>
                 <div class="lead-tile-info">
                     <h3>MIC's Full Name</h3>
-                    <p>Mistress-in-Charge, ගෙත්තම්පාණ 2026</p>
+                    <p>Master-in-Charge, ගෙත්තම්පාණ 2026</p>
                 </div>
             </div>
 
@@ -682,9 +700,6 @@
 </section>
 <!-- ════════════════════════════════════════ -->
 
-
-
-	
 <!-- FOOTER -->
 <footer class="border-t border-white/10 py-8 text-center text-gray-500">
     © 2026 ගෙත්තම්පාන. All Rights Reserved.<br>
@@ -746,8 +761,42 @@
         });
     });
 })();
+
+/* ── Organizing Committee : staggered reveal for lead & core tiles ── */
+(function(){
+    const leads = document.querySelectorAll('.lead-tile');
+    const leadIO = new IntersectionObserver((entries) => {
+        entries.forEach((e, i) => {
+            if(e.isIntersecting){
+                setTimeout(() => e.target.classList.add('visible'), i * 180);
+                leadIO.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.2 });
+    leads.forEach(t => leadIO.observe(t));
+
+    const cores = document.querySelectorAll('.core-tile');
+    const coreIO = new IntersectionObserver((entries) => {
+        entries.forEach((e, i) => {
+            if(e.isIntersecting){
+                setTimeout(() => e.target.classList.add('visible'), i * 150);
+                coreIO.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.2 });
+    cores.forEach(t => coreIO.observe(t));
+})();
+
+/* ── Organizing Committee : duplicate member cards for a seamless infinite-scroll loop ── */
+(function(){
+    const track = document.getElementById('member-track');
+    if(!track) return;
+    const cards = Array.from(track.children);
+    cards.forEach(card => track.appendChild(card.cloneNode(true)));
+})();
 </script>
 
 </body>
 </html>
+
 
