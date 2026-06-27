@@ -285,6 +285,26 @@
         .core-tile--secretary .core-tile-ribbon { background: #f43f5e; color: #fff; }
         .core-tile--chieforg .core-tile-ribbon { background: #10b981; color: #fff; }
 
+        /* Hide position ribbon when the tile slides to centre on hover */
+        .core-tile-ribbon {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .core-tile.core-active .core-tile-ribbon {
+            opacity: 0;
+            transform: translateY(-8px);
+            pointer-events: none;
+        }
+
+        /* Hide name/role info block when tile is hovered to centre */
+        .core-tile-info {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .core-tile.core-active .core-tile-info {
+            opacity: 0;
+            transform: translateY(8px);
+            pointer-events: none;
+        }
+
         .core-tile-info { padding: 1.3rem; text-align: center; }
         .core-tile-info h4 { font-weight: 700; font-size: 1.1rem; }
         .core-tile--chairman .core-tile-info h4 { color: #c084fc; }
@@ -904,6 +924,5 @@
 
 </body>
 </html>
-
 
 
