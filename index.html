@@ -203,42 +203,76 @@
         .lead-tile-info p { color: #a1a1aa; margin-top: .25rem; font-size: .9rem; }
 
         /* ── Core team tiles : Chairman, Secretary, Chief Organizer ── */
+
+        .core-trio {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            align-items: stretch;
+            position: relative;
+        }
+
         .core-tile {
             position: relative;
             border-radius: 1.5rem;
             overflow: hidden;
             opacity: 0;
-            transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
+            cursor: pointer;
+            z-index: 1;
+            /* smooth motion for every property we animate via JS */
+            transition:
+                opacity .6s ease,
+                transform .7s cubic-bezier(.34,1.3,.64,1),
+                filter .6s ease,
+                box-shadow .6s ease;
+            will-change: transform, filter;
         }
-        .core-tile.visible { opacity: 1; transform: translateY(0) scale(1) !important; }
 
+        /* Scroll-reveal resting state */
+        .core-tile.visible {
+            opacity: 1;
+        }
+
+        /* Per-tile colour identities */
         .core-tile--chairman {
-            transform: translateY(45px);
             background: linear-gradient(180deg, rgba(168,85,247,.14), rgba(255,255,255,0.02) 65%);
             border: 1px solid rgba(168,85,247,.32);
         }
-        .core-tile--chairman:hover { box-shadow: 0 20px 50px rgba(168,85,247,.2); }
-
         .core-tile--secretary {
-            transform: translateY(45px) scale(.95);
             background: linear-gradient(180deg, rgba(244,63,94,.14), rgba(255,255,255,0.02) 65%);
             border: 1px solid rgba(244,63,94,.32);
         }
-        .core-tile--secretary:hover { box-shadow: 0 20px 50px rgba(244,63,94,.18); }
-
         .core-tile--chieforg {
-            transform: translateY(45px);
             background: linear-gradient(180deg, rgba(16,185,129,.14), rgba(255,255,255,0.02) 65%);
             border: 1px solid rgba(16,185,129,.32);
         }
-        .core-tile--chieforg:hover { box-shadow: 0 20px 50px rgba(16,185,129,.18); }
 
+        /* Hovered card — JS adds .core-active */
+        .core-tile.core-active {
+            z-index: 10;
+        }
+        .core-tile--chairman.core-active {
+            box-shadow: 0 40px 100px rgba(168,85,247,.55), 0 0 0 1.5px rgba(168,85,247,.7);
+        }
+        .core-tile--secretary.core-active {
+            box-shadow: 0 40px 100px rgba(244,63,94,.5), 0 0 0 1.5px rgba(244,63,94,.7);
+        }
+        .core-tile--chieforg.core-active {
+            box-shadow: 0 40px 100px rgba(16,185,129,.5), 0 0 0 1.5px rgba(16,185,129,.7);
+        }
+
+        /* Dimmed siblings — JS adds .core-dim */
+        .core-tile.core-dim {
+            z-index: 0;
+        }
+
+        /* Image zoom on active */
         .core-tile-img { aspect-ratio: 3/4; overflow: hidden; }
         .core-tile-img img {
             width: 100%; height: 100%; object-fit: cover;
-            transition: transform .55s ease;
+            transition: transform .7s cubic-bezier(.34,1.3,.64,1);
         }
-        .core-tile:hover .core-tile-img img { transform: scale(1.08) rotate(.4deg); }
+        .core-tile.core-active .core-tile-img img { transform: scale(1.09) rotate(.3deg); }
 
         .core-tile-ribbon {
             position: absolute; top: 0; right: 0;
@@ -375,7 +409,7 @@
         </div>
         <div class="rounded-3xl overflow-hidden shadow-2xl border border-white/10">
             <video class="w-full" autoplay muted loop playsinline controls>
-                <source src="images/test.mp4" type="video/mp4">
+                <source src="images/tst.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         </div>
@@ -469,7 +503,7 @@
         <div class="text-center mb-12">
             <p class="uppercase tracking-[5px] text-amber-400 mb-3 text-sm">Behind the Scenes</p>
             <h2 class="text-4xl font-bold">Reels</h2>
-            <p class="text-gray-400 mt-3">Moments that matter</p>
+            <p class="text-gray-400 mt-3">Moments that matter — scroll to explore</p>
         </div>
 
         <!-- scroll controls + track -->
@@ -485,7 +519,7 @@
 
                 <!-- Reel 1 – video file -->
                 <div class="reel-card" data-reel="1">
-                    <video src="images/test.mp4" loop playsinline muted preload="metadata"></video>
+                    <video src="images/tst.mp4" loop playsinline muted preload="metadata"></video>
                     <div class="reel-overlay">
                         <p class="text-sm font-semibold text-white">ගෙත්තම්පාන 2026</p>
                     </div>
@@ -496,7 +530,7 @@
 
                 <!-- Reel 2 -->
                 <div class="reel-card" data-reel="2">
-                    <video src="images/test.mp4" loop playsinline muted preload="metadata"></video>
+                    <video src="images/tst.mp4" loop playsinline muted preload="metadata"></video>
                     <div class="reel-overlay">
                         <p class="text-sm font-semibold text-white">Rehearsal Highlights</p>
                     </div>
@@ -507,7 +541,7 @@
 
                 <!-- Reel 3 -->
                 <div class="reel-card" data-reel="3">
-                    <video src="images/test.mp4" loop playsinline muted preload="metadata"></video>
+                    <video src="images/tet.mp4" loop playsinline muted preload="metadata"></video>
                     <div class="reel-overlay">
                         <p class="text-sm font-semibold text-white">Stage Setup</p>
                     </div>
@@ -518,7 +552,7 @@
 
                 <!-- Reel 4 -->
                 <div class="reel-card" data-reel="4">
-                    <video src="images/test.mp4" loop playsinline muted preload="metadata"></video>
+                    <video src="images/tst.mp4" loop playsinline muted preload="metadata"></video>
                     <div class="reel-overlay">
                         <p class="text-sm font-semibold text-white">Artists at Work</p>
                     </div>
@@ -529,7 +563,7 @@
 
                 <!-- Reel 5 -->
                 <div class="reel-card" data-reel="5">
-                    <video src="images/test.mp4" loop playsinline muted preload="metadata"></video>
+                    <video src="images/tet.mp4" loop playsinline muted preload="metadata"></video>
                     <div class="reel-overlay">
                         <p class="text-sm font-semibold text-white">Folk Traditions</p>
                     </div>
@@ -548,7 +582,7 @@
 
         </div><!-- /flex row -->
 
-        <p class="text-center text-gray-600 text-xs mt-6"></p>
+        <p class="text-center text-gray-600 text-xs mt-6">Swipe or use arrows to browse · Tap a reel to play / pause</p>
 
     </div>
 </section>
@@ -566,6 +600,7 @@
 </section>
 
 
+
 <!-- ════════════════════════════════════════
      ORGANIZING COMMITTEE  (NEW)
 ════════════════════════════════════════ -->
@@ -575,7 +610,7 @@
         <div class="text-center mb-16">
             <p class="uppercase tracking-[5px] text-amber-400 mb-3 text-sm">The People Behind The Stage</p>
             <h2 class="text-4xl font-bold">Organizing Committee</h2>
-            <p class="text-gray-400 mt-3">Meet the team making ගෙත්තම්පාණ 2026 happen</p>
+            <p class="text-gray-400 mt-3">Meet the team making ගෙත්තම්පාණ 2026 possible</p>
         </div>
 
         <!-- LEADERSHIP : Principal & Teacher-in-Charge -->
@@ -606,12 +641,12 @@
         </div>
 
         <!-- CORE TEAM : Chairman, Secretary, Chief Organizer -->
-        <div class="grid md:grid-cols-3 gap-6 mb-20">
+        <div class="core-trio mb-20">
 
             <div class="core-tile core-tile--chairman" data-core>
                 <span class="core-tile-ribbon">Chairman</span>
                 <div class="core-tile-img">
-                    <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Chairman">
+                   <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Chairman">
                 </div>
                 <div class="core-tile-info">
                     <h4>Chairman's Full Name</h4>
@@ -646,7 +681,7 @@
         <!-- COMMITTEE MEMBERS — auto-sliding, continuous, seamless loop -->
         <div class="text-center mb-8">
             <h3 class="text-2xl font-bold text-amber-400">Committee Members</h3>
-            <p class="text-gray-500 text-sm mt-2"></p>
+            <p class="text-gray-500 text-sm mt-2">Hover to pause</p>
         </div>
 
         <div class="member-track-wrap">
@@ -680,31 +715,32 @@
 </section>
 <!-- ════════════════════════════════════════ -->
 
-	<!-- CONTACT -->
+
+<!-- CONTACT -->
 <section id="contact" class="py-24 bg-black">
     <div class="max-w-5xl mx-auto px-6 text-center">
+	 <div class="glass rounded-3xl p-10">
         <h2 class="text-4xl font-bold mb-8">Contact Us</h2>
-        <div class="glass rounded-3xl p-10">
-            <p class="text-xl mb-4">Email</p>
-            <a href="mailto:dsgeththampana@gmail.com" class="text-amber-400 text-lg">dsgeththampana@gmail.com</a>
+        
+            <p class="text-xl mb-4">Email<br>
+            <a href="mailto:dsgeththampana@gmail.com" class="text-amber-400 text-lg">dsgeththampana@gmail.com</a></p>
        
-        <br>
+        <p>
+        
+            <p class="text-xl mb-4">Instagram<br>
+            <a href="#" class="text-amber-400 text-lg">geththampana.lk</a></p>
+        
+        <p>
        
-            <p class="text-xl mb-4">Instagram</p>
-            <a href="#" class="text-amber-400 text-lg">geththampana.lk</a>
-       
-        <br>
-       
-            <p class="text-xl mb-4">Contact</p>
-            <a href="tel:+94754852275" class="text-amber-400 text-lg">+94 75 485 2275</a>
-       
+            <p class="text-xl mb-4">Contact<br>
+            <a href="tel:+94754852275" class="text-amber-400 text-lg">+94 75 485 2275</a></p>
+     </div>   
     </div>
 </section>
 
-
 <!-- FOOTER -->
 <footer class="border-t border-white/10 py-8 text-center text-gray-500">
-    © 2026 ගෙත්තම්පාන. All Rights Reserved.<br>
+    © 2026 ගෙත්තම්පාණ. All Rights Reserved.<br>
     Developed By - Lochana Dineth.
 </footer>
 
@@ -777,16 +813,84 @@
     }, { threshold: 0.2 });
     leads.forEach(t => leadIO.observe(t));
 
+    /* Scroll reveal for core tiles */
     const cores = document.querySelectorAll('.core-tile');
     const coreIO = new IntersectionObserver((entries) => {
         entries.forEach((e, i) => {
             if(e.isIntersecting){
-                setTimeout(() => e.target.classList.add('visible'), i * 150);
+                setTimeout(() => {
+                    e.target.style.transform = 'translateY(0) scale(1)';
+                    e.target.classList.add('visible');
+                }, i * 150);
                 coreIO.unobserve(e.target);
             }
         });
     }, { threshold: 0.2 });
-    cores.forEach(t => coreIO.observe(t));
+    cores.forEach((t, i) => {
+        t.style.transform = 'translateY(45px) scale(' + (i === 1 ? '.95' : '1') + ')';
+        coreIO.observe(t);
+    });
+
+    /* ── Move-to-centre hover effect ──
+       Each tile is in a 3-column grid.
+       Column indices: 0 = left, 1 = centre, 2 = right.
+       To move a tile to the visual centre we translate it by
+       exactly one column-width + gap toward the middle.
+    */
+    const trio = document.querySelector('.core-trio');
+    if (!trio) return;
+
+    const tiles = Array.from(trio.querySelectorAll('.core-tile'));
+
+    function getColWidth() {
+        /* Returns the outer width of one grid cell (tile + its share of gap) */
+        const trioRect = trio.getBoundingClientRect();
+        const tileRect = tiles[0].getBoundingClientRect();
+        /* gap = (trio width - 3*tile width) / 2  ≈ (trioRect.width - 3*tileRect.width)/2 */
+        return tileRect.width + (trioRect.width - 3 * tileRect.width) / 2;
+    }
+
+    tiles.forEach((tile, idx) => {
+        tile.addEventListener('mouseenter', () => {
+            const colW = getColWidth();
+
+            /* How far does this tile need to move to reach col-index 1 (centre)? */
+            /* col 0 → move right +1 step, col 1 → 0, col 2 → move left -1 step */
+            const shift = (1 - idx) * colW;  /* positive = right, negative = left */
+
+            tiles.forEach((t, i) => {
+                if (i === idx) {
+                    /* Active: slide to centre, lift, scale up */
+                    t.style.transform = `translateX(${shift}px) translateY(-18px) scale(1.1)`;
+                    t.style.filter    = 'blur(0px) brightness(1) saturate(1.08)';
+                    t.classList.add('core-active');
+                    t.classList.remove('core-dim');
+                } else {
+                    /* Siblings: blur & dim in place */
+                    t.style.transform = 'translateX(0) translateY(6px) scale(0.93)';
+                    t.style.filter    = 'blur(6px) brightness(0.35) saturate(0.5)';
+                    t.classList.add('core-dim');
+                    t.classList.remove('core-active');
+                }
+            });
+        });
+
+        tile.addEventListener('mouseleave', () => {
+            /* Slight delay so it doesn't snap if cursor barely clips edge */
+            trio.addEventListener('mouseleave', resetAll, { once: true });
+        });
+    });
+
+    trio.addEventListener('mouseleave', resetAll);
+
+    function resetAll() {
+        tiles.forEach(t => {
+            t.style.transform = 'translateX(0) translateY(0) scale(1)';
+            t.style.filter    = '';
+            t.style.boxShadow = '';
+            t.classList.remove('core-active', 'core-dim');
+        });
+    }
 })();
 
 /* ── Organizing Committee : duplicate member cards for a seamless infinite-scroll loop ── */
@@ -800,5 +904,6 @@
 
 </body>
 </html>
+
 
 
