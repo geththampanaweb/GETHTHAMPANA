@@ -305,18 +305,12 @@
             pointer-events: none;
         }
 
-        /* Expand image to fill the full tile when hovered */
+        /* Expand image to match principal tile portrait size on hover */
         .core-tile-img {
-            transition: height 0.5s cubic-bezier(.34,1.3,.64,1);
+            transition: aspect-ratio 0.5s cubic-bezier(.34,1.3,.64,1);
         }
         .core-tile.core-active .core-tile-img {
-            aspect-ratio: unset;
-            position: absolute;
-            inset: 0;
-            height: 100%;
-        }
-        .core-tile.core-active .core-tile-img img {
-            height: 100%;
+            aspect-ratio: 2/3;
         }
 
         .core-tile-info { padding: 1.3rem; text-align: center; }
@@ -916,6 +910,27 @@
     });
 
     trio.addEventListener('mouseleave', resetAll);
+
+    /* ── Mobile touch support: tap to activate, tap again or elsewhere to reset ── */
+    tiles.forEach((tile, idx) => {
+        tile.addEventListener('touchstart', (e) => {
+            const alreadyActive = tile.classList.contains('core-active');
+            resetAll();
+            if (!alreadyActive) {
+                tile.classList.add('core-active');
+                tiles.forEach((t, i) => {
+                    if (i !== idx) {
+                        t.style.filter = 'blur(6px) brightness(0.35) saturate(0.5)';
+                        t.classList.add('core-dim');
+                    }
+                });
+            }
+        }, { passive: true });
+    });
+
+    document.addEventListener('touchstart', (e) => {
+        if (!trio.contains(e.target)) resetAll();
+    }, { passive: true });
 
     function resetAll() {
         tiles.forEach(t => {
