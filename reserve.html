@@ -67,6 +67,11 @@ background:#444 !important;
 cursor:not-allowed;
 }
 
+.hiddenSeat{
+visibility:hidden !important;
+pointer-events:none !important;
+}
+
 .seatMapViewport{
 width:100%;
 overflow:hidden;
@@ -265,6 +270,22 @@ let selected = [];
 /* ---------- CREATE SEATS ---------- */
 
 let seatNumber = 1;
+
+/* ---------- SEATS THAT SHOULD BE INVISIBLE ---------- */
+/* These seats keep their exact position in the layout,
+   but are hidden (no color, no number, not clickable). */
+
+const hiddenSeats = new Set([
+46, 61, 76, 47, 62, 77, 21, 36, 44, 45, 58, 59, 60, 72, 73, 74, 75,
+86, 87, 88, 89, 90, 91, 92, 106, 107, 121, 122, 141, 156,
+101, 102, 103, 104, 105, 117, 118, 119, 120, 133, 134, 135, 149, 150,
+181, 182, 183, 184, 185, 186, 187, 188, 203, 204, 205, 206, 207, 208,
+225, 226, 227, 228, 247, 248, 249, 269, 313, 317, 321, 303,
+282, 283, 284, 285, 304, 305, 306, 307, 326, 327, 328, 329, 311, 312,
+445, 428, 429, 430, 431, 450, 451, 452, 453, 454, 472, 473, 474, 475,
+480, 484, 488, 444, 420, 421, 422, 397, 398, 399, 400,
+373, 374, 375, 376, 377, 378, 349, 350, 351, 352, 353, 354, 355, 356
+]);
 
 /* Create rows */
 
@@ -477,8 +498,13 @@ seat.className = `seat ${type}`;
 seat.innerText = id;
 seat.dataset.id = id;
 
+if(hiddenSeats.has(id)){
+seat.classList.add('hiddenSeat');
+}
+
 seat.onclick = () => {
 
+if(hiddenSeats.has(id)) return;
 if(seat.classList.contains('booked')) return;
 if(seat.classList.contains('locked')) return;
 
