@@ -67,6 +67,56 @@ background:#444 !important;
 cursor:not-allowed;
 }
 
+.seatMapViewport{
+width:100%;
+overflow:hidden;
+touch-action:none;
+cursor:grab;
+border-radius:16px;
+position:relative;
+user-select:none;
+}
+
+.seatMapViewport.grabbing{
+cursor:grabbing;
+}
+
+.seatMapInner{
+transform-origin:0 0;
+width:max-content;
+}
+
+.zoomControls{
+position:sticky;
+bottom:16px;
+display:flex;
+justify-content:center;
+gap:10px;
+margin-top:16px;
+z-index:10;
+}
+
+.zoomBtn{
+width:44px;
+height:44px;
+border-radius:9999px;
+background:rgba(250,204,21,.15);
+border:1px solid rgba(250,204,21,.4);
+color:#facc15;
+font-size:20px;
+font-weight:bold;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+backdrop-filter:blur(6px);
+transition:.2s;
+}
+
+.zoomBtn:hover{
+background:rgba(250,204,21,.3);
+}
+
 </style>
 
 </head>
@@ -148,7 +198,21 @@ Selected
 
 <div class="max-w-6xl mx-auto px-4">
 
+<p class="text-center text-gray-400 text-sm mb-3">
+Drag to move around &middot; scroll or pinch to zoom
+</p>
+
+<div id="seatMapViewport" class="seatMapViewport" style="height:520px;">
+<div id="seatMapInner" class="seatMapInner">
 <div id="seatMap" class="space-y-3"></div>
+</div>
+</div>
+
+<div class="zoomControls">
+<div id="zoomOutBtn" class="zoomBtn">−</div>
+<div id="zoomResetBtn" class="zoomBtn" style="width:auto;padding:0 16px;font-size:13px;">Reset</div>
+<div id="zoomInBtn" class="zoomBtn">+</div>
+</div>
 
 </div>
 
@@ -206,22 +270,37 @@ let seatNumber = 1;
 
 function createRows(parent, rows, cols, type){
 
-for(let row=1; row<=rows; row++){
+/* Build a grid of seat numbers assigned column by column
+   (column 1 gets numbered top-to-bottom first, then column 2, etc.)
+   while still rendering the seats row by row visually. */
+
+const grid = [];
+
+for(let row=0; row<rows; row++){
+grid.push(new Array(cols));
+}
+
+for(let col=0; col<cols; col++){
+for(let row=0; row<rows; row++){
+grid[row][col] = seatNumber;
+seatNumber++;
+}
+}
+
+for(let row=0; row<rows; row++){
 
 const rowDiv = document.createElement("div");
 
 rowDiv.className =
 "flex justify-center gap-2 mb-2";
 
-for(let seat=1; seat<=cols; seat++){
+for(let col=0; col<cols; col++){
 
 createSeat(
 rowDiv,
-seatNumber,
+grid[row][col],
 type
 );
-
-seatNumber++;
 
 }
 
@@ -427,6 +506,218 @@ localStorage.setItem("selectedSeats", JSON.stringify(selected));
 window.location.href = "checkout.html";
 
 });
+
+/* ---------- PAN & ZOOM ---------- */
+
+const viewport = document.getElementById('seatMapViewport');
+const inner = document.getElementById('seatMapInner');
+
+let scale = 1;
+let minScale = 0.4;
+let maxScale = 2.5;
+let panX = 0;
+let panY = 0;
+
+let isDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let panStartX = 0;
+let panStartY = 0;
+
+let dragMoved = false;
+
+function applyTransform(){
+inner.style.transform =
+`translate(${panX}px, ${panY}px) scale(${scale})`;
+}
+
+function centerSeatMap(){
+
+/* Fit the map horizontally inside the viewport on first load */
+
+const vpRect = viewport.getBoundingClientRect();
+
+scale = 1;
+applyTransform();
+
+const innerRect = inner.getBoundingClientRect();
+
+const naturalWidth = innerRect.width;
+const naturalHeight = innerRect.height;
+
+const fitScale = Math.min(
+vpRect.width / naturalWidth,
+vpRect.height / naturalHeight,
+1
+);
+
+scale = Math.max(minScale, Math.min(maxScale, fitScale));
+
+panX = (vpRect.width - naturalWidth * scale) / 2;
+panY = 20;
+
+applyTransform();
+}
+
+function clampZoom(z){
+return Math.max(minScale, Math.min(maxScale, z));
+}
+
+function zoomAt(factor, clientX, clientY){
+
+const vpRect = viewport.getBoundingClientRect();
+
+const offsetX = clientX - vpRect.left;
+const offsetY = clientY - vpRect.top;
+
+const prevScale = scale;
+const newScale = clampZoom(scale * factor);
+
+/* Keep the point under the cursor/finger stable while zooming */
+
+panX = offsetX - ((offsetX - panX) / prevScale) * newScale;
+panY = offsetY - ((offsetY - panY) / prevScale) * newScale;
+
+scale = newScale;
+
+applyTransform();
+
+}
+
+/* Mouse drag */
+
+viewport.addEventListener('mousedown', (e) => {
+isDragging = true;
+dragMoved = false;
+dragStartX = e.clientX;
+dragStartY = e.clientY;
+panStartX = panX;
+panStartY = panY;
+viewport.classList.add('grabbing');
+});
+
+window.addEventListener('mousemove', (e) => {
+if(!isDragging) return;
+
+const dx = e.clientX - dragStartX;
+const dy = e.clientY - dragStartY;
+
+if(Math.abs(dx) > 3 || Math.abs(dy) > 3) dragMoved = true;
+
+panX = panStartX + dx;
+panY = panStartY + dy;
+
+applyTransform();
+});
+
+window.addEventListener('mouseup', () => {
+isDragging = false;
+viewport.classList.remove('grabbing');
+});
+
+/* Prevent seat clicks from firing right after a drag */
+
+viewport.addEventListener('click', (e) => {
+if(dragMoved){
+e.stopPropagation();
+e.preventDefault();
+}
+}, true);
+
+/* Wheel zoom */
+
+viewport.addEventListener('wheel', (e) => {
+e.preventDefault();
+const factor = e.deltaY < 0 ? 1.1 : 0.9;
+zoomAt(factor, e.clientX, e.clientY);
+}, { passive:false });
+
+/* Touch drag + pinch zoom */
+
+let touchStartDist = null;
+let touchStartScale = 1;
+
+function getTouchDist(touches){
+const dx = touches[0].clientX - touches[1].clientX;
+const dy = touches[0].clientY - touches[1].clientY;
+return Math.hypot(dx, dy);
+}
+
+viewport.addEventListener('touchstart', (e) => {
+
+if(e.touches.length === 1){
+isDragging = true;
+dragMoved = false;
+dragStartX = e.touches[0].clientX;
+dragStartY = e.touches[0].clientY;
+panStartX = panX;
+panStartY = panY;
+} else if(e.touches.length === 2){
+isDragging = false;
+touchStartDist = getTouchDist(e.touches);
+touchStartScale = scale;
+}
+
+}, { passive:true });
+
+viewport.addEventListener('touchmove', (e) => {
+
+if(e.touches.length === 1 && isDragging){
+
+const dx = e.touches[0].clientX - dragStartX;
+const dy = e.touches[0].clientY - dragStartY;
+
+if(Math.abs(dx) > 3 || Math.abs(dy) > 3) dragMoved = true;
+
+panX = panStartX + dx;
+panY = panStartY + dy;
+
+applyTransform();
+
+} else if(e.touches.length === 2 && touchStartDist){
+
+const newDist = getTouchDist(e.touches);
+const factor = newDist / touchStartDist;
+
+const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+scale = touchStartScale;
+zoomAt(factor, midX, midY);
+
+}
+
+e.preventDefault();
+
+}, { passive:false });
+
+viewport.addEventListener('touchend', () => {
+isDragging = false;
+touchStartDist = null;
+});
+
+/* Zoom buttons */
+
+document.getElementById('zoomInBtn').addEventListener('click', () => {
+const r = viewport.getBoundingClientRect();
+zoomAt(1.2, r.left + r.width/2, r.top + r.height/2);
+});
+
+document.getElementById('zoomOutBtn').addEventListener('click', () => {
+const r = viewport.getBoundingClientRect();
+zoomAt(0.8, r.left + r.width/2, r.top + r.height/2);
+});
+
+document.getElementById('zoomResetBtn').addEventListener('click', () => {
+centerSeatMap();
+});
+
+/* Initial fit once seats are rendered */
+
+window.addEventListener('load', () => {
+setTimeout(centerSeatMap, 50);
+});
+
 </script>
 
 
@@ -521,4 +812,3 @@ setInterval(loadBookedSeats, 5000);
 
 </body>
 </html>
-
