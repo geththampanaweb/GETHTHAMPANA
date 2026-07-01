@@ -268,11 +268,13 @@ let seatNumber = 1;
 
 /* Create rows */
 
-function createRows(parent, rows, cols, type){
+function createRows(parent, rows, cols, type, order){
 
-/* Build a grid of seat numbers assigned column by column
-   (column 1 gets numbered top-to-bottom first, then column 2, etc.)
-   while still rendering the seats row by row visually. */
+/* order = "column" -> column 1 numbered top-to-bottom first, then column 2, etc.
+   order = "row"    -> row 1 numbered left-to-right first, then row 2, etc.
+   Defaults to "column" if not specified. */
+
+order = order || "column";
 
 const grid = [];
 
@@ -280,11 +282,24 @@ for(let row=0; row<rows; row++){
 grid.push(new Array(cols));
 }
 
+if(order === "row"){
+
+for(let row=0; row<rows; row++){
+for(let col=0; col<cols; col++){
+grid[row][col] = seatNumber;
+seatNumber++;
+}
+}
+
+} else {
+
 for(let col=0; col<cols; col++){
 for(let row=0; row<rows; row++){
 grid[row][col] = seatNumber;
 seatNumber++;
 }
+}
+
 }
 
 for(let row=0; row<rows; row++){
@@ -414,7 +429,8 @@ createRows(
 leftBottom,
 7,
 22,
-"premium"
+"premium",
+"row"
 );
 
 /* EMPTY CENTER */
@@ -434,7 +450,8 @@ createRows(
 rightBottom,
 7,
 22,
-"premium"
+"premium",
+"row"
 );
 
 bottomSection.append(
