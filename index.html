@@ -2,549 +2,2121 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>PROJECT: BIRTHDAY</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050508">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<title>A Little Something For You</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap');
 
-:root{
-    --pink:#ff5ca8;
-    --purple:#8b6cff;
-    --cyan:#62e6ff;
-    --white:#f5f5f7;
-    --muted:#8f9099;
-    --bg:#050507;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-html{scroll-behavior:smooth}
-
-body{
-    background:var(--bg);
-    color:var(--white);
-    font-family:"DM Mono",monospace;
-    overflow:hidden;
+:root {
+    --bg: #050508;
+    --white: #f7f5f8;
+    --muted: #8d8992;
+    --pink: #ff5b9f;
+    --purple: #9874ff;
+    --green: #68f5b0;
+    --border: rgba(255,255,255,.12);
 }
 
-button{
-    font-family:inherit;
+html,
+body {
+    width: 100%;
+    height: 100%;
 }
 
-/* ==============================
-   GLOBAL
-============================== */
-
-.scene{
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    opacity:0;
-    visibility:hidden;
-    transition:opacity .8s ease,visibility .8s;
+body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: Inter, sans-serif;
+    overflow: hidden;
 }
 
-.scene.active{
-    opacity:1;
-    visibility:visible;
-}
+/* ==================================================
+   BACKGROUND
+================================================== */
 
-.noise{
-    position:fixed;
-    inset:0;
-    z-index:999;
-    pointer-events:none;
-    opacity:.035;
-    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
-}
-
-.grid{
-    position:absolute;
-    inset:0;
-    background-image:
-        linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-    background-size:50px 50px;
-    mask-image:linear-gradient(to bottom,transparent,black 30%,black 70%,transparent);
-}
-
-.scanline{
-    position:absolute;
-    left:0;
-    right:0;
-    height:2px;
-    background:rgba(98,230,255,.12);
-    animation:scan 5s linear infinite;
-}
-
-@keyframes scan{
-    from{top:-5%}
-    to{top:105%}
-}
-
-.small{
-    font-size:11px;
-    color:var(--muted);
-    letter-spacing:2px;
-}
-
-.cursor{
-    display:inline-block;
-    width:7px;
-    height:16px;
-    background:var(--cyan);
-    animation:blink .8s infinite;
-}
-
-@keyframes blink{
-    50%{opacity:0}
-}
-
-.btn{
-    border:1px solid rgba(98,230,255,.4);
-    background:rgba(98,230,255,.04);
-    color:var(--cyan);
-    padding:14px 24px;
-    cursor:pointer;
-    letter-spacing:2px;
-    transition:.3s;
-}
-
-.btn:hover{
-    background:rgba(98,230,255,.12);
-    box-shadow:0 0 30px rgba(98,230,255,.12);
-    transform:translateY(-2px);
-}
-
-.btn.pink{
-    color:#ff79b8;
-    border-color:rgba(255,92,168,.4);
-}
-
-/* ==============================
-   SCENE 1
-============================== */
-
-#scene1{
-    text-align:center;
+#background {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
     background:
-        radial-gradient(circle at 50% 50%,rgba(98,230,255,.05),transparent 35%),
-        #050507;
+        radial-gradient(
+            circle at 50% 45%,
+            rgba(120,80,255,.09),
+            transparent 35%
+        ),
+        #050508;
+    z-index: -5;
 }
 
-.boot{
-    width:min(800px,90%);
+.bg-glow {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: .12;
 }
 
-.boot-top{
-    display:flex;
-    justify-content:space-between;
-    color:#555;
-    font-size:10px;
-    margin-bottom:60px;
+.bg-glow.one {
+    background: #ff3f91;
+    left: -200px;
+    top: -200px;
 }
 
-.system{
-    font-size:clamp(11px,2vw,14px);
-    color:var(--cyan);
-    letter-spacing:3px;
-    margin-bottom:30px;
+.bg-glow.two {
+    background: #7652ff;
+    right: -200px;
+    bottom: -200px;
 }
 
-.boot h1{
-    font-size:clamp(42px,9vw,100px);
-    line-height:.9;
-    font-family:"Playfair Display",serif;
-    font-weight:500;
-    letter-spacing:-4px;
+#stars {
+    position: absolute;
+    inset: 0;
 }
 
-.boot h1 span{
-    color:var(--pink);
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: white;
+    opacity: .4;
+    animation: twinkle 3s infinite ease-in-out;
 }
 
-.boot-desc{
-    color:#777;
-    max-width:500px;
-    margin:30px auto 45px;
-    line-height:1.8;
-    font-size:13px;
+@keyframes twinkle {
+    0%,100% {
+        opacity: .15;
+        transform: scale(.7);
+    }
+
+    50% {
+        opacity: .9;
+        transform: scale(1.4);
+    }
 }
 
-.loading{
-    height:2px;
-    background:#15151a;
-    width:100%;
-    margin:25px 0;
-    overflow:hidden;
+/* ==================================================
+   SCREEN SYSTEM
+================================================== */
+
+.screen {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity .7s ease,
+        visibility .7s ease;
+
+    overflow-y: auto;
 }
 
-.loading div{
-    height:100%;
-    width:0;
-    background:var(--cyan);
-    box-shadow:0 0 15px var(--cyan);
-    transition:width 2s;
+.screen.active {
+    opacity: 1;
+    visibility: visible;
 }
 
-/* ==============================
-   SCENE 2 TERMINAL
-============================== */
+/* ==================================================
+   BOOT
+================================================== */
 
-.terminal{
-    width:min(900px,92%);
-    border:1px solid #25262d;
-    background:#09090c;
-    box-shadow:0 30px 100px rgba(0,0,0,.5);
+.boot-window {
+    width: min(650px, 100%);
 }
 
-.terminal-head{
-    height:45px;
-    display:flex;
-    align-items:center;
-    padding:0 15px;
-    border-bottom:1px solid #202127;
+.window-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 30px;
 }
 
-.dot{
-    width:9px;
-    height:9px;
-    border-radius:50%;
-    margin-right:7px;
-    background:#333;
+.window-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
 }
 
-.terminal-title{
-    margin-left:15px;
-    color:#555;
-    font-size:10px;
+.red {
+    background: #ff5b61;
 }
 
-.terminal-body{
-    padding:30px;
-    min-height:450px;
+.yellow {
+    background: #ffd45a;
 }
 
-.line{
-    margin:9px 0;
-    font-size:13px;
-    line-height:1.7;
+.green {
+    background: #5df0a4;
 }
 
-.green{color:#72e6a1}
-.blue{color:var(--cyan)}
-.pink{color:var(--pink)}
-.gray{color:#555}
-
-.progress{
-    margin:25px 0;
-    height:8px;
-    background:#16171c;
+.window-title {
+    margin-left: 12px;
+    color: #666;
+    font-family: "DM Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
 }
 
-.progress div{
-    width:0;
-    height:100%;
-    background:linear-gradient(90deg,var(--cyan),var(--purple));
-    transition:width 2s;
+.terminal {
+    color: #aaa;
+    font-family: "DM Mono", monospace;
+    font-size: 14px;
+    line-height: 2;
+    min-height: 230px;
 }
 
-.terminal-button{
-    margin-top:25px;
-    opacity:0;
-    pointer-events:none;
+.terminal .bright {
+    color: white;
 }
 
-.terminal-button.show{
-    opacity:1;
-    pointer-events:auto;
+.terminal .success {
+    color: var(--green);
 }
 
-/* ==============================
-   SCENE 3 PROFILE
-============================== */
-
-.profile{
-    width:min(1000px,90%);
+.cursor {
+    display: inline-block;
+    width: 8px;
+    height: 15px;
+    background: var(--green);
+    vertical-align: middle;
+    animation: blink .8s infinite;
 }
 
-.profile-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:end;
-    margin-bottom:35px;
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
 }
 
-.profile h2{
-    font-family:"Playfair Display",serif;
-    font-size:clamp(45px,7vw,80px);
-    font-weight:500;
+.access-button {
+    display: none;
+
+    padding: 14px 22px;
+
+    background: transparent;
+    color: var(--green);
+
+    border: 1px solid rgba(104,245,176,.4);
+
+    font-family: "DM Mono", monospace;
+    cursor: pointer;
+
+    transition: .25s;
 }
 
-.profile h2 span{
-    color:var(--pink);
+.access-button:hover {
+    background: rgba(104,245,176,.08);
+    box-shadow: 0 0 30px rgba(104,245,176,.1);
 }
 
-.profile-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:20px;
+/* ==================================================
+   FILE
+================================================== */
+
+.file-card {
+    width: min(900px, 100%);
+
+    background: rgba(10,10,13,.8);
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 40px 100px rgba(0,0,0,.5);
 }
 
-.card{
-    border:1px solid #202127;
-    padding:25px;
-    background:rgba(255,255,255,.015);
+.file-header {
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 18px;
+
+    border-bottom: 1px solid var(--border);
 }
 
-.card h3{
-    color:#666;
-    font-size:10px;
-    letter-spacing:2px;
-    margin-bottom:20px;
+.file-name {
+    margin-left: 14px;
+
+    color: #777;
+
+    font-family: "DM Mono", monospace;
+
+    font-size: 11px;
 }
 
-.data{
-    display:flex;
-    justify-content:space-between;
-    padding:13px 0;
-    border-bottom:1px solid #17181c;
-    font-size:12px;
+.file-content {
+    padding: clamp(30px,7vw,70px);
 }
 
-.data:last-child{border:0}
+.label {
+    color: var(--green);
 
-.value{color:var(--cyan)}
+    font-family: "DM Mono", monospace;
 
-.big-status{
-    font-size:clamp(30px,5vw,55px);
-    font-family:"Playfair Display",serif;
-    color:var(--pink);
-    margin:25px 0;
+    font-size: 10px;
+
+    letter-spacing: 3px;
+
+    margin-bottom: 18px;
 }
 
-/* ==============================
-   SCENE 4 MEMORY
-============================== */
+.file-content h1 {
+    font-family: "Playfair Display", serif;
 
-.memory{
-    width:min(1100px,92%);
+    font-size: clamp(50px,9vw,95px);
+
+    line-height: .9;
+
+    font-weight: 500;
+
+    margin-bottom: 45px;
 }
 
-.memory h2{
-    font-family:"Playfair Display",serif;
-    font-size:clamp(45px,8vw,90px);
-    font-weight:500;
-    margin-bottom:10px;
+.file-content h1 span {
+    color: var(--pink);
 }
 
-.memory h2 span{color:var(--pink)}
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 
-.memory-sub{
-    color:#666;
-    margin-bottom:40px;
+    border: 1px solid var(--border);
+
+    margin-bottom: 30px;
 }
 
-.memory-card{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    min-height:450px;
-    border:1px solid #25262d;
-    background:#08080b;
+.info {
+    padding: 24px;
+
+    border-bottom: 1px solid var(--border);
 }
 
-.memory-image{
-    overflow:hidden;
+.info:nth-child(odd) {
+    border-right: 1px solid var(--border);
 }
 
-.memory-image img{
-    width:100%;
-    height:100%;
-    min-height:450px;
-    object-fit:cover;
-    filter:saturate(.7);
-    transition:1s;
+.info:nth-last-child(-n+2) {
+    border-bottom: none;
 }
 
-.memory-card:hover img{
-    transform:scale(1.04);
+.info small {
+    display: block;
+
+    color: #555;
+
+    font-family: "DM Mono", monospace;
+
+    font-size: 9px;
+
+    margin-bottom: 9px;
 }
 
-.memory-info{
-    padding:45px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
+.info strong {
+    font-family: "DM Mono", monospace;
+
+    font-size: 14px;
 }
 
-.memory-number{
-    color:var(--pink);
-    font-size:11px;
-    letter-spacing:3px;
-    margin-bottom:25px;
+.launch-button {
+    border: none;
+
+    padding: 14px 24px;
+
+    background: white;
+    color: black;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: .25s;
 }
 
-.memory-info h3{
-    font-family:"Playfair Display",serif;
-    font-size:42px;
-    font-weight:500;
-    margin-bottom:20px;
+.launch-button:hover {
+    transform: translateY(-3px);
 }
 
-.memory-info p{
-    color:#777;
-    line-height:1.9;
-    font-size:13px;
+/* ==================================================
+   SCAN
+================================================== */
+
+.scan-container {
+    width: min(700px, 100%);
 }
 
-.memory-controls{
-    margin-top:30px;
-    display:flex;
-    gap:10px;
+.scan-top {
+    display: flex;
+    justify-content: space-between;
+
+    margin-bottom: 15px;
+
+    color: #666;
+
+    font-family: "DM Mono", monospace;
+
+    font-size: 11px;
 }
 
-/* ==============================
-   SCENE 5 QUESTION
-============================== */
+.scan-bar {
+    height: 2px;
 
-.question{
-    text-align:center;
-    width:min(700px,90%);
+    background: rgba(255,255,255,.08);
+
+    overflow: hidden;
 }
 
-.question-number{
-    color:var(--pink);
-    font-size:11px;
-    letter-spacing:4px;
-    margin-bottom:30px;
+.scan-progress {
+    width: 0%;
+    height: 100%;
+
+    background: var(--green);
+
+    box-shadow: 0 0 15px var(--green);
+
+    transition: width .2s linear;
 }
 
-.question h2{
-    font-family:"Playfair Display",serif;
-    font-size:clamp(40px,7vw,75px);
-    font-weight:500;
-    margin-bottom:20px;
+.scan-log {
+    margin-top: 30px;
+
+    min-height: 300px;
+
+    color: #aaa;
+
+    font-family: "DM Mono", monospace;
+
+    font-size: 13px;
+
+    line-height: 2;
 }
 
-.question p{
-    color:#666;
-    font-size:13px;
-    margin-bottom:40px;
+.scan-log .important {
+    color: white;
 }
 
-.options{
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    flex-wrap:wrap;
+.continue-button {
+    display: none;
+
+    padding: 13px 22px;
+
+    background: transparent;
+
+    color: white;
+
+    border: 1px solid var(--border);
+
+    cursor: pointer;
 }
 
-.option{
-    background:transparent;
-    border:1px solid #282930;
-    color:#aaa;
-    padding:15px 25px;
-    cursor:pointer;
-    transition:.3s;
+/* ==================================================
+   MEMORY
+================================================== */
+
+.memory-section {
+    width: min(1050px, 100%);
 }
 
-.option:hover{
-    border-color:var(--pink);
-    color:white;
+.memory-heading {
+    text-align: center;
+
+    margin-bottom: 45px;
 }
 
-.answer{
-    min-height:100px;
-    margin-top:40px;
-    color:var(--pink);
-    line-height:1.8;
+.memory-heading h2 {
+    font-family: "Playfair Display", serif;
+
+    font-size: clamp(42px,7vw,72px);
+
+    font-weight: 500;
+
+    line-height: 1;
 }
 
-/* ==============================
-   SCENE 6 UNIVERSE
-============================== */
+.memory-heading p {
+    max-width: 600px;
 
-#scene6{
-    overflow:hidden;
-    background:#020204;
+    margin: 20px auto 0;
+
+    color: var(--muted);
+
+    line-height: 1.7;
 }
 
-.universe{
-    position:absolute;
-    inset:0;
+.memory-grid {
+    display: grid;
+
+    grid-template-columns: 1.4fr 1fr;
+
+    grid-template-rows: 220px 220px;
+
+    gap: 14px;
 }
 
-.star2{
-    position:absolute;
-    width:2px;
-    height:2px;
-    border-radius:50%;
-    background:white;
-    animation:starPulse 3s infinite alternate;
+.memory {
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 12px;
+
+    border: 1px solid var(--border);
+
+    cursor: pointer;
+
+    background: #111;
 }
 
-@keyframes starPulse{
-    from{opacity:.1}
-    to{opacity:1}
+.memory:first-child {
+    grid-row: 1 / 3;
 }
 
-.universe-content{
-    position:relative;
-    z-index:3;
-    text-align:center;
-    width:90%;
+.memory img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: transform .7s;
 }
 
-.universe-line{
-    opacity:0;
-    transition:2s;
-    font-family:"Playfair Display",serif;
-    font-size:clamp(25px,5vw,55px);
-    margin:18px 0;
+.memory:hover img {
+    transform: scale(1.06);
 }
 
-.universe-line.show{opacity:1}
+.memory::after {
+    content: "";
 
-.big-heart{
-    font-size:100px;
-    opacity:0;
-    transform:scale(.3);
-    transition:2s;
-    color:var(--pink);
-    text-shadow:0 0 70px rgba(255,92,168,.7);
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            transparent 35%,
+            rgba(0,0,0,.85)
+        );
 }
 
-.big-heart.show{
-    opacity:1;
-    transform:scale(1);
+.memory-text {
+    position: absolute;
+
+    z-index: 2;
+
+    left: 22px;
+    right: 22px;
+    bottom: 20px;
 }
 
-/* ==============================
-   SCENE 7 LOCK
-============================== */
+.memory-text h3 {
+    font-family: "Playfair Display", serif;
 
-.lock{
-    text-align:center;
-    width:min(700px,90%);
+    font-size: 25px;
 }
 
-.lock-icon{
-    font-size:70px;
-    margin-bottom:30px;
-    filter:grayscale(1);
+.memory-text small {
+    display: block;
+
+    color: #aaa;
+
+    margin-top: 5px;
+
+    font-family: "DM Mono", monospace;
+
+    font-size: 10px;
 }
 
-.lock h2{
-    font-family:"Playfair Display",serif;
-    font-size:clamp(40px,7vw,70px);
-    font-weight:500;
+/* ==================================================
+   MODAL
+================================================== */
+
+.modal {
+    position: fixed;
+    inset: 0;
+
+    z-index: 100;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(0,0,0,.8);
+
+    backdrop-filter: blur(15px);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: .3s;
 }
 
-.lock p{
-    color:#666
+.modal.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-card {
+    width: min(550px,100%);
+
+    padding: 45px 35px;
+
+    background: #0d0b10;
+
+    border: 1px solid var(--border);
+
+    border-radius: 15px;
+
+    text-align: center;
+}
+
+.modal-card h3 {
+    font-family: "Playfair Display", serif;
+
+    font-size: 42px;
+
+    margin-bottom: 15px;
+}
+
+.modal-card p {
+    color: #999;
+
+    line-height: 1.8;
+}
+
+.modal-close {
+    margin-top: 25px;
+
+    padding: 11px 20px;
+
+    background: transparent;
+
+    color: white;
+
+    border: 1px solid var(--border);
+
+    cursor: pointer;
+}
+
+/* ==================================================
+   CHOICE
+================================================== */
+
+.choice-container {
+    width: min(900px,100%);
+}
+
+.choice-heading {
+    text-align: center;
+
+    margin-bottom: 45px;
+}
+
+.choice-heading h2 {
+    font-family: "Playfair Display", serif;
+
+    font-size: clamp(43px,7vw,72px);
+
+    font-weight: 500;
+}
+
+.choice-heading p {
+    color: var(--muted);
+
+    margin-top: 15px;
+}
+
+.choices {
+    display: grid;
+
+    grid-template-columns: repeat(3,1fr);
+
+    gap: 14px;
+}
+
+.choice {
+    min-height: 220px;
+
+    padding: 25px;
+
+    border: 1px solid var(--border);
+
+    background: rgba(255,255,255,.035);
+
+    cursor: pointer;
+
+    transition: .35s;
+}
+
+.choice:hover {
+    transform: translateY(-6px);
+
+    border-color: rgba(255,91,159,.5);
+
+    background: rgba(255,91,159,.05);
+}
+
+.choice-number {
+    color: #555;
+
+    font-family: "DM Mono", monospace;
+
+    font-size: 11px;
+}
+
+.choice h3 {
+    margin-top: 50px;
+
+    font-family: "Playfair Display", serif;
+
+    font-size: 27px;
+}
+
+.choice p {
+    color: #777;
+
+    font-size: 12px;
+
+    margin-top: 8px;
+}
+
+/* ==================================================
+   UNIVERSE
+================================================== */
+
+.universe-container {
+    width: min(850px,100%);
+
+    text-align: center;
+}
+
+.universe-line {
+    font-family: "Playfair Display", serif;
+
+    font-size: clamp(26px,5vw,48px);
+
+    line-height: 1.5;
+
+    opacity: 0;
+
+    transform: translateY(15px);
+
+    transition: 1.5s;
+}
+
+.universe-line.show {
+    opacity: 1;
+
+    transform: translateY(0);
+}
+
+.heart-space {
+    position: relative;
+
+    width: min(500px,100%);
+
+    height: 330px;
+
+    margin: 25px auto;
+}
+
+.heart-star {
+    position: absolute;
+
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    box-shadow: 0 0 8px white;
+
+    opacity: 0;
+
+    transition: opacity .6s;
+}
+
+.heart-star.show {
+    opacity: 1;
+}
+
+.universe-ending {
+    opacity: 0;
+
+    transform: translateY(15px);
+
+    transition: 1.5s;
+
+    font-family: "Playfair Display", serif;
+
+    font-size: clamp(28px,6vw,58px);
+}
+
+.universe-ending.show {
+    opacity: 1;
+
+    transform: translateY(0);
+}
+
+.universe-ending span {
+    color: var(--pink);
+}
+
+/* ==================================================
+   LOCK
+================================================== */
+
+.lock-container {
+    width: min(600px,100%);
+
+    text-align: center;
+}
+
+.lock {
+    width: 85px;
+    height: 85px;
+
+    margin: 0 auto 30px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 30px;
+}
+
+.lock-container h2 {
+    font-family: "Playfair Display", serif;
+
+    font-size: clamp(45px,7vw,75px);
+
+    font-weight: 500;
+}
+
+.lock-container p {
+    color: #777;
+
+    line-height: 1.7;
+
+    margin: 18px auto 28px;
+}
+
+.password {
+    display: block;
+
+    width: min(380px,100%);
+
+    margin: auto;
+
+    padding: 15px;
+
+    background: transparent;
+
+    color: white;
+
+    border: 1px solid var(--border);
+
+    outline: none;
+
+    text-align: center;
+
+    font-family: "DM Mono", monospace;
+}
+
+.unlock {
+    margin-top: 10px;
+
+    padding: 13px 25px;
+
+    background: white;
+
+    color: black;
+
+    border: none;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.error {
+    min-height: 20px;
+
+    margin-top: 12px;
+
+    color: #ff6688;
+
+    font-family: "DM Mono", monospace;
+
+    font-size: 10px;
+}
+
+/* ==================================================
+   FINAL
+================================================== */
+
+.final-container {
+    width: min(950px,100%);
+
+    text-align: center;
+}
+
+.final-date {
+    color: #666;
+
+    font-family: "DM Mono", monospace;
+
+    font-size: 11px;
+
+    letter-spacing: 5px;
+
+    margin-bottom: 30px;
+}
+
+.final-container h1 {
+    font-family: "Playfair Display", serif;
+
+    font-weight: 500;
+
+    font-size: clamp(65px,12vw,145px);
+
+    line-height: .82;
+}
+
+.final-container h1 span {
+    background:
+        linear-gradient(
+            90deg,
+            #ff5b9f,
+            #a77aff,
+            #ff9bc8
+        );
+
+    -webkit-background-clip: text;
+
+    color: transparent;
+}
+
+.final-name {
+    margin-top: 30px;
+
+    font-family: "Playfair Display", serif;
+
+    font-style: italic;
+
+    font-size: clamp(35px,6vw,65px);
+}
+
+.final-message {
+    max-width: 600px;
+
+    margin: 35px auto;
+
+    color: #999;
+
+    line-height: 1.9;
+}
+
+.replay {
+    padding: 12px 22px;
+
+    background: transparent;
+
+    color: white;
+
+    border: 1px solid var(--border);
+
+    cursor: pointer;
+}
+
+/* ==================================================
+   CONFETTI
+================================================== */
+
+.confetti {
+    position: fixed;
+
+    top: -20px;
+
+    width: 7px;
+    height: 13px;
+
+    z-index: 500;
+
+    animation: fall linear forwards;
+}
+
+@keyframes fall {
+    to {
+        transform:
+            translateY(110vh)
+            rotate(800deg);
+
+        opacity: 0;
+    }
+}
+
+/* ==================================================
+   MOBILE
+================================================== */
+
+@media(max-width:700px) {
+
+    .screen {
+        padding: 20px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .info {
+        border-right: none !important;
+        border-bottom: 1px solid var(--border) !important;
+    }
+
+    .info:last-child {
+        border-bottom: none !important;
+    }
+
+    .memory-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(3,220px);
+    }
+
+    .memory:first-child {
+        grid-row: auto;
+    }
+
+    .choices {
+        grid-template-columns: 1fr;
+    }
+
+    .choice {
+        min-height: 160px;
+    }
+
+    .choice h3 {
+        margin-top: 25px;
+    }
+
+    .file-content h1 {
+        margin-bottom: 30px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- BACKGROUND -->
+
+<div id="background">
+    <div class="bg-glow one"></div>
+    <div class="bg-glow two"></div>
+    <div id="stars"></div>
+</div>
+
+
+<!-- ==================================================
+     SCREEN 1 — BOOT
+================================================== -->
+
+<section
+    id="bootScreen"
+    class="screen active">
+
+    <div class="boot-window">
+
+        <div class="window-top">
+
+            <span class="window-dot red"></span>
+            <span class="window-dot yellow"></span>
+            <span class="window-dot green"></span>
+
+            <span class="window-title">
+                PRIVATE_FILE.EXE
+            </span>
+
+        </div>
+
+        <div
+            id="terminal"
+            class="terminal">
+        </div>
+
+        <button
+            id="accessButton"
+            class="access-button"
+            onclick="goTo('fileScreen')">
+
+            [ ACCESS FILE ]
+
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     SCREEN 2 — FILE
+================================================== -->
+
+<section
+    id="fileScreen"
+    class="screen">
+
+    <div class="file-card">
+
+        <div class="file-header">
+
+            <span class="window-dot red"></span>
+            <span class="window-dot yellow"></span>
+            <span class="window-dot green"></span>
+
+            <span class="file-name">
+                birthday_project.private
+            </span>
+
+        </div>
+
+
+        <div class="file-content">
+
+            <div class="label">
+                CLASSIFIED // PERSONAL
+            </div>
+
+            <h1>
+                The Birthday<br>
+                <span>File.</span>
+            </h1>
+
+
+            <div class="info-grid">
+
+                <div class="info">
+                    <small>SUBJECT</small>
+                    <strong>██████████</strong>
+                </div>
+
+                <div class="info">
+                    <small>STATUS</small>
+                    <strong style="color:var(--green)">
+                        VERY SPECIAL
+                    </strong>
+                </div>
+
+                <div class="info">
+                    <small>MEMORIES</small>
+                    <strong>∞</strong>
+                </div>
+
+                <div class="info">
+                    <small>REASONS TO SMILE</small>
+                    <strong>TOO MANY</strong>
+                </div>
+
+            </div>
+
+
+            <button
+                class="launch-button"
+                onclick="startScan()">
+
+                START INVESTIGATION →
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     SCREEN 3 — SCAN
+================================================== -->
+
+<section
+    id="scanScreen"
+    class="screen">
+
+    <div class="scan-container">
+
+        <div class="scan-top">
+
+            <span>SYSTEM ANALYSIS</span>
+
+            <span id="scanPercent">
+                0%
+            </span>
+
+        </div>
+
+        <div class="scan-bar">
+            <div
+                id="scanProgress"
+                class="scan-progress">
+            </div>
+        </div>
+
+        <div
+            id="scanLog"
+            class="scan-log">
+        </div>
+
+        <button
+            id="scanContinue"
+            class="continue-button"
+            onclick="goTo('memoryScreen')">
+
+            CONTINUE →
+
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     SCREEN 4 — MEMORIES
+================================================== -->
+
+<section
+    id="memoryScreen"
+    class="screen">
+
+    <div class="memory-section">
+
+        <div class="memory-heading">
+
+            <div class="label">
+                FILE 02 // MEMORIES
+            </div>
+
+            <h2>
+                Some things are<br>
+                worth keeping.
+            </h2>
+
+            <p>
+                These are demo memories.
+                Replace them with your own photos later.
+            </p>
+
+        </div>
+
+
+        <div class="memory-grid">
+
+            <div
+                class="memory"
+                onclick="
+                    openMemory(
+                        'The Smile',
+                        'Some smiles are ordinary. Some somehow make an entire day better.'
+                    )
+                ">
+
+                <img
+                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1000&q=85"
+                    alt="Demo memory">
+
+                <div class="memory-text">
+                    <h3>The Smile</h3>
+                    <small>MEMORY_001</small>
+                </div>
+
+            </div>
+
+
+            <div
+                class="memory"
+                onclick="
+                    openMemory(
+                        'The Little Things',
+                        'The random little moments usually become the memories we remember the longest.'
+                    )
+                ">
+
+                <img
+                    src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=1000&q=85"
+                    alt="Demo memory">
+
+                <div class="memory-text">
+                    <h3>The Little Things</h3>
+                    <small>MEMORY_002</small>
+                </div>
+
+            </div>
+
+
+            <div
+                class="memory"
+                onclick="
+                    openMemory(
+                        'A Good Day',
+                        'Sometimes an ordinary day becomes special simply because of who is there.'
+                    )
+                ">
+
+                <img
+                    src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1000&q=85"
+                    alt="Demo memory">
+
+                <div class="memory-text">
+                    <h3>A Good Day</h3>
+                    <small>MEMORY_003</small>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div style="text-align:center;margin-top:25px">
+
+            <button
+                class="continue-button"
+                style="display:inline-block"
+                onclick="goTo('choiceScreen')">
+
+                CONTINUE →
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- MEMORY MODAL -->
+
+<div
+    id="memoryModal"
+    class="modal">
+
+    <div class="modal-card">
+
+        <div class="label">
+            MEMORY OPENED
+        </div>
+
+        <h3 id="modalTitle">
+            Memory
+        </h3>
+
+        <p id="modalText">
+        </p>
+
+        <button
+            class="modal-close"
+            onclick="closeMemory()">
+
+            CLOSE
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     SCREEN 5 — CHOICE
+================================================== -->
+
+<section
+    id="choiceScreen"
+    class="screen">
+
+    <div class="choice-container">
+
+        <div class="choice-heading">
+
+            <div class="label">
+                FILE 03 // CHOOSE
+            </div>
+
+            <h2>
+                Pick a memory.
+            </h2>
+
+            <p>
+                There is no wrong answer.
+            </p>
+
+        </div>
+
+
+        <div class="choices">
+
+            <div
+                class="choice"
+                onclick="startUniverse()">
+
+                <div class="choice-number">
+                    01
+                </div>
+
+                <h3>
+                    The Laugh
+                </h3>
+
+                <p>
+                    Some laughs are contagious.
+                </p>
+
+            </div>
+
+
+            <div
+                class="choice"
+                onclick="startUniverse()">
+
+                <div class="choice-number">
+                    02
+                </div>
+
+                <h3>
+                    The Moment
+                </h3>
+
+                <p>
+                    The one you didn't expect.
+                </p>
+
+            </div>
+
+
+            <div
+                class="choice"
+                onclick="startUniverse()">
+
+                <div class="choice-number">
+                    03
+                </div>
+
+                <h3>
+                    The Future
+                </h3>
+
+                <p>
+                    The memories we haven't made yet.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     SCREEN 6 — UNIVERSE
+================================================== -->
+
+<section
+    id="universeScreen"
+    class="screen">
+
+    <div class="universe-container">
+
+        <div
+            id="universeLine"
+            class="universe-line">
+
+            There are billions of people<br>
+            in this world.
+
+        </div>
+
+
+        <div
+            id="heartSpace"
+            class="heart-space">
+        </div>
+
+
+        <div
+            id="universeEnding"
+            class="universe-ending">
+
+            And somehow...
+
+            <br>
+
+            <span>
+                our paths crossed.
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     SCREEN 7 — LOCK
+================================================== -->
+
+<section
+    id="lockScreen"
+    class="screen">
+
+    <div class="lock-container">
+
+        <div class="lock">
+            🔒
+        </div>
+
+        <div class="label">
+            FINAL FILE
+        </div>
+
+        <h2>
+            One last<br>
+            message.
+        </h2>
+
+        <p>
+            This file is protected.<br>
+            But the password is easy.
+        </p>
+
+
+        <input
+            id="password"
+            class="password"
+            placeholder="enter password"
+            autocomplete="off"
+            onkeydown="
+                if(event.key === 'Enter'){
+                    unlock();
+                }
+            ">
+
+
+        <button
+            class="unlock"
+            onclick="unlock()">
+
+            UNLOCK
+
+        </button>
+
+
+        <div
+            id="error"
+            class="error">
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     SCREEN 8 — FINAL
+================================================== -->
+
+<section
+    id="finalScreen"
+    class="screen">
+
+    <div class="final-container">
+
+        <div class="final-date">
+            25 · 08 · 2026
+        </div>
+
+        <h1>
+            HAPPY<br>
+            <span>BIRTHDAY</span>
+        </h1>
+
+        <div class="final-name">
+            Beautiful.
+        </div>
+
+        <p class="final-message">
+
+            I could have simply said
+            “Happy Birthday”.
+
+            <br><br>
+
+            But somehow, two words didn't feel
+            like enough.
+
+            <br><br>
+
+            So here's to another year,
+            another chapter,
+            and all the memories that haven't
+            happened yet.
+
+            <br><br>
+
+            <strong style="color:white">
+                Never forget how special you are. ❤️
+            </strong>
+
+        </p>
+
+
+        <button
+            class="replay"
+            onclick="location.reload()">
+
+            ↻ EXPERIENCE AGAIN
+
+        </button>
+
+    </div>
+
+</section>
+
+
+<script>
+
+/* ==================================================
+   CREATE STARS
+================================================== */
+
+const stars =
+    document.getElementById("stars");
+
+for(let i = 0; i < 160; i++){
+
+    const star =
+        document.createElement("div");
+
+    star.className = "star";
+
+    star.style.left =
+        Math.random() * 100 + "%";
+
+    star.style.top =
+        Math.random() * 100 + "%";
+
+    star.style.animationDelay =
+        Math.random() * 3 + "s";
+
+    stars.appendChild(star);
+}
+
+
+/* ==================================================
+   SCREEN NAVIGATION
+================================================== */
+
+function goTo(id){
+
+    const screens =
+        document.querySelectorAll(".screen");
+
+    screens.forEach(screen => {
+
+        screen.classList.remove("active");
+
+    });
+
+    const target =
+        document.getElementById(id);
+
+    if(target){
+
+        target.classList.add("active");
+
+    }
+
+}
+
+
+/* ==================================================
+   BOOT TERMINAL
+================================================== */
+
+const bootMessages = [
+
+    "INITIALIZING PRIVATE FILE...",
+    "Checking date...",
+    "Checking memories...",
+    "Searching for something special...",
+    "████████████████████ 100%",
+    "",
+    "WARNING:",
+    "This file contains an unusual",
+    "amount of happiness.",
+    "",
+    "ACCESS REQUIRED."
+
+];
+
+let bootIndex = 0;
+
+function writeBootLine(){
+
+    const terminal =
+        document.getElementById("terminal");
+
+    if(bootIndex >= bootMessages.length){
+
+        terminal.innerHTML +=
+            '<span class="success">SYSTEM READY.</span><br><br><span class="cursor"></span>';
+
+        document
+            .getElementById("accessButton")
+            .style.display = "inline-block";
+
+        return;
+    }
+
+    const line =
+        bootMessages[bootIndex];
+
+    if(line.includes("WARNING")){
+
+        terminal.innerHTML +=
+            '<span class="bright">' +
+            line +
+            '</span><br>';
+
+    }else{
+
+        terminal.innerHTML +=
+            line +
+            "<br>";
+
+    }
+
+    bootIndex++;
+
+    setTimeout(
+        writeBootLine,
+        170
+    );
+
+}
+
+writeBootLine();
+
+
+/* ==================================================
+   SCAN
+================================================== */
+
+let scanRunning = false;
+
+function startScan(){
+
+    if(scanRunning) return;
+
+    scanRunning = true;
+
+    goTo("scanScreen");
+
+    const log =
+        document.getElementById("scanLog");
+
+    const progress =
+        document.getElementById("scanProgress");
+
+    const percent =
+        document.getElementById("scanPercent");
+
+    const button =
+        document.getElementById("scanContinue");
+
+    const messages = [
+
+        "Scanning memories...",
+        "Searching conversations...",
+        "Analyzing smiles...",
+        "Calculating happy moments...",
+        "Searching for reasons to celebrate...",
+        "Checking personality...",
+        "Result: dangerously adorable.",
+        "",
+        "Analysis complete.",
+        "",
+        "Conclusion:",
+        "Someone very special was born today."
+
+    ];
+
+    let index = 0;
+
+    function next(){
+
+        if(index >= messages.length){
+
+            progress.style.width = "100%";
+            percent.textContent = "100%";
+
+            button.style.display =
+                "inline-block";
+
+            return;
+        }
+
+        const line =
+            messages[index];
+
+        if(
+            line === "Analysis complete." ||
+            line === "Conclusion:"
+        ){
+
+            log.innerHTML +=
+                '<span class="important">' +
+                line +
+                '</span><br>';
+
+        }else{
+
+            log.innerHTML +=
+                line + "<br>";
+
+        }
+
+        const value =
+            Math.round(
+                ((index + 1) /
+                messages.length) * 100
+            );
+
+        progress.style.width =
+            value + "%";
+
+        percent.textContent =
+            value + "%";
+
+        index++;
+
+        setTimeout(
+            next,
+            300
+        );
+
+    }
+
+    next();
+
+}
+
+
+/* ==================================================
+   MEMORY MODAL
+================================================== */
+
+function openMemory(title,text){
+
+    document
+        .getElementById("modalTitle")
+        .textContent = title;
+
+    document
+        .getElementById("modalText")
+        .textContent = text;
+
+    document
+        .getElementById("memoryModal")
+        .classList.add("open");
+
+}
+
+function closeMemory(){
+
+    document
+        .getElementById("memoryModal")
+        .classList.remove("open");
+
+}
+
+
+/* ==================================================
+   UNIVERSE
+================================================== */
+
+let universeStarted = false;
+
+function startUniverse(){
+
+    if(universeStarted) return;
+
+    universeStarted = true;
+
+    goTo("universeScreen");
+
+    const line =
+        document.getElementById("universeLine");
+
+    setTimeout(() => {
+
+        line.classList.add("show");
+
+    },500);
+
+    setTimeout(() => {
+
+        createHeart();
+
+    },1800);
+
+}
+
+
+function createHeart(){
+
+    const container =
+        document.getElementById("heartSpace");
+
+    const width =
+        container.clientWidth;
+
+    const height =
+        container.clientHeight;
+
+    const centerX =
+        width / 2;
+
+    const centerY =
+        height / 2;
+
+    const scale =
+        Math.min(width,height) / 38;
+
+    const points = [];
+
+    for(
+        let t = 0;
+        t < Math.PI * 2;
+        t += .035
+    ){
+
+        const x =
+            16 *
+            Math.pow(Math.sin(t),3);
+
+        const y =
+            13 * Math.cos(t)
+            - 5 * Math.cos(2*t)
+            - 2 * Math.cos(3*t)
+            - Math.cos(4*t);
+
+        points.push({
+
+            x: centerX + x * scale,
+
+            y: centerY - y * scale
+
+        });
+
+    }
+
+
+    points.forEach((point,index) => {
+
+        const star =
+            document.createElement("div");
+
+        star.className =
+            "heart-star";
+
+        star.style.left =
+            point.x + "px";
+
+        star.style.top =
+            point.y + "px";
+
+        container.appendChild(star);
+
+        setTimeout(() => {
+
+            star.classList.add("show");
+
+        }, index * 10);
+
+    });
+
+
+    setTimeout(() => {
+
+        document
+            .getElementById("universeEnding")
+            .classList.add("show");
+
+    },2500);
+
+
+    setTimeout(() => {
+
+        goTo("lockScreen");
+
+    },5200);
+
+}
+
+
+/* ==================================================
+   PASSWORD
+================================================== */
+
+function unlock(){
+
+    const input =
+        document.getElementById("password");
+
+    const error =
+        document.getElementById("error");
+
+    const value =
+        input.value
+            .trim()
+            .toLowerCase();
+
+    /*
+       DEMO PASSWORDS
+
+       You can change these later.
+    */
+
+    const passwords = [
+        "birthday",
+        "happy birthday",
+        "25",
+        "2026"
+    ];
+
+    if(passwords.includes(value)){
+
+        error.textContent = "";
+
+        createConfetti();
+
+        setTimeout(() => {
+
+            goTo("finalScreen");
+
+        },700);
+
+    }else{
+
+        error.textContent =
+            "ACCESS DENIED — hint: what's special about today?";
+
+        input.value = "";
+
+        input.focus();
+
+    }
+
+}
+
+
+/* ==================================================
+   CONFETTI
+================================================== */
+
+function createConfetti(){
+
+    const pieces = 160;
+
+    for(let i = 0; i < pieces; i++){
+
+        const piece =
+            document.createElement("div");
+
+        piece.className =
+            "confetti";
+
+        piece.style.left =
+            Math.random() * 100 + "vw";
+
+        piece.style.background =
+            [
+                "#ff5b9f",
+                "#9874ff",
+                "#68f5b0",
+                "#ffffff",
+                "#ffd166"
+            ][
+                Math.floor(Math.random() * 5)
+            ];
+
+        piece.style.animationDuration =
+            (2 + Math.random() * 3) + "s";
+
+        piece.style.animationDelay =
+            Math.random() * .5 + "s";
+
+        document.body.appendChild(piece);
+
+        setTimeout(
+            () => piece.remove(),
+            6000
+        );
+
+    }
+
+}
+
+
+/* ==================================================
+   ESCAPE CLOSES MODAL
+================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(event.key === "Escape"){
+
+            closeMemory();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
