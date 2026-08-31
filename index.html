@@ -1,2122 +1,967 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="si">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#050508">
-
-<title>A Little Something For You</title>
-
-<style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap');
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-:root {
-    --bg: #050508;
-    --white: #f7f5f8;
-    --muted: #8d8992;
-    --pink: #ff5b9f;
-    --purple: #9874ff;
-    --green: #68f5b0;
-    --border: rgba(255,255,255,.12);
-}
-
-html,
-body {
-    width: 100%;
-    height: 100%;
-}
-
-body {
-    background: var(--bg);
-    color: var(--white);
-    font-family: Inter, sans-serif;
-    overflow: hidden;
-}
-
-/* ==================================================
-   BACKGROUND
-================================================== */
-
-#background {
-    position: fixed;
-    inset: 0;
-    overflow: hidden;
-    background:
-        radial-gradient(
-            circle at 50% 45%,
-            rgba(120,80,255,.09),
-            transparent 35%
-        ),
-        #050508;
-    z-index: -5;
-}
-
-.bg-glow {
-    position: absolute;
-    width: 500px;
-    height: 500px;
-    border-radius: 50%;
-    filter: blur(120px);
-    opacity: .12;
-}
-
-.bg-glow.one {
-    background: #ff3f91;
-    left: -200px;
-    top: -200px;
-}
-
-.bg-glow.two {
-    background: #7652ff;
-    right: -200px;
-    bottom: -200px;
-}
-
-#stars {
-    position: absolute;
-    inset: 0;
-}
-
-.star {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    border-radius: 50%;
-    background: white;
-    opacity: .4;
-    animation: twinkle 3s infinite ease-in-out;
-}
-
-@keyframes twinkle {
-    0%,100% {
-        opacity: .15;
-        transform: scale(.7);
-    }
-
-    50% {
-        opacity: .9;
-        transform: scale(1.4);
-    }
-}
-
-/* ==================================================
-   SCREEN SYSTEM
-================================================== */
-
-.screen {
-    position: fixed;
-    inset: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 30px;
-
-    opacity: 0;
-    visibility: hidden;
-
-    transition:
-        opacity .7s ease,
-        visibility .7s ease;
-
-    overflow-y: auto;
-}
-
-.screen.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* ==================================================
-   BOOT
-================================================== */
-
-.boot-window {
-    width: min(650px, 100%);
-}
-
-.window-top {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 30px;
-}
-
-.window-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-}
-
-.red {
-    background: #ff5b61;
-}
-
-.yellow {
-    background: #ffd45a;
-}
-
-.green {
-    background: #5df0a4;
-}
-
-.window-title {
-    margin-left: 12px;
-    color: #666;
-    font-family: "DM Mono", monospace;
-    font-size: 11px;
-    letter-spacing: 2px;
-}
-
-.terminal {
-    color: #aaa;
-    font-family: "DM Mono", monospace;
-    font-size: 14px;
-    line-height: 2;
-    min-height: 230px;
-}
-
-.terminal .bright {
-    color: white;
-}
-
-.terminal .success {
-    color: var(--green);
-}
-
-.cursor {
-    display: inline-block;
-    width: 8px;
-    height: 15px;
-    background: var(--green);
-    vertical-align: middle;
-    animation: blink .8s infinite;
-}
-
-@keyframes blink {
-    50% {
-        opacity: 0;
-    }
-}
-
-.access-button {
-    display: none;
-
-    padding: 14px 22px;
-
-    background: transparent;
-    color: var(--green);
-
-    border: 1px solid rgba(104,245,176,.4);
-
-    font-family: "DM Mono", monospace;
-    cursor: pointer;
-
-    transition: .25s;
-}
-
-.access-button:hover {
-    background: rgba(104,245,176,.08);
-    box-shadow: 0 0 30px rgba(104,245,176,.1);
-}
-
-/* ==================================================
-   FILE
-================================================== */
-
-.file-card {
-    width: min(900px, 100%);
-
-    background: rgba(10,10,13,.8);
-    border: 1px solid var(--border);
-
-    border-radius: 14px;
-
-    overflow: hidden;
-
-    box-shadow:
-        0 40px 100px rgba(0,0,0,.5);
-}
-
-.file-header {
-    height: 50px;
-
-    display: flex;
-    align-items: center;
-
-    padding: 0 18px;
-
-    border-bottom: 1px solid var(--border);
-}
-
-.file-name {
-    margin-left: 14px;
-
-    color: #777;
-
-    font-family: "DM Mono", monospace;
-
-    font-size: 11px;
-}
-
-.file-content {
-    padding: clamp(30px,7vw,70px);
-}
-
-.label {
-    color: var(--green);
-
-    font-family: "DM Mono", monospace;
-
-    font-size: 10px;
-
-    letter-spacing: 3px;
-
-    margin-bottom: 18px;
-}
-
-.file-content h1 {
-    font-family: "Playfair Display", serif;
-
-    font-size: clamp(50px,9vw,95px);
-
-    line-height: .9;
-
-    font-weight: 500;
-
-    margin-bottom: 45px;
-}
-
-.file-content h1 span {
-    color: var(--pink);
-}
-
-.info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-
-    border: 1px solid var(--border);
-
-    margin-bottom: 30px;
-}
-
-.info {
-    padding: 24px;
-
-    border-bottom: 1px solid var(--border);
-}
-
-.info:nth-child(odd) {
-    border-right: 1px solid var(--border);
-}
-
-.info:nth-last-child(-n+2) {
-    border-bottom: none;
-}
-
-.info small {
-    display: block;
-
-    color: #555;
-
-    font-family: "DM Mono", monospace;
-
-    font-size: 9px;
-
-    margin-bottom: 9px;
-}
-
-.info strong {
-    font-family: "DM Mono", monospace;
-
-    font-size: 14px;
-}
-
-.launch-button {
-    border: none;
-
-    padding: 14px 24px;
-
-    background: white;
-    color: black;
-
-    font-weight: 700;
-
-    cursor: pointer;
-
-    transition: .25s;
-}
-
-.launch-button:hover {
-    transform: translateY(-3px);
-}
-
-/* ==================================================
-   SCAN
-================================================== */
-
-.scan-container {
-    width: min(700px, 100%);
-}
-
-.scan-top {
-    display: flex;
-    justify-content: space-between;
-
-    margin-bottom: 15px;
-
-    color: #666;
-
-    font-family: "DM Mono", monospace;
-
-    font-size: 11px;
-}
-
-.scan-bar {
-    height: 2px;
-
-    background: rgba(255,255,255,.08);
-
-    overflow: hidden;
-}
-
-.scan-progress {
-    width: 0%;
-    height: 100%;
-
-    background: var(--green);
-
-    box-shadow: 0 0 15px var(--green);
-
-    transition: width .2s linear;
-}
-
-.scan-log {
-    margin-top: 30px;
-
-    min-height: 300px;
-
-    color: #aaa;
-
-    font-family: "DM Mono", monospace;
-
-    font-size: 13px;
-
-    line-height: 2;
-}
-
-.scan-log .important {
-    color: white;
-}
-
-.continue-button {
-    display: none;
-
-    padding: 13px 22px;
-
-    background: transparent;
-
-    color: white;
-
-    border: 1px solid var(--border);
-
-    cursor: pointer;
-}
-
-/* ==================================================
-   MEMORY
-================================================== */
-
-.memory-section {
-    width: min(1050px, 100%);
-}
-
-.memory-heading {
-    text-align: center;
-
-    margin-bottom: 45px;
-}
-
-.memory-heading h2 {
-    font-family: "Playfair Display", serif;
-
-    font-size: clamp(42px,7vw,72px);
-
-    font-weight: 500;
-
-    line-height: 1;
-}
-
-.memory-heading p {
-    max-width: 600px;
-
-    margin: 20px auto 0;
-
-    color: var(--muted);
-
-    line-height: 1.7;
-}
-
-.memory-grid {
-    display: grid;
-
-    grid-template-columns: 1.4fr 1fr;
-
-    grid-template-rows: 220px 220px;
-
-    gap: 14px;
-}
-
-.memory {
-    position: relative;
-
-    overflow: hidden;
-
-    border-radius: 12px;
-
-    border: 1px solid var(--border);
-
-    cursor: pointer;
-
-    background: #111;
-}
-
-.memory:first-child {
-    grid-row: 1 / 3;
-}
-
-.memory img {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-
-    transition: transform .7s;
-}
-
-.memory:hover img {
-    transform: scale(1.06);
-}
-
-.memory::after {
-    content: "";
-
-    position: absolute;
-    inset: 0;
-
-    background:
-        linear-gradient(
-            transparent 35%,
-            rgba(0,0,0,.85)
-        );
-}
-
-.memory-text {
-    position: absolute;
-
-    z-index: 2;
-
-    left: 22px;
-    right: 22px;
-    bottom: 20px;
-}
-
-.memory-text h3 {
-    font-family: "Playfair Display", serif;
-
-    font-size: 25px;
-}
-
-.memory-text small {
-    display: block;
-
-    color: #aaa;
-
-    margin-top: 5px;
-
-    font-family: "DM Mono", monospace;
-
-    font-size: 10px;
-}
-
-/* ==================================================
-   MODAL
-================================================== */
-
-.modal {
-    position: fixed;
-    inset: 0;
-
-    z-index: 100;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 20px;
-
-    background: rgba(0,0,0,.8);
-
-    backdrop-filter: blur(15px);
-
-    opacity: 0;
-    visibility: hidden;
-
-    transition: .3s;
-}
-
-.modal.open {
-    opacity: 1;
-    visibility: visible;
-}
-
-.modal-card {
-    width: min(550px,100%);
-
-    padding: 45px 35px;
-
-    background: #0d0b10;
-
-    border: 1px solid var(--border);
-
-    border-radius: 15px;
-
-    text-align: center;
-}
-
-.modal-card h3 {
-    font-family: "Playfair Display", serif;
-
-    font-size: 42px;
-
-    margin-bottom: 15px;
-}
-
-.modal-card p {
-    color: #999;
-
-    line-height: 1.8;
-}
-
-.modal-close {
-    margin-top: 25px;
-
-    padding: 11px 20px;
-
-    background: transparent;
-
-    color: white;
-
-    border: 1px solid var(--border);
-
-    cursor: pointer;
-}
-
-/* ==================================================
-   CHOICE
-================================================== */
-
-.choice-container {
-    width: min(900px,100%);
-}
-
-.choice-heading {
-    text-align: center;
-
-    margin-bottom: 45px;
-}
-
-.choice-heading h2 {
-    font-family: "Playfair Display", serif;
-
-    font-size: clamp(43px,7vw,72px);
-
-    font-weight: 500;
-}
-
-.choice-heading p {
-    color: var(--muted);
-
-    margin-top: 15px;
-}
-
-.choices {
-    display: grid;
-
-    grid-template-columns: repeat(3,1fr);
-
-    gap: 14px;
-}
-
-.choice {
-    min-height: 220px;
-
-    padding: 25px;
-
-    border: 1px solid var(--border);
-
-    background: rgba(255,255,255,.035);
-
-    cursor: pointer;
-
-    transition: .35s;
-}
-
-.choice:hover {
-    transform: translateY(-6px);
-
-    border-color: rgba(255,91,159,.5);
-
-    background: rgba(255,91,159,.05);
-}
-
-.choice-number {
-    color: #555;
-
-    font-family: "DM Mono", monospace;
-
-    font-size: 11px;
-}
-
-.choice h3 {
-    margin-top: 50px;
-
-    font-family: "Playfair Display", serif;
-
-    font-size: 27px;
-}
-
-.choice p {
-    color: #777;
-
-    font-size: 12px;
-
-    margin-top: 8px;
-}
-
-/* ==================================================
-   UNIVERSE
-================================================== */
-
-.universe-container {
-    width: min(850px,100%);
-
-    text-align: center;
-}
-
-.universe-line {
-    font-family: "Playfair Display", serif;
-
-    font-size: clamp(26px,5vw,48px);
-
-    line-height: 1.5;
-
-    opacity: 0;
-
-    transform: translateY(15px);
-
-    transition: 1.5s;
-}
-
-.universe-line.show {
-    opacity: 1;
-
-    transform: translateY(0);
-}
-
-.heart-space {
-    position: relative;
-
-    width: min(500px,100%);
-
-    height: 330px;
-
-    margin: 25px auto;
-}
-
-.heart-star {
-    position: absolute;
-
-    width: 3px;
-    height: 3px;
-
-    border-radius: 50%;
-
-    background: white;
-
-    box-shadow: 0 0 8px white;
-
-    opacity: 0;
-
-    transition: opacity .6s;
-}
-
-.heart-star.show {
-    opacity: 1;
-}
-
-.universe-ending {
-    opacity: 0;
-
-    transform: translateY(15px);
-
-    transition: 1.5s;
-
-    font-family: "Playfair Display", serif;
-
-    font-size: clamp(28px,6vw,58px);
-}
-
-.universe-ending.show {
-    opacity: 1;
-
-    transform: translateY(0);
-}
-
-.universe-ending span {
-    color: var(--pink);
-}
-
-/* ==================================================
-   LOCK
-================================================== */
-
-.lock-container {
-    width: min(600px,100%);
-
-    text-align: center;
-}
-
-.lock {
-    width: 85px;
-    height: 85px;
-
-    margin: 0 auto 30px;
-
-    border: 1px solid var(--border);
-
-    border-radius: 50%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 30px;
-}
-
-.lock-container h2 {
-    font-family: "Playfair Display", serif;
-
-    font-size: clamp(45px,7vw,75px);
-
-    font-weight: 500;
-}
-
-.lock-container p {
-    color: #777;
-
-    line-height: 1.7;
-
-    margin: 18px auto 28px;
-}
-
-.password {
-    display: block;
-
-    width: min(380px,100%);
-
-    margin: auto;
-
-    padding: 15px;
-
-    background: transparent;
-
-    color: white;
-
-    border: 1px solid var(--border);
-
-    outline: none;
-
-    text-align: center;
-
-    font-family: "DM Mono", monospace;
-}
-
-.unlock {
-    margin-top: 10px;
-
-    padding: 13px 25px;
-
-    background: white;
-
-    color: black;
-
-    border: none;
-
-    font-weight: 700;
-
-    cursor: pointer;
-}
-
-.error {
-    min-height: 20px;
-
-    margin-top: 12px;
-
-    color: #ff6688;
-
-    font-family: "DM Mono", monospace;
-
-    font-size: 10px;
-}
-
-/* ==================================================
-   FINAL
-================================================== */
-
-.final-container {
-    width: min(950px,100%);
-
-    text-align: center;
-}
-
-.final-date {
-    color: #666;
-
-    font-family: "DM Mono", monospace;
-
-    font-size: 11px;
-
-    letter-spacing: 5px;
-
-    margin-bottom: 30px;
-}
-
-.final-container h1 {
-    font-family: "Playfair Display", serif;
-
-    font-weight: 500;
-
-    font-size: clamp(65px,12vw,145px);
-
-    line-height: .82;
-}
-
-.final-container h1 span {
-    background:
-        linear-gradient(
-            90deg,
-            #ff5b9f,
-            #a77aff,
-            #ff9bc8
-        );
-
-    -webkit-background-clip: text;
-
-    color: transparent;
-}
-
-.final-name {
-    margin-top: 30px;
-
-    font-family: "Playfair Display", serif;
-
-    font-style: italic;
-
-    font-size: clamp(35px,6vw,65px);
-}
-
-.final-message {
-    max-width: 600px;
-
-    margin: 35px auto;
-
-    color: #999;
-
-    line-height: 1.9;
-}
-
-.replay {
-    padding: 12px 22px;
-
-    background: transparent;
-
-    color: white;
-
-    border: 1px solid var(--border);
-
-    cursor: pointer;
-}
-
-/* ==================================================
-   CONFETTI
-================================================== */
-
-.confetti {
-    position: fixed;
-
-    top: -20px;
-
-    width: 7px;
-    height: 13px;
-
-    z-index: 500;
-
-    animation: fall linear forwards;
-}
-
-@keyframes fall {
-    to {
-        transform:
-            translateY(110vh)
-            rotate(800deg);
-
-        opacity: 0;
-    }
-}
-
-/* ==================================================
-   MOBILE
-================================================== */
-
-@media(max-width:700px) {
-
-    .screen {
-        padding: 20px;
-    }
-
-    .info-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .info {
-        border-right: none !important;
-        border-bottom: 1px solid var(--border) !important;
-    }
-
-    .info:last-child {
-        border-bottom: none !important;
-    }
-
-    .memory-grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: repeat(3,220px);
-    }
-
-    .memory:first-child {
-        grid-row: auto;
-    }
-
-    .choices {
-        grid-template-columns: 1fr;
-    }
-
-    .choice {
-        min-height: 160px;
-    }
-
-    .choice h3 {
-        margin-top: 25px;
-    }
-
-    .file-content h1 {
-        margin-bottom: 30px;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ගෙත්තම්පාණ | Musical Evening</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body{
+            font-family:'Noto Sans Sinhala',sans-serif;
+        }
+
+        .hero-bg{
+            background:
+            linear-gradient(rgba(0,0,0,.65),rgba(0,0,0,.7)),
+            url('https://images.unsplash.com/photo-1501386761578-eac5c94b800');
+            background-size:cover;
+            background-position:center;
+        }
+
+        .glass{
+            backdrop-filter:blur(10px);
+            background:rgba(255,255,255,.05);
+            border:1px solid rgba(255,255,255,.1);
+        }
+
+        /* ── Gallery transitions ── */
+        .gallery-img {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .gallery-img.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .gallery-img:hover {
+            transform: scale(1.03);
+            transition: transform 0.35s ease;
+        }
+
+        /* ── Reels section ── */
+        .reel-card {
+            position: relative;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            aspect-ratio: 9/16;
+            background: #111;
+            cursor: pointer;
+            flex: 0 0 220px;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+        }
+        .reel-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+        .reel-card video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .reel-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%);
+            display: flex;
+            align-items: flex-end;
+            padding: 1rem;
+            pointer-events: none;
+        }
+        .reel-play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: rgba(251,191,36,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .reel-card:hover .reel-play-btn,
+        .reel-card.playing .reel-play-btn {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+        .reel-play-btn svg {
+            width: 22px;
+            height: 22px;
+            fill: #000;
+            margin-left: 3px;
+        }
+
+        /* scrollable reel track */
+        .reel-track {
+            display: flex;
+            gap: 1.25rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .reel-track::-webkit-scrollbar { height: 4px; }
+        .reel-track::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+        .reel-track::-webkit-scrollbar-thumb { background: rgba(251,191,36,0.5); border-radius: 4px; }
+        .reel-card { scroll-snap-align: start; }
+
+        /* scroll arrow buttons */
+        .reel-arrow {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(251,191,36,0.15);
+            border: 1px solid rgba(251,191,36,0.3);
+            color: #fbbf24;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .reel-arrow:hover { background: rgba(251,191,36,0.3); }
+        .reel-arrow svg { width: 20px; height: 20px; }
+
+        /* reel slide-in animation */
+        .reel-card {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.35s ease;
+        }
+        .reel-card.reel-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reel-card:hover {
+            transform: translateY(-6px) scale(1.02) !important;
+        }
+
+        /* ════════════════════════════════════════
+           ORGANIZING COMMITTEE SECTION  (NEW)
+        ════════════════════════════════════════ */
+
+        /* ── Leadership tiles : Principal & Teacher-in-Charge ── */
+        .lead-tile {
+            position: relative;
+            border-radius: 1.75rem;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity .7s ease, transform .7s ease, box-shadow .35s ease;
+        }
+        .lead-tile.visible { opacity: 1; transform: translateX(0) !important; }
+
+        .lead-tile--principal {
+            transform: translateX(-60px);
+            background: linear-gradient(160deg, rgba(251,191,36,0.14), rgba(255,255,255,0.03) 60%);
+            border: 1px solid rgba(251,191,36,0.3);
+        }
+        .lead-tile--principal:hover { box-shadow: 0 25px 60px rgba(251,191,36,0.18); }
+
+        .lead-tile--mic {
+            transform: translateX(60px);
+            background: linear-gradient(200deg, rgba(56,189,248,0.12), rgba(255,255,255,0.03) 60%);
+            border: 1px solid rgba(56,189,248,0.3);
+        }
+        .lead-tile--mic:hover { box-shadow: 0 25px 60px rgba(56,189,248,0.16); }
+
+        .lead-tile-img { aspect-ratio: 3/4; overflow: hidden; }
+        .lead-tile-img img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform .6s ease, filter .6s ease;
+        }
+        .lead-tile--principal .lead-tile-img img { filter: saturate(1.08) contrast(1.03); }
+        .lead-tile--mic .lead-tile-img img { filter: saturate(1.12) hue-rotate(-3deg); }
+        .lead-tile:hover .lead-tile-img img { transform: scale(1.07); }
+
+        .lead-tile-badge {
+            position: absolute; top: 1.1rem; left: 1.1rem;
+            padding: .4rem 1rem;
+            border-radius: 999px;
+            font-size: .7rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            font-weight: 700;
+            backdrop-filter: blur(6px);
+            z-index: 2;
+        }
+        .lead-tile--principal .lead-tile-badge { background: rgba(251,191,36,.9); color: #000; }
+        .lead-tile--mic .lead-tile-badge { background: rgba(56,189,248,.9); color: #000; }
+
+        .lead-tile-info { padding: 1.6rem; }
+        .lead-tile-info h3 { font-size: 1.4rem; font-weight: 700; }
+        .lead-tile--principal .lead-tile-info h3 { color: #fbbf24; }
+        .lead-tile--mic .lead-tile-info h3 { color: #38bdf8; }
+        .lead-tile-info p { color: #a1a1aa; margin-top: .25rem; font-size: .9rem; }
+
+        /* ── Core team tiles : Chairman, Secretary, Chief Organizer ── */
+
+        .core-trio {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            align-items: stretch;
+            position: relative;
+        }
+
+        .core-tile {
+            position: relative;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 1;
+            /* smooth motion for every property we animate via JS */
+            transition:
+                opacity .6s ease,
+                transform .7s cubic-bezier(.34,1.3,.64,1),
+                filter .6s ease,
+                box-shadow .6s ease;
+            will-change: transform, filter;
+        }
+
+        /* Scroll-reveal resting state */
+        .core-tile.visible {
+            opacity: 1;
+        }
+
+        /* Per-tile colour identities */
+        .core-tile--chairman {
+            background: linear-gradient(180deg, rgba(168,85,247,.14), rgba(255,255,255,0.02) 65%);
+            border: 1px solid rgba(168,85,247,.32);
+        }
+        .core-tile--secretary {
+            background: linear-gradient(180deg, rgba(244,63,94,.14), rgba(255,255,255,0.02) 65%);
+            border: 1px solid rgba(244,63,94,.32);
+        }
+        .core-tile--chieforg {
+            background: linear-gradient(180deg, rgba(16,185,129,.14), rgba(255,255,255,0.02) 65%);
+            border: 1px solid rgba(16,185,129,.32);
+        }
+
+        /* Hovered card — JS adds .core-active */
+        .core-tile.core-active {
+            z-index: 10;
+        }
+        .core-tile--chairman.core-active {
+            box-shadow: 0 40px 100px rgba(168,85,247,.55), 0 0 0 1.5px rgba(168,85,247,.7);
+        }
+        .core-tile--secretary.core-active {
+            box-shadow: 0 40px 100px rgba(244,63,94,.5), 0 0 0 1.5px rgba(244,63,94,.7);
+        }
+        .core-tile--chieforg.core-active {
+            box-shadow: 0 40px 100px rgba(16,185,129,.5), 0 0 0 1.5px rgba(16,185,129,.7);
+        }
+
+        /* Dimmed siblings — JS adds .core-dim */
+        .core-tile.core-dim {
+            z-index: 0;
+        }
+
+        /* Image zoom on active */
+        .core-tile-img { aspect-ratio: 3/4; overflow: hidden; }
+        .core-tile-img img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform .7s cubic-bezier(.34,1.3,.64,1);
+        }
+        .core-tile.core-active .core-tile-img img { transform: scale(1.09) rotate(.3deg); }
+
+        .core-tile-ribbon {
+            position: absolute; top: 0; right: 0;
+            padding: .45rem 1.1rem .45rem 1.5rem;
+            font-size: .65rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 700;
+            border-bottom-left-radius: 1rem;
+            z-index: 2;
+        }
+        .core-tile--chairman .core-tile-ribbon { background: #a855f7; color: #fff; }
+        .core-tile--secretary .core-tile-ribbon { background: #f43f5e; color: #fff; }
+        .core-tile--chieforg .core-tile-ribbon { background: #10b981; color: #fff; }
+
+        /* Hide position ribbon when the tile slides to centre on hover */
+        .core-tile-ribbon {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .core-tile.core-active .core-tile-ribbon {
+            opacity: 0;
+            transform: translateY(-8px);
+            pointer-events: none;
+        }
+
+        /* Hide name/role info block when tile is hovered to centre */
+        .core-tile-info {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .core-tile.core-active .core-tile-info {
+            opacity: 0;
+            transform: translateY(8px);
+            pointer-events: none;
+        }
+
+        /* Expand image to fill entire tile when hovered */
+        .core-tile-img {
+            position: relative;
+            z-index: 0;
+            transition: all 0.5s cubic-bezier(.34,1.3,.64,1);
+        }
+        .core-tile.core-active .core-tile-img {
+            position: absolute;
+            inset: 0;
+            aspect-ratio: unset;
+            height: 100% !important;
+            width: 100%;
+        }
+        .core-tile.core-active .core-tile-img img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .core-tile-info { padding: 1.3rem; text-align: center; }
+        .core-tile-info h4 { font-weight: 700; font-size: 1.1rem; }
+        .core-tile--chairman .core-tile-info h4 { color: #c084fc; }
+        .core-tile--secretary .core-tile-info h4 { color: #fb7185; }
+        .core-tile--chieforg .core-tile-info h4 { color: #34d399; }
+        .core-tile-info p { color: #a1a1aa; font-size: .85rem; margin-top: .2rem; }
+
+        /* ── Committee members : continuous left-sliding marquee ── */
+        .member-track-wrap {
+            position: relative;
+            overflow: hidden;
+            -webkit-mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+        }
+        .member-track {
+            display: flex;
+            gap: 1.5rem;
+            width: max-content;
+            animation: member-scroll 32s linear infinite;
+        }
+        .member-track-wrap:hover .member-track { animation-play-state: paused; }
+        @keyframes member-scroll {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+        }
+        .member-card { flex: 0 0 130px; text-align: center; }
+        .member-card img {
+            width: 130px; height: 130px;
+            object-fit: cover;
+            border-radius: 1.1rem; /* rounded square, not circle */
+            border: 2px solid rgba(251,191,36,0.22);
+            transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+        }
+        .member-card:hover img {
+            transform: translateY(-6px) scale(1.06);
+            border-color: rgba(251,191,36,0.85);
+            box-shadow: 0 14px 32px rgba(251,191,36,0.25);
+        }
+        .member-card p {
+            margin-top: .6rem;
+            font-size: .78rem;
+            color: #d4d4d8;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        /* ── Artists section : hover-to-highlight, blur the rest ── */
+        .artist-grid { position: relative; }
+        .artist-img {
+            transition: transform .45s ease, filter .45s ease, box-shadow .45s ease, opacity .45s ease;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+        .artist-grid:hover .artist-img {
+            filter: blur(5px) brightness(.55);
+        }
+        .artist-grid .artist-img:hover {
+            filter: blur(0) brightness(1) saturate(1.05);
+            transform: scale(1.08);
+            box-shadow: 0 25px 60px rgba(251,191,36,0.35);
+            z-index: 5;
+        }
+    </style>
 </head>
 
-<body>
+<body class="bg-black text-white">
 
-<!-- BACKGROUND -->
-
-<div id="background">
-    <div class="bg-glow one"></div>
-    <div class="bg-glow two"></div>
-    <div id="stars"></div>
-</div>
-
-
-<!-- ==================================================
-     SCREEN 1 — BOOT
-================================================== -->
-
-<section
-    id="bootScreen"
-    class="screen active">
-
-    <div class="boot-window">
-
-        <div class="window-top">
-
-            <span class="window-dot red"></span>
-            <span class="window-dot yellow"></span>
-            <span class="window-dot green"></span>
-
-            <span class="window-title">
-                PRIVATE_FILE.EXE
-            </span>
-
+<!-- NAVBAR -->
+<nav class="fixed w-full z-50 bg-black/50 backdrop-blur-md border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-amber-400">ගෙත්තම්පාණ </h1>
+        <div class="hidden md:flex gap-8 text-sm">
+            <a href="#" class="hover:text-amber-400">Home</a>
+            <a href="#about" class="hover:text-amber-400">About</a>
+            <a href="#artists" class="hover:text-amber-400">Artists</a>
+            <a href="#venue" class="hover:text-amber-400">Venue</a>
+            <a href="#contact" class="hover:text-amber-400">Contact</a>
         </div>
-
-        <div
-            id="terminal"
-            class="terminal">
-        </div>
-
-        <button
-            id="accessButton"
-            class="access-button"
-            onclick="goTo('fileScreen')">
-
-            [ ACCESS FILE ]
-
-        </button>
-
     </div>
+</nav>
 
+<!-- HERO -->
+<section class="hero-bg min-h-screen flex items-center">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="max-w-3xl">
+            <p class="uppercase tracking-[5px] text-amber-400 mb-4">Musical Evening</p>
+            
+			<img src="images/geththampana..jpeg" class="rounded-3xl shadow-2xl">
+			
+			
+            <p class="text-xl text-gray-300 mb-8">An unforgettable evening of music, culture, rhythm and memories under one stage.</p>
+            <div class="flex flex-wrap gap-4">
+                <a href="reserve.html" class="bg-amber-500 hover:bg-amber-600 px-8 py-4 rounded-full font-semibold transition">Reserve Your Seat</a>
+                <a href="audience-choice.html" class="bg-amber-500 hover:bg-amber-600 px-8 py-4 rounded-full font-semibold transition">Audience Choice</a>
+                <a href="#about" class="border border-white px-8 py-4 rounded-full hover:bg-white hover:text-black transition">Learn More</a>
+            </div>
+            <div class="mt-12 flex flex-wrap gap-8">
+                <div>
+                    <p class="text-gray-400">Venue</p>
+                    <h3 class="font-bold">D.S. Senanayake College, Colombo 07</h3>
+                </div>
+                <div>
+                    <p class="text-gray-400">Event</p>
+                    <h3 class="font-bold">Live Musical Evening</h3>
+                </div>
+                <div>
+                    <p class="text-gray-400">Date</p>
+                    <h3 class="font-bold">25th September</h3>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
+<!-- OFFICIAL TRAILER -->
+<section class="py-24 bg-black">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-amber-400 mb-4">Official Trailer</h2>
+            <p class="text-gray-400">Watch the official trailer of ගෙත්තම්පාණ 2026</p>
+        </div>
+        <div class="rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+            <video class="w-full" autoplay muted loop playsinline controls>
+                <source src="images/tst.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+</section>
 
-<!-- ==================================================
-     SCREEN 2 — FILE
-================================================== -->
+<!-- ABOUT -->
+<section id="about" class="py-24 bg-zinc-950">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <img src="images/unknown.jpeg" class="rounded-3xl shadow-2xl">
+            <div>
+                <h2 class="text-4xl font-bold mb-6 text-amber-400">About ගෙත්තම්පාණ</h2>
+                <p class="text-gray-300 leading-relaxed mb-6">
+                    ගෙත්තම්පාණ is a musical programme organized by D.S. Senanayake College, first introduced in 2025 to promote musical appreciation and provide students with a platform to showcase their talents. Following the success of its inaugural edition, the programme will be held for the second time in 2026 with the theme of Sri Lankan Folk Music.
+                </p>
+                <p class="text-gray-300 leading-relaxed mb-6">
+                    This year's event aims to celebrate the richness and diversity of Sri Lanka's folk music traditions through performances and presentations that highlight their cultural and historical significance. By bringing traditional music to a modern audience, Geththampana 2026 seeks to foster cultural awareness, encourage artistic expression, and inspire a greater appreciation for the nation's musical heritage among students and the wider community.
+                </p>
+                <p class="text-gray-400 leading-relaxed">
+                    Experience live music performances, vibrant stage productions and a night filled with rhythm and emotion.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
 
-<section
-    id="fileScreen"
-    class="screen">
+<!-- HIGHLIGHTS -->
+<section class="py-24 bg-black">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold">Event Highlights</h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="glass p-8 rounded-3xl">
+                <h3 class="text-xl font-bold text-amber-400 mb-3">Live Performances</h3>
+                <p class="text-gray-300">Enjoy powerful performances from talented musicians.</p>
+            </div>
+            <div class="glass p-8 rounded-3xl">
+                <h3 class="text-xl font-bold text-amber-400 mb-3">Special Guests</h3>
+                <p class="text-gray-300">Exciting appearances and unforgettable moments.</p>
+            </div>
+            <div class="glass p-8 rounded-3xl">
+                <h3 class="text-xl font-bold text-amber-400 mb-3">Cultural Experience</h3>
+                <p class="text-gray-300">Music, community and artistic expression together.</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <div class="file-card">
+<!-- ARTISTS -->
+<section id="artists" class="py-24 bg-zinc-950">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4">Featured Artists</h2>
+            <p class="text-gray-400">Artist lineup will be announced soon.</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8 artist-grid">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" class="rounded-3xl h-96 object-cover w-full artist-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" class="rounded-3xl h-96 object-cover w-full artist-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" class="rounded-3xl h-96 object-cover w-full artist-img">
+        </div>
+    </div>
+</section>
 
-        <div class="file-header">
+<!-- GALLERY (with scroll-triggered fade+scale transitions) -->
+<section class="py-24 bg-black">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold">Gallery</h2>
+        </div>
+        <div class="grid md:grid-cols-4 gap-4">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry1.jpeg" class="rounded-2xl gallery-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry5.jpeg" class="rounded-2xl gallery-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry3.jpeg" class="rounded-2xl gallery-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry4.jpeg" class="rounded-2xl gallery-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry4.jpeg" class="rounded-2xl gallery-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry3.jpeg" class="rounded-2xl gallery-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry5.jpeg" class="rounded-2xl gallery-img">
+            <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/gallerry1.jpeg" class="rounded-2xl gallery-img">
+        </div>
+    </div>
+</section>
 
-            <span class="window-dot red"></span>
-            <span class="window-dot yellow"></span>
-            <span class="window-dot green"></span>
+<!-- ════════════════════════════════════════
+     REELS SECTION  (NEW)
+════════════════════════════════════════ -->
+<section id="reels" class="py-24 bg-zinc-950">
+    <div class="max-w-7xl mx-auto px-6">
 
-            <span class="file-name">
-                birthday_project.private
-            </span>
-
+        <div class="text-center mb-12">
+            <p class="uppercase tracking-[5px] text-amber-400 mb-3 text-sm">Behind the Scenes</p>
+            <h2 class="text-4xl font-bold">Reels</h2>
+            <p class="text-gray-400 mt-3">Moments that matter — scroll to explore</p>
         </div>
 
+        <!-- scroll controls + track -->
+        <div class="flex items-center gap-4">
 
-        <div class="file-content">
-
-            <div class="label">
-                CLASSIFIED // PERSONAL
-            </div>
-
-            <h1>
-                The Birthday<br>
-                <span>File.</span>
-            </h1>
-
-
-            <div class="info-grid">
-
-                <div class="info">
-                    <small>SUBJECT</small>
-                    <strong>██████████</strong>
-                </div>
-
-                <div class="info">
-                    <small>STATUS</small>
-                    <strong style="color:var(--green)">
-                        VERY SPECIAL
-                    </strong>
-                </div>
-
-                <div class="info">
-                    <small>MEMORIES</small>
-                    <strong>∞</strong>
-                </div>
-
-                <div class="info">
-                    <small>REASONS TO SMILE</small>
-                    <strong>TOO MANY</strong>
-                </div>
-
-            </div>
-
-
-            <button
-                class="launch-button"
-                onclick="startScan()">
-
-                START INVESTIGATION →
-
+            <button class="reel-arrow" id="reel-prev" aria-label="Scroll left">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
             </button>
 
-        </div>
+            <div class="reel-track flex-1" id="reel-track">
 
-    </div>
-
-</section>
-
-
-<!-- ==================================================
-     SCREEN 3 — SCAN
-================================================== -->
-
-<section
-    id="scanScreen"
-    class="screen">
-
-    <div class="scan-container">
-
-        <div class="scan-top">
-
-            <span>SYSTEM ANALYSIS</span>
-
-            <span id="scanPercent">
-                0%
-            </span>
-
-        </div>
-
-        <div class="scan-bar">
-            <div
-                id="scanProgress"
-                class="scan-progress">
-            </div>
-        </div>
-
-        <div
-            id="scanLog"
-            class="scan-log">
-        </div>
-
-        <button
-            id="scanContinue"
-            class="continue-button"
-            onclick="goTo('memoryScreen')">
-
-            CONTINUE →
-
-        </button>
-
-    </div>
-
-</section>
-
-
-<!-- ==================================================
-     SCREEN 4 — MEMORIES
-================================================== -->
-
-<section
-    id="memoryScreen"
-    class="screen">
-
-    <div class="memory-section">
-
-        <div class="memory-heading">
-
-            <div class="label">
-                FILE 02 // MEMORIES
-            </div>
-
-            <h2>
-                Some things are<br>
-                worth keeping.
-            </h2>
-
-            <p>
-                These are demo memories.
-                Replace them with your own photos later.
-            </p>
-
-        </div>
-
-
-        <div class="memory-grid">
-
-            <div
-                class="memory"
-                onclick="
-                    openMemory(
-                        'The Smile',
-                        'Some smiles are ordinary. Some somehow make an entire day better.'
-                    )
-                ">
-
-                <img
-                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1000&q=85"
-                    alt="Demo memory">
-
-                <div class="memory-text">
-                    <h3>The Smile</h3>
-                    <small>MEMORY_001</small>
+                <!-- Reel 1 – video file -->
+                <div class="reel-card" data-reel="1">
+                    <video src="images/tst.mp4" loop playsinline muted preload="metadata"></video>
+                    <div class="reel-overlay">
+                        <p class="text-sm font-semibold text-white">ගෙත්තම්පාන 2026</p>
+                    </div>
+                    <div class="reel-play-btn">
+                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </div>
                 </div>
 
-            </div>
-
-
-            <div
-                class="memory"
-                onclick="
-                    openMemory(
-                        'The Little Things',
-                        'The random little moments usually become the memories we remember the longest.'
-                    )
-                ">
-
-                <img
-                    src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=1000&q=85"
-                    alt="Demo memory">
-
-                <div class="memory-text">
-                    <h3>The Little Things</h3>
-                    <small>MEMORY_002</small>
+                <!-- Reel 2 -->
+                <div class="reel-card" data-reel="2">
+                    <video src="images/tst.mp4" loop playsinline muted preload="metadata"></video>
+                    <div class="reel-overlay">
+                        <p class="text-sm font-semibold text-white">Rehearsal Highlights</p>
+                    </div>
+                    <div class="reel-play-btn">
+                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </div>
                 </div>
 
-            </div>
-
-
-            <div
-                class="memory"
-                onclick="
-                    openMemory(
-                        'A Good Day',
-                        'Sometimes an ordinary day becomes special simply because of who is there.'
-                    )
-                ">
-
-                <img
-                    src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1000&q=85"
-                    alt="Demo memory">
-
-                <div class="memory-text">
-                    <h3>A Good Day</h3>
-                    <small>MEMORY_003</small>
+                <!-- Reel 3 -->
+                <div class="reel-card" data-reel="3">
+                    <video src="images/tet.mp4" loop playsinline muted preload="metadata"></video>
+                    <div class="reel-overlay">
+                        <p class="text-sm font-semibold text-white">Stage Setup</p>
+                    </div>
+                    <div class="reel-play-btn">
+                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </div>
                 </div>
 
-            </div>
+                <!-- Reel 4 -->
+                <div class="reel-card" data-reel="4">
+                    <video src="images/tst.mp4" loop playsinline muted preload="metadata"></video>
+                    <div class="reel-overlay">
+                        <p class="text-sm font-semibold text-white">Artists at Work</p>
+                    </div>
+                    <div class="reel-play-btn">
+                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </div>
+                </div>
 
-        </div>
+                <!-- Reel 5 -->
+                <div class="reel-card" data-reel="5">
+                    <video src="images/tet.mp4" loop playsinline muted preload="metadata"></video>
+                    <div class="reel-overlay">
+                        <p class="text-sm font-semibold text-white">Folk Traditions</p>
+                    </div>
+                    <div class="reel-play-btn">
+                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </div>
+                </div>
 
+            </div><!-- /reel-track -->
 
-        <div style="text-align:center;margin-top:25px">
-
-            <button
-                class="continue-button"
-                style="display:inline-block"
-                onclick="goTo('choiceScreen')">
-
-                CONTINUE →
-
+            <button class="reel-arrow" id="reel-next" aria-label="Scroll right">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
             </button>
 
-        </div>
+        </div><!-- /flex row -->
+
+        <p class="text-center text-gray-600 text-xs mt-6">Swipe or use arrows to browse · Tap a reel to play / pause</p>
 
     </div>
+</section>
+<!-- ════════════════════════════════════════ -->
 
+<!-- VENUE -->
+<section id="venue" class="py-24 bg-zinc-950">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+        <h2 class="text-4xl font-bold mb-6 text-amber-400">Venue</h2>
+        <p class="text-xl text-gray-300 mb-8">D.S. Senanayake College, Colombo 07</p>
+        <div class="rounded-3xl overflow-hidden">
+            <iframe src="https://maps.google.com/maps?q=D.S.%20Senanayake%20College%20Colombo&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="450" style="border:0;"></iframe>
+        </div>
+    </div>
 </section>
 
 
-<!-- MEMORY MODAL -->
 
-<div
-    id="memoryModal"
-    class="modal">
+<!-- ════════════════════════════════════════
+     ORGANIZING COMMITTEE  (NEW)
+════════════════════════════════════════ -->
+<section id="committee" class="py-24 bg-zinc-950">
+    <div class="max-w-7xl mx-auto px-6">
 
-    <div class="modal-card">
-
-        <div class="label">
-            MEMORY OPENED
+        <div class="text-center mb-16">
+            <p class="uppercase tracking-[5px] text-amber-400 mb-3 text-sm">The People Behind The Stage</p>
+            <h2 class="text-4xl font-bold">Organizing Committee</h2>
+            <p class="text-gray-400 mt-3">Meet the team making ගෙත්තම්පාණ 2026 possible</p>
         </div>
 
-        <h3 id="modalTitle">
-            Memory
-        </h3>
+        <!-- LEADERSHIP : Principal & Teacher-in-Charge -->
+        <div class="grid md:grid-cols-2 gap-8 mb-20">
 
-        <p id="modalText">
-        </p>
-
-        <button
-            class="modal-close"
-            onclick="closeMemory()">
-
-            CLOSE
-
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- ==================================================
-     SCREEN 5 — CHOICE
-================================================== -->
-
-<section
-    id="choiceScreen"
-    class="screen">
-
-    <div class="choice-container">
-
-        <div class="choice-heading">
-
-            <div class="label">
-                FILE 03 // CHOOSE
+            <div class="lead-tile lead-tile--principal" data-lead>
+                <span class="lead-tile-badge">Principal</span>
+                <div class="lead-tile-img">
+                    <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Principal">
+                </div>
+                <div class="lead-tile-info">
+                    <h3>Principal's Full Name</h3>
+                    <p>Principal, D.S. Senanayake College</p>
+                </div>
             </div>
 
-            <h2>
-                Pick a memory.
-            </h2>
-
-            <p>
-                There is no wrong answer.
-            </p>
+            <div class="lead-tile lead-tile--mic" data-lead>
+                <span class="lead-tile-badge">Teacher-in-Charge</span>
+                <div class="lead-tile-img">
+                    <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Teacher-in-Charge">
+                </div>
+                <div class="lead-tile-info">
+                    <h3>MIC's Full Name</h3>
+                    <p>Master-in-Charge, ගෙත්තම්පාණ 2026</p>
+                </div>
+            </div>
 
         </div>
 
+        <!-- CORE TEAM : Chairman, Secretary, Chief Organizer -->
+        <div class="core-trio mb-20">
 
-        <div class="choices">
-
-            <div
-                class="choice"
-                onclick="startUniverse()">
-
-                <div class="choice-number">
-                    01
+            <div class="core-tile core-tile--chairman" data-core>
+                <span class="core-tile-ribbon">Chairman</span>
+                <div class="core-tile-img">
+                   <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Chairman">
                 </div>
-
-                <h3>
-                    The Laugh
-                </h3>
-
-                <p>
-                    Some laughs are contagious.
-                </p>
-
+                <div class="core-tile-info">
+                    <h4>Chairman's Full Name</h4>
+                    <p>Chairman</p>
+                </div>
             </div>
 
-
-            <div
-                class="choice"
-                onclick="startUniverse()">
-
-                <div class="choice-number">
-                    02
+            <div class="core-tile core-tile--secretary" data-core>
+                <span class="core-tile-ribbon">Secretary</span>
+                <div class="core-tile-img">
+                    <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Secretary">
                 </div>
-
-                <h3>
-                    The Moment
-                </h3>
-
-                <p>
-                    The one you didn't expect.
-                </p>
-
+                <div class="core-tile-info">
+                    <h4>Secretary's Full Name</h4>
+                    <p>Secretary</p>
+                </div>
             </div>
 
-
-            <div
-                class="choice"
-                onclick="startUniverse()">
-
-                <div class="choice-number">
-                    03
+            <div class="core-tile core-tile--chieforg" data-core>
+                <span class="core-tile-ribbon">Chief</span>
+                <div class="core-tile-img">
+                    <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Chief Organizer">
                 </div>
-
-                <h3>
-                    The Future
-                </h3>
-
-                <p>
-                    The memories we haven't made yet.
-                </p>
-
+                <div class="core-tile-info">
+                    <h4>Chief Organizer's Full Name</h4>
+                    <p>Chief Organizer</p>
+                </div>
             </div>
 
+        </div>
+
+        <!-- COMMITTEE MEMBERS — auto-sliding, continuous, seamless loop -->
+        <div class="text-center mb-8">
+            <h3 class="text-2xl font-bold text-amber-400">Committee Members</h3>
+            <p class="text-gray-500 text-sm mt-2">Hover to pause</p>
+        </div>
+
+        <div class="member-track-wrap">
+            <div class="member-track" id="member-track">
+
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 1"><p>Member Name 01</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 2"><p>Member Name 02</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 3"><p>Member Name 03</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 4"><p>Member Name 04</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 5"><p>Member Name 05</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 6"><p>Member Name 06</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 7"><p>Member Name 07</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 8"><p>Member Name 08</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 9"><p>Member Name 09</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 10"><p>Member Name 10</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 11"><p>Member Name 11</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 12"><p>Member Name 12</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 13"><p>Member Name 13</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 14"><p>Member Name 14</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 15"><p>Member Name 15</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 16"><p>Member Name 16</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 17"><p>Member Name 17</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 18"><p>Member Name 18</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 19"><p>Member Name 19</p></div>
+                <div class="member-card"><img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Member 20"><p>Member Name 20</p></div>
+
+            </div><!-- /member-track : JS duplicates these 20 cards for a seamless loop -->
         </div>
 
     </div>
-
 </section>
+<!-- ════════════════════════════════════════ -->
 
 
-<!-- ==================================================
-     SCREEN 6 — UNIVERSE
-================================================== -->
-
-<section
-    id="universeScreen"
-    class="screen">
-
-    <div class="universe-container">
-
-        <div
-            id="universeLine"
-            class="universe-line">
-
-            There are billions of people<br>
-            in this world.
-
-        </div>
-
-
-        <div
-            id="heartSpace"
-            class="heart-space">
-        </div>
-
-
-        <div
-            id="universeEnding"
-            class="universe-ending">
-
-            And somehow...
-
-            <br>
-
-            <span>
-                our paths crossed.
-            </span>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ==================================================
-     SCREEN 7 — LOCK
-================================================== -->
-
-<section
-    id="lockScreen"
-    class="screen">
-
-    <div class="lock-container">
-
-        <div class="lock">
-            🔒
-        </div>
-
-        <div class="label">
-            FINAL FILE
-        </div>
-
-        <h2>
-            One last<br>
-            message.
-        </h2>
-
+<!-- CONTACT -->
+<section id="contact" class="py-24 bg-black">
+    <div class="max-w-5xl mx-auto px-6 text-center">
+	 <div class="glass rounded-3xl p-10">
+        <h2 class="text-4xl font-bold mb-8">Contact Us</h2>
+        
+            <p class="text-xl mb-4">Email<br>
+            <a href="mailto:dsgeththampana@gmail.com" class="text-amber-400 text-lg">dsgeththampana@gmail.com</a></p>
+       
         <p>
-            This file is protected.<br>
-            But the password is easy.
-        </p>
-
-
-        <input
-            id="password"
-            class="password"
-            placeholder="enter password"
-            autocomplete="off"
-            onkeydown="
-                if(event.key === 'Enter'){
-                    unlock();
-                }
-            ">
-
-
-        <button
-            class="unlock"
-            onclick="unlock()">
-
-            UNLOCK
-
-        </button>
-
-
-        <div
-            id="error"
-            class="error">
-        </div>
-
+        
+            <p class="text-xl mb-4">Instagram<br>
+            <a href="#" class="text-amber-400 text-lg">geththampana.lk</a></p>
+        
+        <p>
+       
+            <p class="text-xl mb-4">Contact<br>
+            <a href="tel:+94754852275" class="text-amber-400 text-lg">+94 75 485 2275</a></p>
+     </div>   
     </div>
-
 </section>
 
-
-<!-- ==================================================
-     SCREEN 8 — FINAL
-================================================== -->
-
-<section
-    id="finalScreen"
-    class="screen">
-
-    <div class="final-container">
-
-        <div class="final-date">
-            25 · 08 · 2026
-        </div>
-
-        <h1>
-            HAPPY<br>
-            <span>BIRTHDAY</span>
-        </h1>
-
-        <div class="final-name">
-            Beautiful.
-        </div>
-
-        <p class="final-message">
-
-            I could have simply said
-            “Happy Birthday”.
-
-            <br><br>
-
-            But somehow, two words didn't feel
-            like enough.
-
-            <br><br>
-
-            So here's to another year,
-            another chapter,
-            and all the memories that haven't
-            happened yet.
-
-            <br><br>
-
-            <strong style="color:white">
-                Never forget how special you are. ❤️
-            </strong>
-
-        </p>
-
-
-        <button
-            class="replay"
-            onclick="location.reload()">
-
-            ↻ EXPERIENCE AGAIN
-
-        </button>
-
-    </div>
-
-</section>
-
+<!-- FOOTER -->
+<footer class="border-t border-white/10 py-8 text-center text-gray-500">
+    © 2026 ගෙත්තම්පාණ. All Rights Reserved.<br>
+    Developed By - Lochana Dineth.
+</footer>
 
 <script>
+/* ── Gallery: scroll-triggered fade + scale ── */
+(function(){
+    const imgs = document.querySelectorAll('.gallery-img');
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach((e, i) => {
+            if(e.isIntersecting){
+                setTimeout(() => e.target.classList.add('visible'), i * 80);
+                io.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.15 });
+    imgs.forEach(img => io.observe(img));
+})();
 
-/* ==================================================
-   CREATE STARS
-================================================== */
+/* ── Reels: play/pause on tap, arrow scroll, slide-in ── */
+(function(){
+    const track  = document.getElementById('reel-track');
+    const prev   = document.getElementById('reel-prev');
+    const next   = document.getElementById('reel-next');
+    const cards  = document.querySelectorAll('.reel-card');
+    const SCROLL = 240;
 
-const stars =
-    document.getElementById("stars");
+    /* slide-in on scroll */
+    const reelIO = new IntersectionObserver((entries) => {
+        entries.forEach((e, i) => {
+            if(e.isIntersecting){
+                setTimeout(() => e.target.classList.add('reel-visible'), i * 100);
+                reelIO.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    cards.forEach(c => reelIO.observe(c));
 
-for(let i = 0; i < 160; i++){
+    /* arrow buttons */
+    prev.addEventListener('click', () => track.scrollBy({ left: -SCROLL, behavior: 'smooth' }));
+    next.addEventListener('click', () => track.scrollBy({ left: SCROLL, behavior: 'smooth' }));
 
-    const star =
-        document.createElement("div");
+    /* tap to play / pause */
+    cards.forEach(card => {
+        const vid = card.querySelector('video');
+        if(!vid) return;
+        card.addEventListener('click', () => {
+            if(vid.paused){
+                /* pause all others first */
+                document.querySelectorAll('.reel-card video').forEach(v => { if(v !== vid){ v.pause(); v.closest('.reel-card').classList.remove('playing'); } });
+                vid.play();
+                card.classList.add('playing');
+            } else {
+                vid.pause();
+                card.classList.remove('playing');
+            }
+        });
+    });
+})();
 
-    star.className = "star";
+/* ── Organizing Committee : staggered reveal for lead & core tiles ── */
+(function(){
+    const leads = document.querySelectorAll('.lead-tile');
+    const leadIO = new IntersectionObserver((entries) => {
+        entries.forEach((e, i) => {
+            if(e.isIntersecting){
+                setTimeout(() => e.target.classList.add('visible'), i * 180);
+                leadIO.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.2 });
+    leads.forEach(t => leadIO.observe(t));
 
-    star.style.left =
-        Math.random() * 100 + "%";
-
-    star.style.top =
-        Math.random() * 100 + "%";
-
-    star.style.animationDelay =
-        Math.random() * 3 + "s";
-
-    stars.appendChild(star);
-}
-
-
-/* ==================================================
-   SCREEN NAVIGATION
-================================================== */
-
-function goTo(id){
-
-    const screens =
-        document.querySelectorAll(".screen");
-
-    screens.forEach(screen => {
-
-        screen.classList.remove("active");
-
+    /* Scroll reveal for core tiles */
+    const cores = document.querySelectorAll('.core-tile');
+    const coreIO = new IntersectionObserver((entries) => {
+        entries.forEach((e, i) => {
+            if(e.isIntersecting){
+                setTimeout(() => {
+                    e.target.style.transform = 'translateY(0) scale(1)';
+                    e.target.classList.add('visible');
+                }, i * 150);
+                coreIO.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.2 });
+    cores.forEach((t, i) => {
+        t.style.transform = 'translateY(45px) scale(' + (i === 1 ? '.95' : '1') + ')';
+        coreIO.observe(t);
     });
 
-    const target =
-        document.getElementById(id);
+    /* ── Move-to-centre hover effect ──
+       Each tile is in a 3-column grid.
+       Column indices: 0 = left, 1 = centre, 2 = right.
+       To move a tile to the visual centre we translate it by
+       exactly one column-width + gap toward the middle.
+    */
+    const trio = document.querySelector('.core-trio');
+    if (!trio) return;
 
-    if(target){
+    const tiles = Array.from(trio.querySelectorAll('.core-tile'));
 
-        target.classList.add("active");
-
+    function getColWidth() {
+        /* Returns the outer width of one grid cell (tile + its share of gap) */
+        const trioRect = trio.getBoundingClientRect();
+        const tileRect = tiles[0].getBoundingClientRect();
+        /* gap = (trio width - 3*tile width) / 2  ≈ (trioRect.width - 3*tileRect.width)/2 */
+        return tileRect.width + (trioRect.width - 3 * tileRect.width) / 2;
     }
 
-}
-
-
-/* ==================================================
-   BOOT TERMINAL
-================================================== */
-
-const bootMessages = [
-
-    "INITIALIZING PRIVATE FILE...",
-    "Checking date...",
-    "Checking memories...",
-    "Searching for something special...",
-    "████████████████████ 100%",
-    "",
-    "WARNING:",
-    "This file contains an unusual",
-    "amount of happiness.",
-    "",
-    "ACCESS REQUIRED."
-
-];
-
-let bootIndex = 0;
-
-function writeBootLine(){
-
-    const terminal =
-        document.getElementById("terminal");
-
-    if(bootIndex >= bootMessages.length){
-
-        terminal.innerHTML +=
-            '<span class="success">SYSTEM READY.</span><br><br><span class="cursor"></span>';
-
-        document
-            .getElementById("accessButton")
-            .style.display = "inline-block";
-
-        return;
-    }
-
-    const line =
-        bootMessages[bootIndex];
-
-    if(line.includes("WARNING")){
-
-        terminal.innerHTML +=
-            '<span class="bright">' +
-            line +
-            '</span><br>';
-
-    }else{
-
-        terminal.innerHTML +=
-            line +
-            "<br>";
-
-    }
-
-    bootIndex++;
-
-    setTimeout(
-        writeBootLine,
-        170
-    );
-
-}
-
-writeBootLine();
-
-
-/* ==================================================
-   SCAN
-================================================== */
-
-let scanRunning = false;
-
-function startScan(){
-
-    if(scanRunning) return;
-
-    scanRunning = true;
-
-    goTo("scanScreen");
-
-    const log =
-        document.getElementById("scanLog");
-
-    const progress =
-        document.getElementById("scanProgress");
-
-    const percent =
-        document.getElementById("scanPercent");
-
-    const button =
-        document.getElementById("scanContinue");
-
-    const messages = [
-
-        "Scanning memories...",
-        "Searching conversations...",
-        "Analyzing smiles...",
-        "Calculating happy moments...",
-        "Searching for reasons to celebrate...",
-        "Checking personality...",
-        "Result: dangerously adorable.",
-        "",
-        "Analysis complete.",
-        "",
-        "Conclusion:",
-        "Someone very special was born today."
-
-    ];
-
-    let index = 0;
-
-    function next(){
-
-        if(index >= messages.length){
-
-            progress.style.width = "100%";
-            percent.textContent = "100%";
-
-            button.style.display =
-                "inline-block";
-
-            return;
-        }
-
-        const line =
-            messages[index];
-
-        if(
-            line === "Analysis complete." ||
-            line === "Conclusion:"
-        ){
-
-            log.innerHTML +=
-                '<span class="important">' +
-                line +
-                '</span><br>';
-
-        }else{
-
-            log.innerHTML +=
-                line + "<br>";
-
-        }
-
-        const value =
-            Math.round(
-                ((index + 1) /
-                messages.length) * 100
-            );
-
-        progress.style.width =
-            value + "%";
-
-        percent.textContent =
-            value + "%";
-
-        index++;
-
-        setTimeout(
-            next,
-            300
-        );
-
-    }
-
-    next();
-
-}
-
-
-/* ==================================================
-   MEMORY MODAL
-================================================== */
-
-function openMemory(title,text){
-
-    document
-        .getElementById("modalTitle")
-        .textContent = title;
-
-    document
-        .getElementById("modalText")
-        .textContent = text;
-
-    document
-        .getElementById("memoryModal")
-        .classList.add("open");
-
-}
-
-function closeMemory(){
-
-    document
-        .getElementById("memoryModal")
-        .classList.remove("open");
-
-}
-
-
-/* ==================================================
-   UNIVERSE
-================================================== */
-
-let universeStarted = false;
-
-function startUniverse(){
-
-    if(universeStarted) return;
-
-    universeStarted = true;
-
-    goTo("universeScreen");
-
-    const line =
-        document.getElementById("universeLine");
-
-    setTimeout(() => {
-
-        line.classList.add("show");
-
-    },500);
-
-    setTimeout(() => {
-
-        createHeart();
-
-    },1800);
-
-}
-
-
-function createHeart(){
-
-    const container =
-        document.getElementById("heartSpace");
-
-    const width =
-        container.clientWidth;
-
-    const height =
-        container.clientHeight;
-
-    const centerX =
-        width / 2;
-
-    const centerY =
-        height / 2;
-
-    const scale =
-        Math.min(width,height) / 38;
-
-    const points = [];
-
-    for(
-        let t = 0;
-        t < Math.PI * 2;
-        t += .035
-    ){
-
-        const x =
-            16 *
-            Math.pow(Math.sin(t),3);
-
-        const y =
-            13 * Math.cos(t)
-            - 5 * Math.cos(2*t)
-            - 2 * Math.cos(3*t)
-            - Math.cos(4*t);
-
-        points.push({
-
-            x: centerX + x * scale,
-
-            y: centerY - y * scale
-
+    tiles.forEach((tile, idx) => {
+        tile.addEventListener('mouseenter', () => {
+            const colW = getColWidth();
+
+            /* How far does this tile need to move to reach col-index 1 (centre)? */
+            /* col 0 → move right +1 step, col 1 → 0, col 2 → move left -1 step */
+            const shift = (1 - idx) * colW;  /* positive = right, negative = left */
+
+            tiles.forEach((t, i) => {
+                if (i === idx) {
+                    /* Active: slide to centre, lift, scale up */
+                    t.style.transform = `translateX(${shift}px) translateY(-18px) scale(1.1)`;
+                    t.style.filter    = 'blur(0px) brightness(1) saturate(1.08)';
+                    t.classList.add('core-active');
+                    t.classList.remove('core-dim');
+                } else {
+                    /* Siblings: blur & dim in place */
+                    t.style.transform = 'translateX(0) translateY(6px) scale(0.93)';
+                    t.style.filter    = 'blur(6px) brightness(0.35) saturate(0.5)';
+                    t.classList.add('core-dim');
+                    t.classList.remove('core-active');
+                }
+            });
         });
 
-    }
-
-
-    points.forEach((point,index) => {
-
-        const star =
-            document.createElement("div");
-
-        star.className =
-            "heart-star";
-
-        star.style.left =
-            point.x + "px";
-
-        star.style.top =
-            point.y + "px";
-
-        container.appendChild(star);
-
-        setTimeout(() => {
-
-            star.classList.add("show");
-
-        }, index * 10);
-
+        tile.addEventListener('mouseleave', () => {
+            /* Slight delay so it doesn't snap if cursor barely clips edge */
+            trio.addEventListener('mouseleave', resetAll, { once: true });
+        });
     });
 
+    trio.addEventListener('mouseleave', resetAll);
 
-    setTimeout(() => {
+    /* ── Mobile touch support: tap to activate, tap again or elsewhere to reset ── */
+    tiles.forEach((tile, idx) => {
+        tile.addEventListener('touchstart', (e) => {
+            const alreadyActive = tile.classList.contains('core-active');
+            resetAll();
+            if (!alreadyActive) {
+                tile.classList.add('core-active');
+                tiles.forEach((t, i) => {
+                    if (i !== idx) {
+                        t.style.filter = 'blur(6px) brightness(0.35) saturate(0.5)';
+                        t.classList.add('core-dim');
+                    }
+                });
+            }
+        }, { passive: true });
+    });
 
-        document
-            .getElementById("universeEnding")
-            .classList.add("show");
+    document.addEventListener('touchstart', (e) => {
+        if (!trio.contains(e.target)) resetAll();
+    }, { passive: true });
 
-    },2500);
-
-
-    setTimeout(() => {
-
-        goTo("lockScreen");
-
-    },5200);
-
-}
-
-
-/* ==================================================
-   PASSWORD
-================================================== */
-
-function unlock(){
-
-    const input =
-        document.getElementById("password");
-
-    const error =
-        document.getElementById("error");
-
-    const value =
-        input.value
-            .trim()
-            .toLowerCase();
-
-    /*
-       DEMO PASSWORDS
-
-       You can change these later.
-    */
-
-    const passwords = [
-        "birthday",
-        "happy birthday",
-        "25",
-        "2026"
-    ];
-
-    if(passwords.includes(value)){
-
-        error.textContent = "";
-
-        createConfetti();
-
-        setTimeout(() => {
-
-            goTo("finalScreen");
-
-        },700);
-
-    }else{
-
-        error.textContent =
-            "ACCESS DENIED — hint: what's special about today?";
-
-        input.value = "";
-
-        input.focus();
-
+    function resetAll() {
+        tiles.forEach(t => {
+            t.style.transform = 'translateX(0) translateY(0) scale(1)';
+            t.style.filter    = '';
+            t.style.boxShadow = '';
+            t.classList.remove('core-active', 'core-dim');
+        });
     }
+})();
 
-}
-
-
-/* ==================================================
-   CONFETTI
-================================================== */
-
-function createConfetti(){
-
-    const pieces = 160;
-
-    for(let i = 0; i < pieces; i++){
-
-        const piece =
-            document.createElement("div");
-
-        piece.className =
-            "confetti";
-
-        piece.style.left =
-            Math.random() * 100 + "vw";
-
-        piece.style.background =
-            [
-                "#ff5b9f",
-                "#9874ff",
-                "#68f5b0",
-                "#ffffff",
-                "#ffd166"
-            ][
-                Math.floor(Math.random() * 5)
-            ];
-
-        piece.style.animationDuration =
-            (2 + Math.random() * 3) + "s";
-
-        piece.style.animationDelay =
-            Math.random() * .5 + "s";
-
-        document.body.appendChild(piece);
-
-        setTimeout(
-            () => piece.remove(),
-            6000
-        );
-
-    }
-
-}
-
-
-/* ==================================================
-   ESCAPE CLOSES MODAL
-================================================== */
-
-document.addEventListener(
-    "keydown",
-    function(event){
-
-        if(event.key === "Escape"){
-
-            closeMemory();
-
-        }
-
-    }
-);
-
+/* ── Organizing Committee : duplicate member cards for a seamless infinite-scroll loop ── */
+(function(){
+    const track = document.getElementById('member-track');
+    if(!track) return;
+    const cards = Array.from(track.children);
+    cards.forEach(card => track.appendChild(card.cloneNode(true)));
+})();
 </script>
 
 </body>
 </html>
+
