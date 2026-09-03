@@ -152,12 +152,65 @@
         /* ── Leadership tiles : Principal & Teacher-in-Charge ── */
         .lead-tile {
             position: relative;
-            border-radius: 1.75rem;
+            border-radius: 1.5rem;
             overflow: hidden;
             opacity: 0;
             transition: opacity .7s ease, transform .7s ease, box-shadow .35s ease;
+            width: 100%;
+        }
+
+        /* EXACTLY match the Chairman card's overall width on desktop.
+           The leadership row has 2 columns, so this calculates 1/3 of
+           the full committee container (the same width as each core tile). */
+        @media (min-width: 768px) {
+            .lead-tile {
+                width: calc((200% - 3rem) / 3);
+            }
+            .lead-tile--principal {
+                justify-self: end;
+            }
+            .lead-tile--mic {
+                justify-self: start;
+            }
+        }
+
+        /* Match Chairman image and information dimensions */
+        .lead-tile .lead-tile-img {
+            aspect-ratio: 3/4;
+        }
+
+        .lead-tile-info {
+            padding: 1.3rem;
+            text-align: center;
+        }
+
+        .lead-tile-info h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
         }
         .lead-tile.visible { opacity: 1; transform: translateX(0) !important; }
+
+        .lead-tile--main {
+            width: 100%;
+            background: linear-gradient(180deg, rgba(251,191,36,0.14), rgba(255,255,255,0.03) 65%);
+            border: 1px solid rgba(251,191,36,0.3);
+            transform: translateY(30px);
+        }
+
+        @media (min-width: 768px) {
+            .lead-tile--main {
+                width: calc((100% - 3rem) / 3);
+            }
+        }
+
+        .lead-tile--main .lead-tile-badge {
+            background: rgba(251,191,36,.9);
+            color: #000;
+        }
+
+        .lead-tile--main .lead-tile-info h3 {
+            color: #fbbf24;
+        }
 
         .lead-tile--principal {
             transform: translateX(-60px);
@@ -688,8 +741,22 @@
             <p class="text-gray-400 mt-3">Meet the team making ගෙත්තම්පාණ 2026 possible</p>
         </div>
 
+        <!-- MAIN MEMBER : centered above Principal & MIC -->
+        <div class="flex justify-center mb-8">
+            <div class="lead-tile lead-tile--main" data-lead>
+                <span class="lead-tile-badge">Main Member</span>
+                <div class="lead-tile-img">
+                    <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/unknown.jpeg" alt="Main Member">
+                </div>
+                <div class="lead-tile-info">
+                    <h3>Main Member's Full Name</h3>
+                    <p>Main Member, ගෙත්තම්පාණ 2026</p>
+                </div>
+            </div>
+        </div>
+
         <!-- LEADERSHIP : Principal & Teacher-in-Charge -->
-        <div class="grid md:grid-cols-2 gap-8 mb-20">
+        <div class="grid md:grid-cols-2 gap-6 mb-20">
 
             <div class="lead-tile lead-tile--principal" data-lead>
                 <span class="lead-tile-badge">Principal</span>
