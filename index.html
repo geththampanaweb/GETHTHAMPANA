@@ -551,10 +551,367 @@
             .reserve-bar-icon { width: 24px; height: 24px; padding: 7px; }
             .reserve-bar-arrow { width: 38px; height: 38px; }
         }
+
+        /* ════════════════════════════════════════
+           GRAND OPENING ANIMATION
+           ════════════════════════════════════════ */
+
+        .opening-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 50% 38%, rgba(250,204,21,.07), transparent 25%),
+                radial-gradient(circle at 50% 78%, rgba(255,255,255,.012), transparent 32%),
+                #050505;
+            will-change: opacity;
+            transition: opacity .85s cubic-bezier(.4,0,.2,1), visibility .85s linear;
+        }
+
+        .opening-screen.hide {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* Page stays locked behind the overlay until the sequence ends. */
+        body.opening-lock {
+            overflow: hidden;
+        }
+
+        .opening-stage {
+            position: relative;
+            width: min(94vw, 900px);
+            height: min(94vh, 820px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* School logo: arrives first, then settles high enough to leave a
+           completely clear visual area for the event logo underneath. */
+        .opening-school-wrap {
+            position: absolute;
+            left: 50%;
+            top: 34%;
+            width: min(210px, 27vw);
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            opacity: 0;
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            animation: schoolArrival 2.6s cubic-bezier(.16,.84,.26,1) .15s both;
+            filter: drop-shadow(0 0 18px rgba(250,204,21,.16));
+        }
+
+        .opening-school-logo {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .school-logo-shine {
+            position: absolute;
+            inset: -8%;
+            pointer-events: none;
+            opacity: 0;
+            background: linear-gradient(
+                105deg,
+                transparent 37%,
+                rgba(255,255,255,.95) 49%,
+                rgba(250,204,21,.92) 53%,
+                transparent 66%
+            );
+            -webkit-mask-image: url('images/school-logo.png');
+            mask-image: url('images/school-logo.png');
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+            will-change: transform, opacity;
+            animation: schoolShine 1.15s cubic-bezier(.36,.06,.24,1) 3.25s both;
+        }
+
+        /* Event logo: kept in its own visual zone, never crossing the school logo. */
+        .opening-brand-wrap {
+            position: absolute;
+            left: 50%;
+            top: 52%;
+            width: min(560px, 72vw);
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            text-align: center;
+            opacity: 0;
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            animation: eventLogoAppear 1.7s cubic-bezier(.16,.84,.26,1) 1.75s both;
+        }
+
+        .opening-brand-logo {
+            position: relative;
+            width: 100%;
+            overflow: visible;
+        }
+
+        .opening-brand-logo img {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 16px rgba(250,204,21,.10));
+        }
+
+        .brand-logo-shine {
+            position: absolute;
+            inset: -5%;
+            pointer-events: none;
+            opacity: 0;
+            background: linear-gradient(
+                105deg,
+                transparent 35%,
+                rgba(255,255,255,.98) 49%,
+                rgba(250,204,21,.95) 53%,
+                transparent 67%
+            );
+            -webkit-mask-image: url('images/event-logo.png');
+            mask-image: url('images/event-logo.png');
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+            will-change: transform, opacity;
+            animation: eventShine 1.25s cubic-bezier(.36,.06,.24,1) 3.8s both;
+        }
+
+        .opening-tagline {
+            margin-top: 8px;
+            color: rgba(255,255,255,.68);
+            font-size: clamp(.62rem, 1.2vw, .8rem);
+            letter-spacing: .34em;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: taglineAppear 1s cubic-bezier(.16,.84,.26,1) 2.75s both;
+        }
+
+        .opening-loader {
+            position: absolute;
+            left: 50%;
+            bottom: 5.5%;
+            transform: translateX(-50%);
+            width: min(280px, 62vw);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 9px;
+            z-index: 5;
+            opacity: 0;
+            animation: loaderAppear .9s cubic-bezier(.16,.84,.26,1) 2.95s both;
+        }
+
+        .opening-loader span {
+            color: rgba(255,255,255,.58);
+            font-size: .68rem;
+            letter-spacing: .28em;
+            text-transform: uppercase;
+        }
+
+        .loader-ring {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,.12);
+            border-top-color: #facc15;
+            border-right-color: rgba(250,204,21,.52);
+            will-change: transform;
+            animation: loaderSpin .9s linear infinite;
+        }
+
+        .loader-track {
+            width: 100%;
+            height: 2px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: rgba(255,255,255,.09);
+        }
+
+        .loader-progress {
+            width: 0;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, transparent, #facc15, #fff0a3);
+            animation: loaderProgress 2.15s cubic-bezier(.3,.7,.3,1) 3.05s both;
+            box-shadow: 0 0 8px rgba(250,204,21,.25);
+        }
+
+        /* One continuous eased move: no mid-animation direction changes and no
+           animated filter, which is what made the old version stutter. */
+        @keyframes schoolArrival {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, 78px) scale(.70);
+            }
+            38% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(.74);
+            }
+        }
+
+        @keyframes eventLogoAppear {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, 22px) scale(.93);
+            }
+            45% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, 0) scale(1);
+            }
+        }
+
+        @keyframes schoolShine {
+            0% {
+                opacity: 0;
+                transform: translate3d(-125%, 0, 0);
+            }
+            22%  { opacity: 1; }
+            78%  { opacity: .9; }
+            100% {
+                opacity: 0;
+                transform: translate3d(125%, 0, 0);
+            }
+        }
+
+        @keyframes eventShine {
+            0% {
+                opacity: 0;
+                transform: translate3d(-125%, 0, 0);
+            }
+            20%  { opacity: 1; }
+            78%  { opacity: .9; }
+            100% {
+                opacity: 0;
+                transform: translate3d(125%, 0, 0);
+            }
+        }
+
+        @keyframes taglineAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes loaderAppear {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, 12px);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        @keyframes loaderProgress {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        @keyframes loaderSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 640px) {
+            .opening-stage {
+                width: 96vw;
+                height: 94vh;
+            }
+
+            .opening-school-wrap {
+                width: min(165px, 34vw);
+                top: 32%;
+            }
+
+            .opening-brand-wrap {
+                top: 50%;
+                width: 88vw;
+            }
+
+            .opening-loader {
+                bottom: 5%;
+                width: 68vw;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .opening-screen,
+            .opening-school-wrap,
+            .opening-brand-wrap,
+            .opening-tagline,
+            .opening-loader,
+            .school-logo-shine,
+            .brand-logo-shine,
+            .loader-ring,
+            .loader-progress {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+            }
+        }
+
     </style>
 </head>
 
 <body class="bg-black text-white">
+
+<!-- ══ GRAND OPENING ANIMATION ══ -->
+<div id="openingScreen" class="opening-screen" aria-hidden="true">
+    <div class="opening-stage">
+
+        <div class="opening-school-wrap">
+            <img
+                class="opening-school-logo"
+                src="images/school-logo.png"
+                alt="D.S. Senanayake College logo"
+            >
+            <span class="school-logo-shine"></span>
+        </div>
+
+        <div class="opening-brand-wrap">
+            <div class="opening-brand-logo">
+                <img src="images/event-logo.png" alt="ගෙත්තම්පාණ">
+                <span class="brand-logo-shine"></span>
+            </div>
+            <div class="opening-tagline">Musical Evening &middot; 8 October 2026</div>
+        </div>
+
+        <div class="opening-loader" aria-hidden="true">
+            <div class="loader-ring"></div>
+            <span>Loading</span>
+            <div class="loader-track">
+                <div class="loader-progress"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 
 <!-- NAVBAR -->
 <nav class="fixed w-full z-50 bg-black/50 backdrop-blur-md border-b border-white/10">
@@ -1171,8 +1528,41 @@
     const cards = Array.from(track.children);
     cards.forEach(card => track.appendChild(card.cloneNode(true)));
 })();
+
+/* ── Grand opening animation : reveal the site once the sequence finishes ── */
+(function () {
+    const opening = document.getElementById('openingScreen');
+    if (!opening) return;
+
+    document.body.classList.add('opening-lock');
+
+    let done = false;
+    function finish() {
+        if (done) return;
+        done = true;
+        opening.classList.add('hide');
+        document.body.classList.remove('opening-lock');
+        window.scrollTo(0, 0);
+        // Remove from the DOM once the fade-out has completed.
+        setTimeout(() => opening.remove(), 900);
+    }
+
+    const HOLD = 6100;                       // full sequence length, in ms
+    let started = Date.now();
+
+    window.addEventListener('load', () => {
+        const elapsed = Date.now() - started;
+        setTimeout(finish, Math.max(HOLD - elapsed, 0));
+    });
+
+    // Safety net: never trap the visitor if an asset stalls.
+    setTimeout(finish, HOLD + 3000);
+
+    // Let an impatient visitor skip ahead.
+    opening.addEventListener('click', finish);
+})();
+
 </script>
 
 </body>
 </html>
-
