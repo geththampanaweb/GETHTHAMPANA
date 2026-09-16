@@ -10,6 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
+		html {
+    scroll-behavior: smooth;
+}
         body{
             font-family:'Noto Sans Sinhala',sans-serif;
         }
@@ -940,7 +943,12 @@
             <div class="flex flex-wrap gap-4">
                
                 <a href="audience-choice.html" class="bg-amber-500 hover:bg-amber-600 px-8 py-4 rounded-full font-semibold transition">Audience Choice</a>
-                <a href="#about" class="border border-white px-8 py-4 rounded-full hover:bg-white hover:text-black transition">Learn More</a>
+              <a href="#reserve-seats"
+   onclick="document.getElementById('reserve-seats').scrollIntoView({ behavior: 'smooth', block: 'center' }); return false;"
+   class="border border-amber-500 text-amber-400 hover:bg-amber-500 hover:text-black px-8 py-4 rounded-full font-semibold transition">
+    Reserve Your Seat
+</a>
+                  <a href="#about" class="border border-white px-8 py-4 rounded-full hover:bg-white hover:text-black transition">Learn More</a>
             </div>
             <div class="mt-12 flex flex-wrap gap-8">
                 <div>
@@ -1299,7 +1307,7 @@
 <!-- ════════════════════════════════════════ -->
 
 <!-- RESERVE SEATS BAR -->
-<section class="reserve-bar-wrap">
+<section id="reserve-seats" class="reserve-bar-wrap">
     <a href="reserve.html" class="reserve-bar" aria-label="Reserve your seat for ගෙත්තම්පාණ 2026">
         <span class="reserve-bar-shine"></span>
         <span class="reserve-bar-content">
