@@ -10,7 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-		html {
+	
+	html {
     scroll-behavior: smooth;
 }
         body{
@@ -260,12 +261,31 @@
 
         /* ── Core team tiles : Chairman, Secretary, Chief Organizer ── */
 
-        .core-trio {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            align-items: stretch;
+        .core-group {
             position: relative;
+        }
+
+        /* Row 1: Chairperson & Secretary, centered */
+        .core-duo {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Row 2: Chief Organizer, centered alone (like the Principal tile) */
+        .core-solo {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Keep each tile the exact same size it had in the old 3-column grid */
+        @media (min-width: 768px) {
+            .core-duo .core-tile,
+            .core-solo .core-tile {
+                width: calc((100% - 3rem) / 3);
+            }
         }
 
         .core-tile {
@@ -273,15 +293,11 @@
             border-radius: 1.5rem;
             overflow: hidden;
             opacity: 0;
-            cursor: pointer;
             z-index: 1;
-            /* smooth motion for every property we animate via JS */
+            /* Only the scroll-reveal is animated; the tiles have no hover state. */
             transition:
                 opacity .6s ease,
-                transform .7s cubic-bezier(.34,1.3,.64,1),
-                filter .6s ease,
-                box-shadow .6s ease;
-            will-change: transform, filter;
+                transform .7s cubic-bezier(.34,1.3,.64,1);
         }
 
         /* Scroll-reveal resting state */
@@ -303,32 +319,12 @@
             border: 1px solid rgba(16,185,129,.32);
         }
 
-        /* Hovered card — JS adds .core-active */
-        .core-tile.core-active {
-            z-index: 10;
-        }
-        .core-tile--chairman.core-active {
-            box-shadow: 0 40px 100px rgba(168,85,247,.55), 0 0 0 1.5px rgba(168,85,247,.7);
-        }
-        .core-tile--secretary.core-active {
-            box-shadow: 0 40px 100px rgba(244,63,94,.5), 0 0 0 1.5px rgba(244,63,94,.7);
-        }
-        .core-tile--chieforg.core-active {
-            box-shadow: 0 40px 100px rgba(16,185,129,.5), 0 0 0 1.5px rgba(16,185,129,.7);
-        }
 
-        /* Dimmed siblings — JS adds .core-dim */
-        .core-tile.core-dim {
-            z-index: 0;
-        }
-
-        /* Image zoom on active */
+        /* Image */
         .core-tile-img { aspect-ratio: 3/4; overflow: hidden; }
         .core-tile-img img {
             width: 100%; height: 100%; object-fit: cover;
-            transition: transform .7s cubic-bezier(.34,1.3,.64,1);
         }
-        .core-tile.core-active .core-tile-img img { transform: scale(1.09) rotate(.3deg); }
 
         .core-tile-ribbon {
             position: absolute; top: 0; right: 0;
@@ -341,43 +337,11 @@
         .core-tile--secretary .core-tile-ribbon { background: #f43f5e; color: #fff; }
         .core-tile--chieforg .core-tile-ribbon { background: #10b981; color: #fff; }
 
-        /* Hide position ribbon when the tile slides to centre on hover */
-        .core-tile-ribbon {
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        .core-tile.core-active .core-tile-ribbon {
-            opacity: 0;
-            transform: translateY(-8px);
-            pointer-events: none;
-        }
-
-        /* Hide name/role info block when tile is hovered to centre */
-        .core-tile-info {
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        .core-tile.core-active .core-tile-info {
-            opacity: 0;
-            transform: translateY(8px);
-            pointer-events: none;
-        }
-
-        /* Expand image to fill entire tile when hovered */
+        /* Image block. Static: no hover expansion, so the tile's height
+           never changes and nothing below it can shift. */
         .core-tile-img {
             position: relative;
             z-index: 0;
-            transition: all 0.5s cubic-bezier(.34,1.3,.64,1);
-        }
-        .core-tile.core-active .core-tile-img {
-            position: absolute;
-            inset: 0;
-            aspect-ratio: unset;
-            height: 100% !important;
-            width: 100%;
-        }
-        .core-tile.core-active .core-tile-img img {
-            height: 100%;
-            width: 100%;
-            object-fit: cover;
         }
 
         .core-tile-info { padding: 1.3rem; text-align: center; }
@@ -943,12 +907,12 @@
             <div class="flex flex-wrap gap-4">
                
                 <a href="audience-choice.html" class="bg-amber-500 hover:bg-amber-600 px-8 py-4 rounded-full font-semibold transition">Audience Choice</a>
-              <a href="#reserve-seats"
+				<a href="#reserve-seats"
    onclick="document.getElementById('reserve-seats').scrollIntoView({ behavior: 'smooth', block: 'center' }); return false;"
    class="border border-amber-500 text-amber-400 hover:bg-amber-500 hover:text-black px-8 py-4 rounded-full font-semibold transition">
     Reserve Your Seat
 </a>
-                  <a href="#about" class="border border-white px-8 py-4 rounded-full hover:bg-white hover:text-black transition">Learn More</a>
+                <a href="#about" class="border border-white px-8 py-4 rounded-full hover:bg-white hover:text-black transition">Learn More</a>
             </div>
             <div class="mt-12 flex flex-wrap gap-8">
                 <div>
@@ -990,7 +954,7 @@
 <section id="about" class="py-24 bg-zinc-950">
     <div class="max-w-7xl mx-auto px-6">
         <div class="grid md:grid-cols-2 gap-12 items-center">
-            <img src="images/post.jpg" class="rounded-3xl shadow-2xl">
+            <img src="images/unknown.jpeg" class="rounded-3xl shadow-2xl">
             <div>
                 <h2 class="text-4xl font-bold mb-6 text-amber-400">About ගෙත්තම්පාණ</h2>
                 <p class="text-gray-300 leading-relaxed mb-6">
@@ -1043,7 +1007,7 @@
             </div>
 
             <div class="lead-tile lead-tile--mic" data-lead>
-                <span class="lead-tile-badge">Amandya Uthpalie</span>
+                <span class="lead-tile-badge">Amandya Uthpali</span>
                 <div class="lead-tile-img">
                     <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/amandyaa.jpg" alt="Amandya">
                 </div>
@@ -1243,7 +1207,7 @@
             <div class="lead-tile lead-tile--principal" data-lead>
                 <span class="lead-tile-badge">Teacher in Charge</span>
                 <div class="lead-tile-img">
-                    <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/medani.jpg" alt="Principal">
+                    <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/logooo.jpg" alt="Principal">
                 </div>
                 <div class="lead-tile-info">
                     <h3>Mrs.Chisanka Medani</h3>
@@ -1254,7 +1218,7 @@
             <div class="lead-tile lead-tile--mic" data-lead>
                 <span class="lead-tile-badge">Music Director</span>
                 <div class="lead-tile-img">
-                    <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/saranga.jpg" alt="Teacher-in-Charge">
+                    <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/logooo.jpg" alt="Teacher-in-Charge">
                 </div>
                 <div class="lead-tile-info">
                     <h3>Mr.Saranga Chulasinghe</h3>
@@ -1264,39 +1228,43 @@
 
         </div>
 
-        <!-- CORE TEAM : Chairman, Secretary, Chief Organizer -->
-        <div class="core-trio mb-20">
+        <!-- CORE TEAM : Chairperson & Secretary (top), Chief Organizer (below, centered) -->
+        <div class="core-group mb-20">
 
-            <div class="core-tile core-tile--chairman" data-core>
-                <span class="core-tile-ribbon">Chairperson</span>
-                <div class="core-tile-img">
-                   <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/ranthula.jpg" alt="Chairman">
+            <div class="core-duo">
+                <div class="core-tile core-tile--chairman" data-core>
+                    <span class="core-tile-ribbon">Chairperson</span>
+                    <div class="core-tile-img">
+                       <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/logooo.jpg" alt="Chairman">
+                    </div>
+                    <div class="core-tile-info">
+                        <h4>Ranthula Jayakody</h4>
+                        <p>Chairperson</p>
+                    </div>
                 </div>
-                <div class="core-tile-info">
-                    <h4>Ranthula Jayakody</h4>
-                    <p>Chairperson</p>
+
+                <div class="core-tile core-tile--secretary" data-core>
+                    <span class="core-tile-ribbon">Secretary</span>
+                    <div class="core-tile-img">
+                        <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/logooo.jpg" alt="Secretary">
+                    </div>
+                    <div class="core-tile-info">
+                        <h4>Maneth Pabasara</h4>
+                        <p>Secretary</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="core-tile core-tile--secretary" data-core>
-                <span class="core-tile-ribbon">Secretary</span>
-                <div class="core-tile-img">
-                    <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/maneth.jpg" alt="Secretary">
-                </div>
-                <div class="core-tile-info">
-                    <h4>Maneth Pabasara</h4>
-                    <p>Secretary</p>
-                </div>
-            </div>
-
-            <div class="core-tile core-tile--chieforg" data-core>
-                <span class="core-tile-ribbon">Chief</span>
-                <div class="core-tile-img">
-                    <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/logooo.jpg" alt="Chief Organizer">
-                </div>
-                <div class="core-tile-info">
-                    <h4>Lochana Dineth</h4>
-                    <p>Chief Organizer</p>
+            <div class="core-solo">
+                <div class="core-tile core-tile--chieforg" data-core>
+                    <span class="core-tile-ribbon">Chief</span>
+                    <div class="core-tile-img">
+                        <img src="https://raw.githubusercontent.com/geththampanaweb/GETHTHAMPANA/main/images/logooo.jpg" alt="Chief Organizer">
+                    </div>
+                    <div class="core-tile-info">
+                        <h4>Lochana Dineth</h4>
+                        <p>Chief Organizer</p>
+                    </div>
                 </div>
             </div>
 
@@ -1357,10 +1325,6 @@
 <footer class="border-t border-white/10 py-8 text-center text-gray-500">
     © 2026 ගෙත්තම්පාණ. All Rights Reserved.<br>
     Developed By - Lochana Dineth.
-	<br>
-	<br>
-	<br>
-	<br>
 </footer>
 
 <script>
@@ -1450,87 +1414,8 @@
         coreIO.observe(t);
     });
 
-    /* ── Move-to-centre hover effect ──
-       Each tile is in a 3-column grid.
-       Column indices: 0 = left, 1 = centre, 2 = right.
-       To move a tile to the visual centre we translate it by
-       exactly one column-width + gap toward the middle.
-    */
-    const trio = document.querySelector('.core-trio');
-    if (!trio) return;
-
-    const tiles = Array.from(trio.querySelectorAll('.core-tile'));
-
-    function getColWidth() {
-        /* Returns the outer width of one grid cell (tile + its share of gap) */
-        const trioRect = trio.getBoundingClientRect();
-        const tileRect = tiles[0].getBoundingClientRect();
-        /* gap = (trio width - 3*tile width) / 2  ≈ (trioRect.width - 3*tileRect.width)/2 */
-        return tileRect.width + (trioRect.width - 3 * tileRect.width) / 2;
-    }
-
-    tiles.forEach((tile, idx) => {
-        tile.addEventListener('mouseenter', () => {
-            const colW = getColWidth();
-
-            /* How far does this tile need to move to reach col-index 1 (centre)? */
-            /* col 0 → move right +1 step, col 1 → 0, col 2 → move left -1 step */
-            const shift = (1 - idx) * colW;  /* positive = right, negative = left */
-
-            tiles.forEach((t, i) => {
-                if (i === idx) {
-                    /* Active: slide to centre, lift, scale up */
-                    t.style.transform = `translateX(${shift}px) translateY(-18px) scale(1.1)`;
-                    t.style.filter    = 'blur(0px) brightness(1) saturate(1.08)';
-                    t.classList.add('core-active');
-                    t.classList.remove('core-dim');
-                } else {
-                    /* Siblings: blur & dim in place */
-                    t.style.transform = 'translateX(0) translateY(6px) scale(0.93)';
-                    t.style.filter    = 'blur(6px) brightness(0.35) saturate(0.5)';
-                    t.classList.add('core-dim');
-                    t.classList.remove('core-active');
-                }
-            });
-        });
-
-        tile.addEventListener('mouseleave', () => {
-            /* Slight delay so it doesn't snap if cursor barely clips edge */
-            trio.addEventListener('mouseleave', resetAll, { once: true });
-        });
-    });
-
-    trio.addEventListener('mouseleave', resetAll);
-
-    /* ── Mobile touch support: tap to activate, tap again or elsewhere to reset ── */
-    tiles.forEach((tile, idx) => {
-        tile.addEventListener('touchstart', (e) => {
-            const alreadyActive = tile.classList.contains('core-active');
-            resetAll();
-            if (!alreadyActive) {
-                tile.classList.add('core-active');
-                tiles.forEach((t, i) => {
-                    if (i !== idx) {
-                        t.style.filter = 'blur(6px) brightness(0.35) saturate(0.5)';
-                        t.classList.add('core-dim');
-                    }
-                });
-            }
-        }, { passive: true });
-    });
-
-    document.addEventListener('touchstart', (e) => {
-        if (!trio.contains(e.target)) resetAll();
-    }, { passive: true });
-
-    function resetAll() {
-        tiles.forEach(t => {
-            t.style.transform = 'translateX(0) translateY(0) scale(1)';
-            t.style.filter    = '';
-            t.style.boxShadow = '';
-            t.classList.remove('core-active', 'core-dim');
-        });
-    }
+    /* The lift-and-dim hover/tap effect on these three tiles has been removed.
+       The cards now look identical whether or not they are hovered. */
 })();
 
 /* ── Organizing Committee : duplicate member cards for a seamless infinite-scroll loop ── */
