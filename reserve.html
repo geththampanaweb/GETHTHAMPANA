@@ -666,6 +666,70 @@ section.py-12 p { animation-delay: .28s; }
 }
 #checkoutBtn:active { transform: scale(.97); }
 
+/* Floating "Checkout" button - appears next to the seat map once at
+   least one seat is selected, and can be dragged anywhere on screen. */
+#floatingCheckoutBtn {
+  position: fixed;
+  top: 260px;
+  right: 24px;
+  z-index: 500;
+  background: linear-gradient(135deg,#facc15,#fb923c);
+  color: #1a1300;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: .2px;
+  padding: 14px 22px;
+  border-radius: 9999px;
+  box-shadow: 0 10px 30px rgba(250,204,21,.35), 0 0 0 1px rgba(255,255,255,.08) inset;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  opacity: 0;
+  transform: translateY(8px) scale(.94);
+  pointer-events: none;
+  transition: opacity .3s ease, transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, filter .25s ease;
+}
+
+#floatingCheckoutBtn.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+#floatingCheckoutBtn:hover {
+  filter: brightness(1.06);
+  box-shadow: 0 14px 38px rgba(250,204,21,.45), 0 0 0 1px rgba(255,255,255,.1) inset;
+}
+
+#floatingCheckoutBtn.dragging {
+  cursor: grabbing;
+  transition: none;
+}
+
+#floatingCheckoutBtn .fc-count {
+  background: rgba(0,0,0,.18);
+  border-radius: 9999px;
+  padding: 2px 9px;
+  font-size: 12px;
+}
+
+#floatingCheckoutBtn .fc-handle {
+  opacity: .55;
+  font-size: 12px;
+  margin-left: 2px;
+}
+
+@media (max-width: 640px) {
+  #floatingCheckoutBtn {
+    right: 14px;
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+}
+
 /* Scroll reveal helper */
 .reveal {
   opacity: 0;
@@ -814,6 +878,14 @@ Drag to move around &middot; scroll or pinch to zoom &middot; double-tap a spot 
 <div id="zoomInBtn" class="zoomBtn">+</div>
 </div>
 
+</div>
+
+<!-- FLOATING CHECKOUT BUTTON (right side of seat map, draggable, only
+     shows once at least one seat is selected) -->
+<div id="floatingCheckoutBtn">
+<span>Checkout</span>
+<span class="fc-count" id="floatingCheckoutCount">0</span>
+<span class="fc-handle">⠿</span>
 </div>
 
 <!-- INFO PANEL -->
@@ -1128,11 +1200,18 @@ selected.length ? selected.join(', ') : 'None';
 
 document.getElementById('seatCount').innerText =
 selected.length;
+
+/* Show / hide the floating checkout button based on selection */
+const floatingBtn = document.getElementById('floatingCheckoutBtn');
+if(floatingBtn){
+document.getElementById('floatingCheckoutCount').innerText = selected.length;
+floatingBtn.classList.toggle('show', selected.length > 0);
+}
 }
 
 /* ---------- CHECKOUT ---------- */
 
-document.getElementById("checkoutBtn").addEventListener("click", () => {
+function goToCheckout(){
 
 if(selected.length === 0){
 alert("Please select at least one seat.");
@@ -1143,7 +1222,110 @@ localStorage.setItem("selectedSeats", JSON.stringify(selected));
 
 window.location.href = "checkout.html";
 
+}
+
+document.getElementById("checkoutBtn").addEventListener("click", goToCheckout);
+
+/* ---------- FLOATING CHECKOUT BUTTON (draggable) ---------- */
+
+(function(){
+
+const floatingBtn = document.getElementById('floatingCheckoutBtn');
+if(!floatingBtn) return;
+
+let isDown = false;
+let didDrag = false;
+let startX = 0, startY = 0;
+let startLeft = 0, startTop = 0;
+
+function getPoint(e){
+if(e.touches && e.touches.length){
+return { x:e.touches[0].clientX, y:e.touches[0].clientY };
+}
+return { x:e.clientX, y:e.clientY };
+}
+
+function clampToViewport(left, top){
+const w = floatingBtn.offsetWidth;
+const h = floatingBtn.offsetHeight;
+const maxLeft = window.innerWidth - w - 6;
+const maxTop = window.innerHeight - h - 6;
+return {
+left: Math.min(Math.max(6, left), Math.max(6, maxLeft)),
+top: Math.min(Math.max(6, top), Math.max(6, maxTop))
+};
+}
+
+function pointerDown(e){
+isDown = true;
+didDrag = false;
+
+const rect = floatingBtn.getBoundingClientRect();
+/* Switch from right/top anchored positioning to left/top so it can
+   be freely dragged, without visually jumping. */
+floatingBtn.style.right = 'auto';
+floatingBtn.style.left = rect.left + 'px';
+floatingBtn.style.top = rect.top + 'px';
+
+startLeft = rect.left;
+startTop = rect.top;
+
+const p = getPoint(e);
+startX = p.x;
+startY = p.y;
+
+floatingBtn.classList.add('dragging');
+}
+
+function pointerMove(e){
+if(!isDown) return;
+
+const p = getPoint(e);
+const dx = p.x - startX;
+const dy = p.y - startY;
+
+if(Math.abs(dx) > 4 || Math.abs(dy) > 4) didDrag = true;
+
+if(!didDrag) return;
+
+const clamped = clampToViewport(startLeft + dx, startTop + dy);
+floatingBtn.style.left = clamped.left + 'px';
+floatingBtn.style.top = clamped.top + 'px';
+
+if(e.cancelable) e.preventDefault();
+}
+
+function pointerUp(){
+if(!isDown) return;
+isDown = false;
+floatingBtn.classList.remove('dragging');
+
+if(!didDrag){
+/* It was a click/tap, not a drag: proceed to checkout. */
+goToCheckout();
+}
+}
+
+floatingBtn.addEventListener('mousedown', pointerDown);
+window.addEventListener('mousemove', pointerMove);
+window.addEventListener('mouseup', pointerUp);
+
+floatingBtn.addEventListener('touchstart', pointerDown, { passive:true });
+window.addEventListener('touchmove', pointerMove, { passive:false });
+window.addEventListener('touchend', pointerUp);
+window.addEventListener('touchcancel', pointerUp);
+
+/* Keep the button on-screen if the window is resized */
+window.addEventListener('resize', () => {
+if(floatingBtn.style.left && floatingBtn.style.left !== 'auto'){
+const rect = floatingBtn.getBoundingClientRect();
+const clamped = clampToViewport(rect.left, rect.top);
+floatingBtn.style.left = clamped.left + 'px';
+floatingBtn.style.top = clamped.top + 'px';
+}
 });
+
+})();
 
 /* ---------- PAN & ZOOM ---------- */
 
