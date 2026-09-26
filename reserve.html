@@ -730,6 +730,65 @@ section.py-12 p { animation-delay: .28s; }
   }
 }
 
+/* ===== HOUSEFUL SEQUENCE ===== */
+
+@keyframes housefulPop {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+.seat.housefulSold {
+  background: #ef4444 !important;
+  color: #2b0a0a !important;
+  cursor: not-allowed;
+  pointer-events: none;
+  animation: housefulPop .35s ease;
+}
+
+/* The seat map itself eases back and softens once every seat is sold */
+#seatMapInner.housefulRecede {
+  filter: blur(3px) brightness(.72);
+  transition: filter .7s ease;
+}
+
+.houseful-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(0,0,0,.32), rgba(0,0,0,.6));
+  transition: opacity .7s ease;
+}
+
+.houseful-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.houseful-text {
+  font-weight: 900;
+  font-size: clamp(30px, 6vw, 62px);
+  letter-spacing: 5px;
+  color: #ef4444;
+  text-shadow: 0 0 30px rgba(239,68,68,.7), 0 0 70px rgba(239,68,68,.4);
+  border: 3px solid #ef4444;
+  padding: 14px 40px;
+  border-radius: 14px;
+  transform: rotate(-6deg) scale(.85);
+  background: rgba(5,5,5,.55);
+  backdrop-filter: blur(2px);
+  transition: transform .7s cubic-bezier(.2,.8,.2,1);
+}
+
+.houseful-overlay.show .houseful-text {
+  transform: rotate(-6deg) scale(1);
+}
+
 /* Scroll reveal helper */
 .reveal {
   opacity: 0;
@@ -870,6 +929,9 @@ Drag to move around &middot; scroll or pinch to zoom &middot; double-tap a spot 
 <div id="seatMapInner" class="seatMapInner">
 <div id="seatMap" class="space-y-3"></div>
 </div>
+<div id="housefulOverlay" class="houseful-overlay">
+<div class="houseful-text">HOUSE FULL</div>
+</div>
 </div>
 
 <div class="zoomControls">
@@ -931,6 +993,10 @@ Proceed to Checkout
 
 const seatMap = document.getElementById('seatMap');
 let selected = [];
+
+/* The event is now fully booked out: seat selection is switched off
+   and the "HOUSEFUL" sequence takes over once the page loads. */
+let housefulMode = true;
 
 /* ---------- CREATE SEATS ---------- */
 
@@ -1171,6 +1237,7 @@ seat.classList.add('hiddenSeat');
 
 seat.onclick = () => {
 
+if(housefulMode) return;
 if(hiddenSeats.has(id)) return;
 if(seat.classList.contains('booked')) return;
 if(seat.classList.contains('locked')) return;
@@ -1713,6 +1780,50 @@ window.addEventListener('resize', () => {
   resizeTimer = setTimeout(() => centerSeatMap(false), 150);
 });
 
+/* ---------- HOUSEFUL SEQUENCE ---------- */
+/* Every visible seat turns red one after another (spread across ~2s),
+   then the whole seat map eases back and blurs, and a "HOUSEFUL"
+   note fades in on top of it. */
+
+function runHousefulSequence(){
+
+  const seats = Array.from(seatMap.querySelectorAll('.seat'))
+    .filter(s => !s.classList.contains('hiddenSeat'));
+
+  const totalDuration = 2000;
+  const count = seats.length;
+
+  if(count === 0){
+    finishHouseful();
+    return;
+  }
+
+  const step = totalDuration / count;
+
+  seats.forEach((seat, i) => {
+    setTimeout(() => {
+      seat.classList.remove('selected');
+      seat.classList.add('housefulSold');
+    }, Math.round(i * step));
+  });
+
+  setTimeout(finishHouseful, totalDuration + 200);
+}
+
+function finishHouseful(){
+
+  /* Ease the map back slightly, as if it is receding into the distance */
+  const vp = viewport.getBoundingClientRect();
+  zoomAt(0.88, vp.left + vp.width / 2, vp.top + vp.height / 2, true);
+
+  inner.classList.add('housefulRecede');
+
+  setTimeout(() => {
+    const overlay = document.getElementById('housefulOverlay');
+    if(overlay) overlay.classList.add('show');
+  }, 350);
+}
+
 </script>
 
 
@@ -1825,6 +1936,14 @@ setInterval(loadBookedSeats, 5000);
             block: 'center'
           });
         }
+
+        // Kick off the "houseful" sequence once the seat map has
+        // scrolled into view.
+        setTimeout(() => {
+          if (typeof runHousefulSequence === 'function') {
+            runHousefulSequence();
+          }
+        }, 700);
       }, 250);
     }, 6100);
   });
