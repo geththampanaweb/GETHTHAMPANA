@@ -850,6 +850,250 @@
             }
         }
 
+
+        /* ════════════════════════════════════════
+           LIVE TODAY ADDITIONS
+           (status pill · golden-light canvas · ticker)
+        ════════════════════════════════════════ */
+        .hero-canvas{
+            position:absolute; inset:0; width:100%; height:100%;
+            z-index:0; pointer-events:none; opacity:0;
+            transition:opacity 1.6s ease .2s;
+        }
+        body.site-ready .hero-canvas{ opacity:1; }
+
+        .live-pill{
+            display:inline-flex; align-items:center; gap:.75rem;
+            padding:.55rem 1.1rem .55rem .95rem;
+            border-radius:999px;
+            background:linear-gradient(120deg, rgba(251,191,36,.16), rgba(255,255,255,.04));
+            border:1px solid rgba(251,191,36,.38);
+            backdrop-filter:blur(10px);
+            -webkit-backdrop-filter:blur(10px);
+            margin-bottom:1.5rem;
+            position:relative; overflow:hidden;
+            box-shadow:0 10px 40px rgba(251,191,36,.12);
+            opacity:0; transform:translateY(14px);
+        }
+        body.site-ready .live-pill{
+            animation:livePillIn .9s cubic-bezier(.16,.84,.26,1) .15s both;
+        }
+        .live-pill::after{
+            content:""; position:absolute; top:0; left:-70%;
+            width:45%; height:100%;
+            background:linear-gradient(115deg,transparent,rgba(255,255,255,.28),transparent);
+            transform:skewX(-20deg);
+            animation:reserve-shine-sweep 4.5s ease-in-out 1.6s infinite;
+            pointer-events:none;
+        }
+        @keyframes livePillIn{
+            from{ opacity:0; transform:translateY(14px); }
+            to{   opacity:1; transform:translateY(0); }
+        }
+        .live-dot{
+            position:relative; width:10px; height:10px; border-radius:50%;
+            background:#fbbf24; flex-shrink:0;
+        }
+        .live-dot::before{
+            content:""; position:absolute; inset:0; border-radius:50%;
+            background:#fbbf24;
+            animation:livePulse 1.9s ease-out infinite;
+        }
+        @keyframes livePulse{
+            0%{ transform:scale(1); opacity:.7; }
+            100%{ transform:scale(3.2); opacity:0; }
+        }
+        .live-label{
+            font-size:.78rem; font-weight:700; letter-spacing:.2em;
+            text-transform:uppercase; color:#fbbf24; white-space:nowrap;
+        }
+        .live-sep{ width:1px; height:14px; background:rgba(255,255,255,.25); }
+        .live-sub{
+            font-size:.82rem; color:#e4e4e7; font-weight:500; white-space:nowrap;
+        }
+        .eq{ display:inline-flex; align-items:flex-end; gap:3px; height:16px; margin-left:.15rem; }
+        .eq i{
+            display:block; width:3px; height:100%; border-radius:2px;
+            background:linear-gradient(to top,#b45309,#fbbf24);
+            transform-origin:bottom; transform:scaleY(.25);
+            animation:eqBar 1.1s ease-in-out infinite;
+        }
+        .eq i:nth-child(1){ animation-delay:-.9s; }
+        .eq i:nth-child(2){ animation-delay:-.5s; animation-duration:.9s; }
+        .eq i:nth-child(3){ animation-delay:-.2s; animation-duration:1.3s; }
+        .eq i:nth-child(4){ animation-delay:-.7s; animation-duration:1s; }
+        .eq i:nth-child(5){ animation-delay:-.35s; animation-duration:1.2s; }
+        @keyframes eqBar{
+            0%,100%{ transform:scaleY(.25); }
+            50%{ transform:scaleY(1); }
+        }
+
+        /* Hero copy reveals once the opening sequence has finished */
+        .hero-rise{ opacity:0; transform:translateY(18px); }
+        body.site-ready .hero-rise{
+            animation:livePillIn .9s cubic-bezier(.16,.84,.26,1) both;
+        }
+        body.site-ready .hero-rise.d1{ animation-delay:.3s; }
+        body.site-ready .hero-rise.d2{ animation-delay:.45s; }
+        body.site-ready .hero-rise.d3{ animation-delay:.6s; }
+        body.site-ready .hero-rise.d4{ animation-delay:.75s; }
+        body.site-ready .hero-rise.d5{ animation-delay:.9s; }
+
+        /* ── Ticker strip ── */
+        .ticker{
+            position:relative; overflow:hidden;
+            background:#050505;
+            border-top:1px solid rgba(251,191,36,.25);
+            border-bottom:1px solid rgba(251,191,36,.25);
+            padding:.95rem 0;
+            -webkit-mask-image:linear-gradient(to right,transparent 0,#000 8%,#000 92%,transparent 100%);
+            mask-image:linear-gradient(to right,transparent 0,#000 8%,#000 92%,transparent 100%);
+        }
+        .ticker-track{
+            display:flex; width:max-content;
+            animation:tickerMove 38s linear infinite;
+        }
+        .ticker:hover .ticker-track{ animation-play-state:paused; }
+        .ticker-group{ display:flex; align-items:center; flex-shrink:0; }
+        .ticker-item{
+            display:inline-flex; align-items:center; gap:1.5rem;
+            padding-right:1.5rem;
+            font-size:.8rem; font-weight:600; letter-spacing:.28em;
+            text-transform:uppercase; color:#d4d4d8; white-space:nowrap;
+        }
+        .ticker-item b{ color:#fbbf24; font-weight:700; }
+        .ticker-note{ color:#fbbf24; font-size:1rem; letter-spacing:0; }
+        @keyframes tickerMove{
+            from{ transform:translateX(0); }
+            to{   transform:translateX(-50%); }
+        }
+
+        @media (max-width:640px){
+            .live-pill{ gap:.55rem; padding:.5rem .85rem; }
+            .live-label{ font-size:.68rem; letter-spacing:.16em; }
+            .live-sub{ font-size:.72rem; }
+            .live-sep{ display:none; }
+            .ticker-item{ font-size:.68rem; letter-spacing:.2em; }
+        }
+        @media (prefers-reduced-motion:reduce){
+            .live-pill,.hero-rise{ opacity:1 !important; transform:none !important; animation:none !important; }
+            .live-pill::after,.live-dot::before,.ticker-track{ animation:none !important; }
+            .eq i{ animation:none !important; transform:scaleY(.6); }
+            .hero-canvas{ display:none; }
+        }
+
+
+        /* ════════════════════════════════════════
+           "THE WAITING IS OVER" BOX + COUNTDOWN
+        ════════════════════════════════════════ */
+        @property --wait-angle{ syntax:'<angle>'; inherits:false; initial-value:0deg; }
+        .wait-wrap{ background:#000; padding:5rem 1.25rem 1rem; }
+        .wait-box{
+            position:relative; max-width:960px; margin:0 auto;
+            padding:3.25rem 2rem 3rem; text-align:center;
+            border-radius:2rem; overflow:hidden; isolation:isolate;
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(251,191,36,.16), transparent 62%),
+                linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.012));
+            box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 90px rgba(251,191,36,.08);
+            opacity:0; transform:translateY(34px) scale(.985);
+            transition:opacity .9s ease, transform .9s cubic-bezier(.16,.84,.26,1);
+        }
+        .wait-box.in{ opacity:1; transform:none; }
+        .wait-box::before{               /* rotating gold hairline border */
+            content:""; position:absolute; inset:0; border-radius:inherit; padding:1.5px;
+            background:conic-gradient(from var(--wait-angle), rgba(251,191,36,.08), #fbbf24 12%, rgba(251,191,36,.08) 30%, rgba(251,191,36,.08) 62%, #f59e0b 76%, rgba(251,191,36,.08) 92%);
+            -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite:xor; mask-composite:exclude;
+            animation:waitSpin 7s linear infinite; z-index:-1; pointer-events:none;
+        }
+        @keyframes waitSpin{ to{ --wait-angle:360deg; } }
+        .wait-box::after{                /* slow light sweep */
+            content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
+            background:linear-gradient(115deg,transparent,rgba(255,255,255,.07),transparent);
+            transform:skewX(-20deg); animation:reserve-shine-sweep 7s ease-in-out 1s infinite;
+            pointer-events:none; z-index:-1;
+        }
+        .wait-eyebrow{
+            font-size:.74rem; letter-spacing:.42em; text-transform:uppercase;
+            color:rgba(255,255,255,.55); font-weight:500;
+        }
+        .wait-title{
+            margin:.9rem 0 .7rem;
+            font-size:clamp(1.9rem, 6.2vw, 3.7rem);
+            font-weight:800; line-height:1.1; letter-spacing:.06em; text-transform:uppercase;
+            background:linear-gradient(100deg,#b45309 0%,#fbbf24 28%,#fff3c4 50%,#fbbf24 72%,#b45309 100%);
+            background-size:240% 100%;
+            -webkit-background-clip:text; background-clip:text;
+            -webkit-text-fill-color:transparent; color:transparent;
+            animation:waitShimmer 5.5s ease-in-out infinite;
+        }
+        @keyframes waitShimmer{ 0%,100%{ background-position:100% 0; } 50%{ background-position:0 0; } }
+        .wait-rule{
+            width:84px; height:2px; margin:0 auto 1.1rem; border-radius:2px;
+            background:linear-gradient(90deg,transparent,#fbbf24,transparent);
+        }
+        .wait-sub{ color:#a1a1aa; font-size:.95rem; line-height:1.6; }
+        .wait-sub strong{ color:#e4e4e7; font-weight:600; }
+
+        .wait-clock{
+            display:flex; justify-content:center; align-items:flex-start;
+            gap:clamp(.35rem,1.6vw,.9rem); margin:2.4rem 0 2.2rem;
+        }
+        .wait-cell{
+            min-width:clamp(62px,15vw,120px);
+            padding:1.1rem .4rem .8rem;
+            border-radius:1.1rem;
+            background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+            border:1px solid rgba(255,255,255,.09);
+            box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+        }
+        .wait-cell[hidden]{ display:none; }
+        .wait-num{
+            display:block; font-weight:700; line-height:1;
+            font-size:clamp(1.7rem,7.2vw,3.5rem);
+            font-variant-numeric:tabular-nums; font-feature-settings:"tnum";
+            font-family:ui-monospace,'SF Mono','Roboto Mono',Menlo,Consolas,monospace;
+            color:#fff; letter-spacing:.02em;
+        }
+        .wait-label{
+            display:block; margin-top:.65rem;
+            font-size:.62rem; letter-spacing:.24em; text-transform:uppercase; color:#fbbf24; font-weight:600;
+        }
+        .wait-cell--ms{ min-width:clamp(70px,16vw,132px); }
+        .wait-cell--ms .wait-num{ color:#fbbf24; }
+        .wait-colon{
+            align-self:center; padding-bottom:1.3rem;
+            font-size:clamp(1.2rem,4.5vw,2.2rem); font-weight:700; color:rgba(251,191,36,.55);
+            animation:waitBlink 1s steps(1) infinite;
+        }
+        @keyframes waitBlink{ 50%{ opacity:.2; } }
+
+        .wait-cta{
+            display:inline-flex; align-items:center; gap:.6rem;
+            padding:.95rem 2.1rem; border-radius:999px; font-weight:700; font-size:.95rem;
+            color:#1c1006; background:linear-gradient(115deg,#f59e0b,#fbbf24);
+            box-shadow:0 12px 34px rgba(251,191,36,.28);
+            transition:transform .35s cubic-bezier(.34,1.3,.64,1), box-shadow .35s ease;
+        }
+        .wait-cta:hover{ transform:translateY(-3px); box-shadow:0 18px 44px rgba(251,191,36,.42); }
+
+        .wait-box.done .wait-colon{ animation:none; opacity:.55; }
+        .wait-box.done .wait-num{ color:#fbbf24; }
+        .wait-box.done .wait-cell{ border-color:rgba(251,191,36,.35); }
+
+        @media (max-width:640px){
+            .wait-box{ padding:2.6rem 1rem 2.4rem; border-radius:1.5rem; }
+            .wait-eyebrow{ font-size:.62rem; letter-spacing:.3em; }
+            .wait-sub{ font-size:.82rem; }
+            .wait-label{ font-size:.5rem; letter-spacing:.14em; }
+            .wait-cell{ padding:.85rem .2rem .65rem; border-radius:.9rem; }
+        }
+        @media (prefers-reduced-motion:reduce){
+            .wait-box{ opacity:1; transform:none; transition:none; }
+            .wait-box::before,.wait-box::after,.wait-title,.wait-colon{ animation:none !important; }
+        }
+
     </style>
 </head>
 
@@ -903,16 +1147,24 @@
 </nav>
 
 <!-- HERO -->
-<section class="hero-bg min-h-screen flex items-center">
+<section class="hero-bg min-h-screen flex items-center relative overflow-hidden" id="hero">
+    <canvas class="hero-canvas" id="heroCanvas" aria-hidden="true"></canvas>
     <div class="max-w-7xl mx-auto px-6">
-        <div class="max-w-3xl">
-            <p class="uppercase tracking-[5px] text-amber-400 mb-4">Musical Evening</p>
+        <div class="max-w-3xl relative z-10">
+            <div class="live-pill" id="livePill" role="status" aria-live="polite">
+                <span class="live-dot"></span>
+                <span class="live-label" id="liveLabel">Happening Today</span>
+                <span class="live-sep"></span>
+                <span class="live-sub" id="liveSub">Doors open 3:30 PM</span>
+                <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+            </div>
+            <p class="uppercase tracking-[5px] text-amber-400 mb-4 hero-rise d1">Musical Evening</p>
             
-			<img src="images/logooo.jpg" class="rounded-3xl shadow-2xl"> 
+			<img src="images/logooo.jpg" class="rounded-3xl shadow-2xl hero-rise d2"> 
 			
 			
-            <p class="text-xl text-gray-300 mb-8">An unforgettable evening of music, culture, rhythm and memories under one stage.</p>
-            <div class="flex flex-wrap gap-4">
+            <p class="text-xl text-gray-300 mb-8 hero-rise d3">An unforgettable evening of music, culture, rhythm and memories under one stage.</p>
+            <div class="flex flex-wrap gap-4 hero-rise d4">
                
                 <a href="audience-choice.html" class="bg-amber-500 hover:bg-amber-600 px-8 py-4 rounded-full font-semibold transition">Audience Choice</a>
 				<a href="#reserve-seats"
@@ -922,7 +1174,7 @@
 </a>
                 <a href="#about" class="border border-white px-8 py-4 rounded-full hover:bg-white hover:text-black transition">Learn More</a>
             </div>
-            <div class="mt-12 flex flex-wrap gap-8">
+            <div class="mt-12 flex flex-wrap gap-8 hero-rise d5">
                 <div>
                     <p class="text-gray-400">Date</p>
                     <h3 class="font-bold">8th October 2026</h3>
@@ -939,6 +1191,53 @@
                 
             </div>
         </div>
+    </div>
+</section>
+
+<!-- LIVE TICKER -->
+<div class="ticker" aria-label="Event happening today from 3.30 PM onwards">
+    <div class="ticker-track">
+            <div class="ticker-group">
+                <span class="ticker-item"><b class="tick-when">Today</b> <span class="ticker-note">&#9834;</span></span>
+                <span class="ticker-item">3.30 PM Onwards <span class="ticker-note">&#9835;</span></span>
+                <span class="ticker-item">D.S. Senanayake College, Colombo 07 <span class="ticker-note">&#9834;</span></span>
+                <span class="ticker-item">Sri Lankan Folk Music <span class="ticker-note">&#9835;</span></span>
+                <span class="ticker-item">ගෙත්තම්පාණ 2026 <span class="ticker-note">&#9834;</span></span>
+                <span class="ticker-item">Limited Seats &middot; Reserve Yours <span class="ticker-note">&#9835;</span></span>
+            </div>
+            <div class="ticker-group" aria-hidden="true">
+                <span class="ticker-item"><b class="tick-when">Today</b> <span class="ticker-note">&#9834;</span></span>
+                <span class="ticker-item">3.30 PM Onwards <span class="ticker-note">&#9835;</span></span>
+                <span class="ticker-item">D.S. Senanayake College, Colombo 07 <span class="ticker-note">&#9834;</span></span>
+                <span class="ticker-item">Sri Lankan Folk Music <span class="ticker-note">&#9835;</span></span>
+                <span class="ticker-item">ගෙත්තම්පාණ 2026 <span class="ticker-note">&#9834;</span></span>
+                <span class="ticker-item">Limited Seats &middot; Reserve Yours <span class="ticker-note">&#9835;</span></span>
+            </div>
+    </div>
+</div>
+
+<!-- THE WAITING IS OVER -->
+<section id="countdown" class="wait-wrap" aria-label="Countdown to doors opening">
+    <div class="wait-box" id="waitBox">
+        <p class="wait-eyebrow">ගෙත්තම්පාණ 2026 &middot; Musical Evening</p>
+        <h2 class="wait-title">The Waiting Is Over</h2>
+        <div class="wait-rule"></div>
+        <p class="wait-sub" id="waitSub">Doors open <strong>today at 3:30 PM</strong> &middot; D.S. Senanayake College, Colombo 07</p>
+
+        <div class="wait-clock" role="timer" aria-live="off">
+            <div class="wait-cell" id="waitDaysCell" hidden><span class="wait-num" id="wD">00</span><span class="wait-label">Days</span></div>
+            <div class="wait-cell"><span class="wait-num" id="wH">00</span><span class="wait-label">Hours</span></div>
+            <span class="wait-colon" aria-hidden="true">:</span>
+            <div class="wait-cell"><span class="wait-num" id="wM">00</span><span class="wait-label">Minutes</span></div>
+            <span class="wait-colon" aria-hidden="true">:</span>
+            <div class="wait-cell"><span class="wait-num" id="wS">00</span><span class="wait-label">Seconds</span></div>
+            <span class="wait-colon" aria-hidden="true">.</span>
+            <div class="wait-cell wait-cell--ms"><span class="wait-num" id="wMs">000</span><span class="wait-label">Millisec</span></div>
+        </div>
+
+        <a href="#reserve-seats" class="wait-cta">Reserve Your Seat
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
     </div>
 </section>
 
@@ -1440,7 +1739,7 @@
 /* ── Grand opening animation : reveal the site once the sequence finishes ── */
 (function () {
     const opening = document.getElementById('openingScreen');
-    if (!opening) return;
+    if (!opening) { document.body.classList.add('site-ready'); return; }
 
     document.body.classList.add('opening-lock');
 
@@ -1449,6 +1748,7 @@
         if (done) return;
         done = true;
         opening.classList.add('hide');
+        document.body.classList.add('site-ready');
         document.body.classList.remove('opening-lock');
         window.scrollTo(0, 0);
         // Remove from the DOM once the fade-out has completed.
@@ -1470,6 +1770,158 @@
     opening.addEventListener('click', finish);
 })();
 
+</script>
+
+
+<script>
+/* ── Live status: reflects the real event date/time in Sri Lanka (no countdown) ── */
+(function(){
+    const label = document.getElementById('liveLabel');
+    const sub   = document.getElementById('liveSub');
+    const whens = document.querySelectorAll('.tick-when');
+    const EVENT_KEY = 20261008, START_MIN = 15*60 + 30;
+
+    function colomboNow(){
+        const f = new Intl.DateTimeFormat('en-GB', {
+            timeZone:'Asia/Colombo', year:'numeric', month:'2-digit', day:'2-digit',
+            hour:'2-digit', minute:'2-digit', hourCycle:'h23'
+        }).formatToParts(new Date());
+        const g = t => parseInt(f.find(p => p.type === t).value, 10);
+        return { key: g('year')*10000 + g('month')*100 + g('day'), min: g('hour')*60 + g('minute') };
+    }
+    function update(){
+        const n = colomboNow();
+        let l, s, w;
+        if (n.key < EVENT_KEY){ l='Coming Soon'; s='8 October 2026 · 3:30 PM onwards'; w='8 October 2026'; }
+        else if (n.key === EVENT_KEY && n.min < START_MIN){ l='Happening Today'; s='Doors open 3:30 PM'; w='Today'; }
+        else if (n.key === EVENT_KEY){ l='Live Now'; s='At D.S. Senanayake College'; w='Live Now'; }
+        else { l='Thank You'; s='See you at ගෙත්තම්පාණ 2027'; w='Thank You'; }
+        if (label) label.textContent = l;
+        if (sub)   sub.textContent   = s;
+        whens.forEach(el => el.textContent = w);
+    }
+    update();
+    setInterval(update, 60000);
+})();
+
+/* ── Hero: drifting golden light + floating notes (canvas, pauses off-screen) ── */
+(function(){
+    const hero = document.getElementById('hero');
+    const cv   = document.getElementById('heroCanvas');
+    if (!hero || !cv) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const ctx = cv.getContext('2d');
+    const NOTES = ['♪','♫','♩','♬'];
+    let w = 0, h = 0, dpr = 1, parts = [], raf = null, visible = true;
+
+    function size(){
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        w = hero.clientWidth; h = hero.clientHeight;
+        cv.width = w*dpr; cv.height = h*dpr;
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+        const count = w < 640 ? 26 : 52;
+        parts = Array.from({length:count}, (_, i) => make(i % 6 === 0, true));
+    }
+    function make(isNote, anywhere){
+        return {
+            note: isNote,
+            glyph: NOTES[Math.floor(Math.random()*NOTES.length)],
+            x: Math.random()*w,
+            y: anywhere ? Math.random()*h : h + 20,
+            r: isNote ? 14 + Math.random()*16 : 0.8 + Math.random()*2,
+            vy: (isNote ? .18 : .12) + Math.random()*.3,
+            sway: Math.random()*Math.PI*2,
+            swaySpeed: .004 + Math.random()*.01,
+            swayAmp: isNote ? 22 : 10,
+            a: isNote ? .10 + Math.random()*.14 : .25 + Math.random()*.5
+        };
+    }
+    function frame(){
+        raf = null;
+        if (!visible || document.hidden) return;
+        ctx.clearRect(0,0,w,h);
+        for (const p of parts){
+            p.y -= p.vy; p.sway += p.swaySpeed;
+            const x = p.x + Math.sin(p.sway)*p.swayAmp;
+            const edge = Math.min(1, Math.max(0, p.y/(h*.25)), (h-p.y+40)/(h*.2));
+            const alpha = p.a * Math.max(0, Math.min(1, edge));
+            if (p.note){
+                ctx.font = p.r + 'px serif';
+                ctx.fillStyle = 'rgba(251,191,36,' + alpha + ')';
+                ctx.fillText(p.glyph, x, p.y);
+            } else {
+                const g = ctx.createRadialGradient(x,p.y,0,x,p.y,p.r*4);
+                g.addColorStop(0,'rgba(255,224,130,' + alpha + ')');
+                g.addColorStop(1,'rgba(251,191,36,0)');
+                ctx.fillStyle = g;
+                ctx.beginPath(); ctx.arc(x,p.y,p.r*4,0,Math.PI*2); ctx.fill();
+            }
+            if (p.y < -30) Object.assign(p, make(p.note,false), { x: Math.random()*w });
+        }
+        raf = requestAnimationFrame(frame);
+    }
+    function start(){ if (!raf) raf = requestAnimationFrame(frame); }
+
+    new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) start(); }, {threshold:0}).observe(hero);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) start(); });
+    let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(size, 200); });
+    size(); start();
+})();
+</script>
+
+
+<script>
+/* ── "The Waiting Is Over" : countdown to 3:30 PM (Sri Lanka time), with milliseconds ── */
+(function(){
+    const box = document.getElementById('waitBox');
+    if (!box) return;
+    const TARGET = Date.parse('2026-10-08T15:30:00+05:30');
+    const el = id => document.getElementById(id);
+    const dCell = el('waitDaysCell'), wD = el('wD'), wH = el('wH'), wM = el('wM'), wS = el('wS'), wMs = el('wMs');
+    const sub = el('waitSub');
+    const pad = (n, l) => String(n).padStart(l || 2, '0');
+    let last = { d:-1, h:-1, m:-1, s:-1 }, raf = null, visible = true, finished = false;
+
+    function setSub(daysLeft){
+        sub.innerHTML = daysLeft > 0
+            ? 'Doors open <strong>8 October 2026 at 3:30 PM</strong> &middot; D.S. Senanayake College, Colombo 07'
+            : 'Doors open <strong>today at 3:30 PM</strong> &middot; D.S. Senanayake College, Colombo 07';
+    }
+    function finish(){
+        finished = true;
+        box.classList.add('done');
+        dCell.hidden = true;
+        wH.textContent = wM.textContent = wS.textContent = '00';
+        wMs.textContent = '000';
+        sub.innerHTML = '<strong>The doors are open</strong> &middot; Welcome to ගෙත්තම්පාණ 2026';
+    }
+    function tick(){
+        raf = null;
+        if (finished) return;
+        const diff = TARGET - Date.now();
+        if (diff <= 0){ finish(); return; }
+        const d = Math.floor(diff / 86400000);
+        const h = Math.floor(diff % 86400000 / 3600000);
+        const m = Math.floor(diff % 3600000 / 60000);
+        const s = Math.floor(diff % 60000 / 1000);
+        if (d !== last.d){ last.d = d; wD.textContent = pad(d); dCell.hidden = d < 1; setSub(d); }
+        if (h !== last.h){ last.h = h; wH.textContent = pad(h); }
+        if (m !== last.m){ last.m = m; wM.textContent = pad(m); }
+        if (s !== last.s){ last.s = s; wS.textContent = pad(s); }
+        wMs.textContent = pad(diff % 1000, 3);
+        if (visible && !document.hidden) raf = requestAnimationFrame(tick);
+    }
+    function start(){ if (!raf && !finished) raf = requestAnimationFrame(tick); }
+
+    new IntersectionObserver(es => {
+        visible = es[0].isIntersecting;
+        if (es[0].isIntersecting) box.classList.add('in');
+        if (visible) start();
+    }, { threshold: .15 }).observe(box);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) start(); });
+    tick();   // paint the correct numbers immediately
+})();
 </script>
 
 </body>
