@@ -608,7 +608,7 @@ footer{margin-top:20px;padding:36px 0 48px;text-align:center;color:var(--faint);
 
 <!-- 1. HEADER / INTRO -->
 <section class="intro wrap" aria-labelledby="pageTitle">
-  <h1 id="pageTitle">Reserve Your Seats</h1>
+  <h1 id="pageTitle">Reserve Your Seats Now</h1>
   <p>Reserve several seats in a single booking for the musical evening. Fill in the form below and you will receive a booking reference and QR ticket straight away.</p>
   <div class="notice" role="note">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
@@ -825,20 +825,18 @@ footer{margin-top:20px;padding:36px 0 48px;text-align:center;color:var(--faint);
 /* =====================================================================
    CONFIGURATION  (edit here)
    ===================================================================== */
-const MAX_PER_BOOKING   = 10;     // must match MAX_PER_BOOKING in functions/index.js
 const LIMITED_THRESHOLD = 0.80;   // "Limited seats remaining" once 80% or more is reserved
-const FUNCTION_REGION   = "asia-south1"; // must match REGION in functions/index.js
 const LIVE_TIMEOUT_MS   = 12000;  // how long to wait for live data before showing an error
 const FIREBASE_VERSION  = "12.15.0";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDaIzeEQkOrziNSXlRHWv-509hYZb4Y7vY",
-  authDomain: "geththampana-reservations.firebaseapp.com",
-  projectId: "geththampana-reservations",
-  storageBucket: "geththampana-reservations.firebasestorage.app",
-  messagingSenderId: "706440471161",
-  appId: "1:706440471161:web:d32183dccadad1b835eaa8",
-  measurementId: "G-R7Y10WQXZ1"
+  apiKey: "AIzaSyChsoXGM6oAq0Jj-8D3ScCjeGx8MmMGP4k",
+  authDomain: "geththampana27.firebaseapp.com",
+  projectId: "geththampana27",
+  storageBucket: "geththampana27.firebasestorage.app",
+  messagingSenderId: "1085072564218",
+  appId: "1:1085072564218:web:a896d78457048723f08e43",
+  measurementId: "G-G6L2YGD8KX"
 };
 const FIRESTORE_DATABASE = "geththampana";
 
@@ -1207,7 +1205,7 @@ const el = {
 };
 
 function maxSelectable(){
-  return state.live ? Math.max(0, Math.min(MAX_PER_BOOKING, remaining())) : MAX_PER_BOOKING;
+  return state.live ? Math.max(0, remaining()) : Infinity; // no per-booking limit: only the seats still remaining
 }
 function getQty(){
   const s = el.qty.value.trim();
@@ -1255,7 +1253,7 @@ function validateQty(){
   let msg = '';
   if(max < 1) msg = state.live ? 'No seats are available.' : 'Live availability is not available right now.';
   else if(!Number.isInteger(q) || q < 1) msg = 'Enter a whole number of 1 or more.';
-  else if(q > max) msg = 'Only ' + max + (max === 1 ? ' seat is' : ' seats are') + ' available for one booking.';
+  else if(q > max) msg = 'Only ' + max + (max === 1 ? ' seat is' : ' seats are') + ' available.';
   setError(el.qty, 'qtyErr', msg);
   return !msg;
 }
@@ -1267,8 +1265,8 @@ function updateQtyControls(){
   el.plus.disabled = !(Number.isInteger(q) ? q < max : max >= 1);
   el.qty.disabled = max < 1 || state.submitting;
   $('qtyHelp').textContent = state.live
-    ? 'Up to ' + Math.min(MAX_PER_BOOKING, Math.max(remaining(), 0)) + ' seats per booking · ' + remaining() + ' remaining overall.'
-    : 'Up to ' + MAX_PER_BOOKING + ' seats per booking.';
+    ? 'Choose any number of seats · ' + remaining() + ' remaining overall.'
+    : 'Choose any number of seats.';
 }
 
 function updateSummary(){
@@ -1307,7 +1305,7 @@ el.email.addEventListener('input', () => { if(el.email.getAttribute('aria-invali
 el.notes.addEventListener('input', () => { $('notesCount').textContent = el.notes.value.length; });
 
 el.qty.addEventListener('input', () => {
-  el.qty.value = el.qty.value.replace(/[^0-9]/g, '').slice(0, 3); // digits only: no decimals, minus or letters
+  el.qty.value = el.qty.value.replace(/[^0-9]/g, '').slice(0, 5); // digits only: no decimals, minus or letters
   const q = getQty(), max = maxSelectable();
   if(Number.isInteger(q) && q > max && max >= 1){ setQty(max); }
   if(Number.isInteger(q) && q === 0){ setQty(1); }
@@ -1616,8 +1614,68 @@ $('anotherBtn').addEventListener('click', () => {
 /* =====================================================================
    FIREBASE  (loaded dynamically so a failure shows a message instead of breaking the page)
    ===================================================================== */
+/* ---------------------------------------------------------------------
+   BOOKING WITHOUT CLOUD FUNCTIONS (works on the free Spark plan)
+   One Firestore transaction does all of this atomically:
+     1. if this requestId was already saved, return that booking (safe retry)
+     2. check enough seats remain
+     3. raise stats/attendance.reserved
+     4. write reservations/{bookingId} and requests/{requestId}
+   firestore.rules enforces the same rules on the server side.
+   --------------------------------------------------------------------- */
+const REF_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+function makeBookingId(){
+  const a = new Uint8Array(8); crypto.getRandomValues(a);
+  return Array.prototype.map.call(a, b => REF_ALPHABET[b % REF_ALPHABET.length]).join('');
+}
+function bookingError(message, remaining){
+  return { code: 'failed-precondition', message: message, details: { remaining: remaining } };
+}
+
+async function createReservation(p){
+  const reqRef = fs.doc(db, 'requests', p.requestId);
+  let lastErr = null;
+  for(let attempt = 0; attempt < 3; attempt++){
+    const bookingId = makeBookingId();
+    try{
+      return await fs.runTransaction(db, async (tx) => {
+        const existing = await tx.get(reqRef);
+        if(existing.exists()){                                  // the first attempt really did succeed
+          const e = existing.data();
+          let when = new Date().toISOString();
+          try{ when = e.createdAt.toDate().toISOString(); }catch(_){}
+          return { bookingId: e.bookingId, name: e.name, phone: e.phone, quantity: e.quantity, createdAt: when };
+        }
+        const snap = await tx.get(statsRef);
+        if(!snap.exists()) throw bookingError('NO_STATS', null);
+        const d = snap.data();
+        const reserved = Math.max(0, Number(d.reserved) || 0);
+        const capacity = Number(d.capacity);
+        const left = capacity - reserved;
+        if(!(capacity > 0) || left <= 0) throw bookingError('SOLD_OUT', 0);
+        if(p.quantity > left) throw bookingError('NOT_ENOUGH', left);
+
+        const now = fs.serverTimestamp();
+        tx.update(statsRef, { reserved: reserved + p.quantity, lastBookingId: bookingId });
+        tx.set(fs.doc(db, 'reservations', bookingId), {
+          bookingId: bookingId, requestId: p.requestId,
+          name: p.name, phone: p.phone, email: p.email, school: p.school, notes: p.notes,
+          quantity: p.quantity, policyAccepted: true, createdAt: now
+        });
+        tx.set(reqRef, { bookingId: bookingId, name: p.name, phone: p.phone, quantity: p.quantity, createdAt: now });
+        return { bookingId: bookingId, name: p.name, phone: p.phone, quantity: p.quantity, createdAt: new Date().toISOString() };
+      });
+    }catch(err){
+      lastErr = err;
+      // permission-denied here almost always means the random reference collided with an existing one: try a new one.
+      if(!(err && err.code === 'permission-denied')) throw err;
+    }
+  }
+  throw lastErr;
+}
+
 let api = null;
-let fs = null, statsRef = null, unsubscribe = null;
+let fs = null, db = null, statsRef = null, unsubscribe = null;
 let pollTimer = null, pollBusy = false, slowTimer = null, relistenTimer = null;
 const RETRY_MS = 800;                       // every reconnect attempt is under one second
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -1719,8 +1777,7 @@ document.addEventListener('visibilitychange', () => { if(!document.hidden) refre
     try{
       mods = await Promise.all([
         import(base + 'firebase-app.js'),
-        import(base + 'firebase-firestore.js'),
-        import(base + 'firebase-functions.js')
+        import(base + 'firebase-firestore.js')
       ]);
       break;
     }catch(err){
@@ -1729,16 +1786,14 @@ document.addEventListener('visibilitychange', () => { if(!document.hidden) refre
       await sleep(RETRY_MS);
     }
   }
-  const [appMod, fsMod, fnMod] = mods;
+  const [appMod, fsMod] = mods;
   try{
     const app = appMod.initializeApp(firebaseConfig);
-    const db = fsMod.getFirestore(app, FIRESTORE_DATABASE);
-    const functions = fnMod.getFunctions(app, FUNCTION_REGION);
-    const callable = fnMod.httpsCallable(functions, 'createReservation', { timeout: 20000 });
+    db = fsMod.getFirestore(app, FIRESTORE_DATABASE);
 
     fs = fsMod;
     statsRef = fsMod.doc(db, 'stats', 'attendance');
-    api = { createReservation: async (payload) => (await callable(payload)).data };
+    api = { createReservation };
   }catch(err){
     if(window.console) console.error('Firebase setup failed:', err);
     state.error = 'We could not connect to the reservation service. Please try again shortly.';
